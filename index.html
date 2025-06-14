@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Μπουζοκοτεφτέρι</title>
+
+    <link rel="icon" href="Assets/bouzouki.png" type="image/png" />
+    <link href="Libraries/Bootstrap/bootstrap.min.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <nav
+      id="main-navbar"
+      class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm"
+    >
+      <div class="container justify-content-center">
+        <div class="navbar-nav flex-wrap gap-1">
+          <button
+            id="nav-scales-list"
+            class="btn btn-outline-primary"
+            data-section="scales-list-container"
+          >
+            Δρόμοι
+          </button>
+          <button
+            id="nav-scale-finder"
+            class="btn btn-outline-primary"
+            data-section="scale-finder-container"
+          >
+            Βρες το δρόμο
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div id="main-container" class="container my-4 d-flex flex-column align-items-center">
+      <div id="scales-list-container" class="w-100" style="max-width: 700px">
+        <scale-list></scale-list>
+      </div>
+
+      <div id="scale-finder-container" class="w-100" style="max-width: 700px">
+        <scale-finder></scale-finder>
+      </div>
+    </div>
+
+    <script src="Libraries/Bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="Features/Scales/ScaleListElement.js"></script>
+    <script type="module" src="Features/Scales/ScaleFinderElement.js"></script>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
