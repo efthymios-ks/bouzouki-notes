@@ -23,7 +23,7 @@ export class ScaleFinder extends LitElement {
     const selectedCount = this.#selectedNotes.length;
     const selectionClass = selectedCount === 7 ? "bg-success" : "bg-danger";
 
-    const notesHtml = Note.allNotes.map((noteKey) => {
+    const notesHtml = Note.sharpNotes.map((noteKey) => {
       const isActive = this.#selectedNotes.includes(noteKey);
       const isActiveClass = isActive ? "active btn-primary" : "btn-outline-primary";
 
@@ -41,9 +41,7 @@ export class ScaleFinder extends LitElement {
     });
 
     return html`
-      <div
-        class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 mb-3"
-      >
+      <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-3">
         <div class="badge text-white fw-semibold rounded px-2 py-1 ${selectionClass}">
           ${selectedCount}/7
         </div>

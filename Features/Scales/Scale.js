@@ -1,3 +1,4 @@
+import { Chord } from "../Chords/Chord.js";
 import { Note } from "../Notes/Note.js";
 import Scales from "./Scales.js";
 
@@ -6,16 +7,17 @@ export class Scale {
   #tonic;
   #intervals = [];
   #otherNames = [];
-  #chordsFromD = [];
+  #chords = null;
   #variants = [];
   #notes = [];
+  #normalizedNotes = [];
 
-  constructor({ name, tonic, intervals, otherNames = [], chordsFromD = [], variants = {} }) {
+  constructor({ name, tonic, intervals, otherNames = [], chords = null, variants = {} }) {
     if (!name) {
       throw new Error("Name must be a non-empty string");
     }
 
-    if (!tonic || !Note.allNotes.includes(tonic)) {
+    if (!tonic || !Note.sharpNotes.includes(tonic)) {
       throw new Error(`Invalid or missing tonic for scale ${name}`);
     }
 
@@ -29,20 +31,14 @@ export class Scale {
       );
     }
 
-    if (
-      chordsFromD &&
-      chordsFromD.length.length > 0 &&
-      chordsFromD.length !== Note.naturalNotes.length
-    ) {
-      throw new Error(
-        "Chords from D must have the same length as the number of notes in the scale"
-      );
+    if (chords && chords.chords && chords.chords.length !== Note.naturalNotes.length) {
+      throw new Error("Chords array must have the same length as the number of notes in the scale");
     }
 
     this.#name = name;
     this.#intervals = intervals;
     this.#otherNames = otherNames || [];
-    this.#chordsFromD = chordsFromD || [];
+    this.#chords = chords || null;
     this.#variants = variants || {};
 
     Scale.#setTonic(this, tonic);
@@ -64,26 +60,47 @@ export class Scale {
     return this.#otherNames;
   }
 
-  get chordsFromD() {
-    return this.#chordsFromD;
+  get chords() {
+    return this.#chords;
   }
 
   get notes() {
     return this.#notes;
   }
 
-  get variants() {
-    return this.#variants;
+  get normalizedNotes() {
+    return this.#normalizedNotes;
   }
 
-  #setVariants(variants) {
-    this.#variants = variants;
+  get variants() {
+    return this.#variants;
   }
 
   transpose(tonic) {
     const newScale = this.#clone();
     Scale.#setTonic(newScale, tonic);
     return newScale;
+  }
+
+  normalizeNote(note) {
+    const indexInNormalized = this.#normalizedNotes.indexOf(note);
+    if (indexInNormalized !== -1) {
+      return note;
+    }
+
+    const indexInNotes = this.#notes.indexOf(note);
+    if (indexInNotes !== -1) {
+      return this.#normalizedNotes[indexInNotes];
+    }
+
+    console.warn(`Note "${note}" not found in scale "${this.#name} (${this.#tonic})"`);
+    return note;
+  }
+
+  normalizeChord(chord) {
+    const { root, suffix } = Chord.parse(chord);
+    const normalizedRoot = this.normalizeNote(root);
+    return normalizedRoot + suffix;
   }
 
   static getAll(tonic) {
@@ -97,15 +114,13 @@ export class Scale {
       return [];
     }
 
-    const seenNames = new Set();
-
     const allScales = Scale.getAll("C");
     const matchingParents = []; // { scale, variantScales: [] }
     const matchingVariants = []; // { scale, parentName }
 
     // Collect parents
     for (const scale of allScales) {
-      for (const tonic of Note.allNotes) {
+      for (const tonic of Note.sharpNotes) {
         try {
           const transposedScale = scale.transpose(tonic);
           if (!transposedScale.#notesMatch(inputNotes)) {
@@ -122,7 +137,7 @@ export class Scale {
     // Collect variants
     for (const parentScale of allScales) {
       for (const variantScale of parentScale.variants || []) {
-        for (const tonic of Note.allNotes) {
+        for (const tonic of Note.sharpNotes) {
           try {
             const transposedScale = variantScale.transpose(tonic);
             if (!transposedScale.#notesMatch(inputNotes)) {
@@ -138,6 +153,7 @@ export class Scale {
     }
 
     const result = [];
+    const seenNames = new Set();
 
     // Map matching variants to parents, if possible
     for (const matchingVariant of matchingVariants) {
@@ -170,7 +186,7 @@ export class Scale {
 
       // Attach variants only for display
       const parentClone = matchingParent.scale.#clone();
-      parentClone.#setVariants(matchingParent.variantScales);
+      parentClone.#variants = matchingParent.variantScales;
       result.push(parentClone);
       seenNames.add(matchingParent.scale.name);
     }
@@ -208,6 +224,8 @@ export class Scale {
 
     scale.#tonic = tonic;
     scale.#notes = scale.#calculateNotes();
+    scale.#normalizedNotes = scale.#calculateNormalizedNotes();
+
     if (scale.#variants && scale.#variants.length > 0) {
       scale.#variants.forEach((variant) => Scale.#setTonic(variant, tonic));
     }
@@ -238,13 +256,13 @@ export class Scale {
       tonic: this.tonic,
       intervals: [...this.intervals],
       otherNames: [...this.otherNames],
-      chordsFromD: [...this.chordsFromD],
+      chords: this.chords,
       variants: this.variants.map((variant) => variant.#deconstruct()),
     };
   }
 
   #calculateNotes() {
-    const semitoneToNote = Note.allNotes.reduce((acc, note, index) => {
+    const semitoneToNote = Note.sharpNotes.reduce((acc, note, index) => {
       acc[index % 12] = note;
       return acc;
     }, {});
@@ -261,9 +279,41 @@ export class Scale {
     return notes;
   }
 
+  #calculateNormalizedNotes() {
+    const sharpToFlat = {
+      "A#": "Bb",
+      "C#": "Db",
+      "D#": "Eb",
+      "F#": "Gb",
+      "G#": "Ab",
+    };
+
+    const notes = [];
+    const seenBaseNotes = new Set();
+
+    for (let i = 0; i < this.#notes.length; i++) {
+      let note = this.#notes[i];
+
+      // Convert sharp to flat if base note already seen
+      if (i !== this.#notes.length - 1 && seenBaseNotes.has(note[0]) && sharpToFlat[note]) {
+        note = sharpToFlat[note];
+      }
+
+      if (!seenBaseNotes.has(note[0])) {
+        notes.push(note);
+        seenBaseNotes.add(note[0]);
+      } else if (i === this.#notes.length - 1) {
+        // For last note, always add even if base note seen before
+        notes.push(note);
+      }
+    }
+
+    return notes;
+  }
+
   #getSemitone(note) {
     const baseSemitone = Note.semitoneMap[note[0]];
-    const allTonicsLength = Note.allNotes.length;
+    const allTonicsLength = Note.sharpNotes.length;
     if (note.length > 1) {
       if (note[1] === "#") {
         return (baseSemitone + 1) % allTonicsLength;
@@ -283,8 +333,5 @@ export class Scale {
     }
 
     return inputNotes.every((note) => this.notes.includes(note));
-
-    const scalesToCheck = [this, ...this.#variants];
-    return scalesToCheck.some((scale) => inputNotes.every((note) => scale.notes.includes(note)));
   }
 }

@@ -20,7 +20,7 @@ export class ScaleList extends LitElement {
   }
 
   render() {
-    const noteOptions = Note.allNotes
+    const noteOptions = Note.sharpNotes
       .map((key) => {
         const note = new Note(key);
         return {

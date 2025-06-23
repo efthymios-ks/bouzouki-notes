@@ -2,13 +2,19 @@ export default [
   {
     name: "Αρμονικό μινόρε",
     intervals: [2, 1, 2, 2, 1, 3, 1],
-    chordsFromD: ["D-", "A+", "D-", "G-", "A+", "A#+", "A+"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "A", "Dm", "Gm", "A", "A#", "A"],
+    },
   },
   {
     name: "Διατονικό μινόρε",
     intervals: [2, 1, 2, 2, 1, 2, 2],
     otherNames: ["Φυσικό μινόρε", "Νησιώτικο μινόρε", "Αιολικός", "Μπουσελίκ"],
-    chordsFromD: ["D-", "C+", "F+", "G-", "D-", "A#+", "C+"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "C", "F", "Gm", "Dm", "A#", "C"],
+    },
   },
   {
     name: "Καρτζιγάρ",
@@ -30,7 +36,10 @@ export default [
   {
     name: "Μελωδικό μινόρε",
     intervals: [2, 1, 2, 2, 2, 2, 1],
-    chordsFromD: ["D-", "E-", "D-", "G+", "A+", "G+", "A+"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "Em", "Dm", "G", "A", "G", "A"],
+    },
     variants: [
       {
         name: "Κατιούσα",
@@ -42,7 +51,10 @@ export default [
     name: "Νιαβέντ",
     intervals: [2, 1, 3, 1, 1, 3, 1],
     otherNames: ["Τσιγγάνικο μινόρε"],
-    chordsFromD: ["D-", "A+", "D-", "G#dim", "D-", "A#+", "A+"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "A", "Dm", "G#dim", "Dm", "A#", "A"],
+    },
   },
   {
     name: "Νικρίζ",
@@ -52,7 +64,10 @@ export default [
     name: "Ουσάκ",
     intervals: [1, 2, 2, 2, 1, 2, 2],
     otherNames: ["Φρυγικός"],
-    chordsFromD: ["D-", "D#+", "F+", "G-", "D-", "D#+", "C-"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "D#", "F", "Gm", "Dm", "D#", "Cm"],
+    },
   },
   {
     name: "Ουζάλ",
@@ -91,7 +106,10 @@ export default [
   {
     name: "Σαμπάχ",
     intervals: [2, 1, 1, 3, 1, 2, 2],
-    chordsFromD: ["D-", "C+", "F+", "F#+", "D-", "A#+", "C+"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "C", "F", "F#", "Dm", "A#", "C"],
+    },
     variants: [
       {
         name: "Παραλλαγή",
@@ -115,7 +133,10 @@ export default [
     name: "Χιτζάζ",
     intervals: [1, 3, 1, 2, 1, 2, 2],
     otherNames: ["Χιουμαγιούν"],
-    chordsFromD: ["D+", "D#+", "D+", "G-", "D+", "G-", "C-"],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "D#", "D", "Gm", "D", "Gm", "Cm"],
+    },
   },
   {
     name: "Χιτζαζκιάρ",

@@ -26,7 +26,7 @@ export class ScaleCard extends LitElement {
   }
 
   render() {
-    const notesHtml = this.scale.notes.map((note) => {
+    const notesHtml = this.scale.normalizedNotes.map((note) => {
       const isTonic = note === this.scale.tonic;
       return html`<span class="badge me-1 mb-1 ${isTonic ? "bg-info" : "bg-secondary"}"
         >${note}</span

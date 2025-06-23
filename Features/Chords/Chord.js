@@ -1,13 +1,22 @@
 import { Note } from "../Notes/Note.js";
 
 export class Chord {
-  static #chordRegex = (() => {
-    const roots = [...new Set(Note.allNotes.map((note) => note.toUpperCase()))].join("");
-    return new RegExp(`^([${roots}][#b]?)(\\+|-|dim)$`);
-  })();
+  static parse(chord) {
+    const roots = [...new Set(Note.sharpNotes.map((note) => note.toUpperCase()))].join("");
+    const regex = new RegExp(`^([${roots}][#b]?)(m|dim)?$`);
+    const match = regex.exec(chord);
+    if (!match) {
+      throw new Error(`Invalid chord format: "${chord}"`);
+    }
+
+    return {
+      root: match[1],
+      suffix: match[2] || "",
+    };
+  }
 
   static transpose(chord, fromTonic, toTonic) {
-    const noteMap = Note.allNotes.map((note) => note.toUpperCase());
+    const noteMap = Note.sharpNotes.map((note) => note.toUpperCase());
 
     const getNoteIndex = (note) => noteMap.indexOf(note.toUpperCase());
     const fromIndex = getNoteIndex(fromTonic);
@@ -19,12 +28,7 @@ export class Chord {
       throw new Error(`Invalid toTonic: ${toTonic}`);
     }
 
-    const match = chord.match(Chord.#chordRegex);
-    if (!match) {
-      throw new Error(`Invalid chord format: ${chord}`);
-    }
-
-    const [_, root, suffix] = match;
+    const { root, suffix } = Chord.parse(chord);
     const rootIndex = getNoteIndex(root);
     if (rootIndex === -1) {
       throw new Error(`Invalid chord root: ${root}`);
@@ -36,21 +40,16 @@ export class Chord {
   }
 
   static getNotes(chord) {
-    const noteMap = Note.allNotes.map((n) => n.toUpperCase());
-    const match = chord.match(Chord.#chordRegex);
-    if (!match) {
-      throw new Error(`Invalid chord format: ${chord}`);
-    }
-
-    const [_, root, suffix] = match;
+    const { root, suffix } = Chord.parse(chord);
+    const noteMap = Note.sharpNotes.map((n) => n.toUpperCase());
     const rootIndex = noteMap.indexOf(root.toUpperCase());
     if (rootIndex === -1) {
       throw new Error(`Invalid chord root: ${root}`);
     }
 
     const intervals = {
-      "+": [0, 4, 7],
-      "-": [0, 3, 7],
+      "": [0, 4, 7],
+      m: [0, 3, 7],
       dim: [0, 4, 7, 10],
     }[suffix];
 

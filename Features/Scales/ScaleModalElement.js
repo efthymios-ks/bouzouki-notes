@@ -21,25 +21,8 @@ export class ScaleModal extends LitElement {
     }
 
     this.scale = scale;
+    document.body.style.overflow = "hidden";
     this.requestUpdate();
-  }
-
-  #hide() {
-    const modal = this.querySelector(".modal");
-    const backdrop = this.querySelector(".modal-backdrop");
-
-    if (modal && backdrop) {
-      modal.classList.remove("show");
-      backdrop.classList.remove("show");
-
-      setTimeout(() => {
-        this.scale = null;
-        this.requestUpdate();
-      }, 150);
-    } else {
-      this.scale = null;
-      this.requestUpdate();
-    }
   }
 
   renderScaleSlide(scale) {
@@ -57,7 +40,7 @@ export class ScaleModal extends LitElement {
 
     const intervalsHtml = titleWithText("Διαστήματα:", scale.intervals.join("-"));
 
-    const noteBadgesHtml = scale.notes.map((note) => {
+    const noteBadgesHtml = scale.normalizedNotes.map((note) => {
       const isTonic = note === scale.tonic;
       const noteBgColor = isTonic ? "bg-info" : "bg-secondary";
       return html`<span class="badge me-1 mb-1 ${noteBgColor}">${note}</span>`;
@@ -65,11 +48,16 @@ export class ScaleModal extends LitElement {
     const notesHtml = titleWithText("Νότες:", noteBadgesHtml);
 
     let chordsHtml = html``;
-    if (scale.chordsFromD?.length) {
-      const chords = scale.chordsFromD.map((chord, index) => {
-        const transposed = Chord.transpose(chord, "D", scale.tonic);
-        const notes = Chord.getNotes(transposed);
-        return { note: scale.notes[index], chord: transposed, notes };
+    if (scale.chords && scale.chords.chords.length) {
+      const chords = scale.chords.chords.map((chord, index) => {
+        const transposedChord = Chord.transpose(chord, scale.chords.baseNote, scale.tonic);
+        const transposedChordNotes = Chord.getNotes(transposedChord);
+
+        const normalizedChord = scale.normalizeChord(transposedChord);
+        const normalizedChordNotes = transposedChordNotes.map((note) => scale.normalizeNote(note));
+
+        const note = scale.normalizedNotes[index];
+        return { note, chord: normalizedChord, notes: normalizedChordNotes };
       });
 
       const rows = chords.map(
@@ -120,6 +108,7 @@ export class ScaleModal extends LitElement {
         tabindex="-1"
         aria-modal="true"
         style="${isVisible ? "display: block;" : "display: none;"}"
+        @click=${this.#onModalClick}
       >
         <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content">
@@ -178,6 +167,32 @@ export class ScaleModal extends LitElement {
         style="${isVisible ? "display: block;" : "display: none;"}"
       ></div>
     `;
+  }
+
+  #onModalClick(e) {
+    if (e.target.classList.contains("modal")) {
+      this.#hide();
+    }
+  }
+
+  #hide() {
+    const modal = this.querySelector(".modal");
+    const backdrop = this.querySelector(".modal-backdrop");
+
+    if (modal && backdrop) {
+      modal.classList.remove("show");
+      backdrop.classList.remove("show");
+
+      setTimeout(() => {
+        this.scale = null;
+        document.body.style.overflow = "";
+        this.requestUpdate();
+      }, 150);
+    } else {
+      this.scale = null;
+      document.body.style.overflow = "";
+      this.requestUpdate();
+    }
   }
 }
 

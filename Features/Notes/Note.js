@@ -9,16 +9,37 @@ export class Note {
     A: "Λα",
     B: "Σι",
   });
-  static naturalNotes = Object.freeze(Object.keys(Note.#noteNames));
-  static allNotes = Object.freeze(
-    Note.naturalNotes.flatMap((note) => {
-      if (note === "E" || note === "B") {
-        return [note];
-      }
 
-      return [note, `${note}#`];
-    })
-  );
+  static naturalNotes = Object.freeze(Object.keys(Note.#noteNames));
+  static sharpNotes = Object.freeze([
+    "C",
+    "C#",
+    "D",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B",
+  ]);
+
+  static flatNotes = Object.freeze([
+    "C",
+    "Db",
+    "D",
+    "Eb",
+    "E",
+    "F",
+    "Gb",
+    "G",
+    "Ab",
+    "A",
+    "Bb",
+    "B",
+  ]);
 
   #key;
   #name;
