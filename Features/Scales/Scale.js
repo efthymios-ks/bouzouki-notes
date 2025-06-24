@@ -42,11 +42,6 @@ export class Scale {
     this.#variants = variants || {};
 
     Scale.#setTonic(this, tonic);
-
-    if (this.#name === "Σεγκιάχ") {
-      console.log(this.#notes);
-      console.log(this.#normalizedNotes);
-    }
   }
 
   get name() {

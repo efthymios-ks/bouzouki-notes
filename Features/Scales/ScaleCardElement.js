@@ -1,4 +1,5 @@
 import { LitElement, html } from "../../Libraries/lit/lit.min.js";
+import { Note } from "../Notes/Note.js";
 
 export class ScaleCard extends LitElement {
   static properties = {
@@ -26,11 +27,12 @@ export class ScaleCard extends LitElement {
   }
 
   render() {
-    const notesHtml = this.scale.normalizedNotes.map((note) => {
-      const isTonic = note === this.scale.tonic;
-      return html`<span class="badge me-1 mb-1 ${isTonic ? "bg-info" : "bg-secondary"}"
-        >${note}</span
-      >`;
+    const notesHtml = this.scale.normalizedNotes.map((noteKey) => {
+      const note = new Note(noteKey);
+      const isTonic = note.key === this.scale.tonic;
+      const noteName = note.toPrintableString();
+      const colorClass = isTonic ? "bg-info" : "bg-secondary";
+      return html`<span class="badge me-1 mb-1 ${colorClass}">${noteName}</span>`;
     });
 
     return html`

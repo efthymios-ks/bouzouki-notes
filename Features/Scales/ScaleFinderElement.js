@@ -24,18 +24,17 @@ export class ScaleFinder extends LitElement {
     const selectionClass = selectedCount === 7 ? "bg-success" : "bg-danger";
 
     const notesHtml = Note.sharpNotes.map((noteKey) => {
+      const note = new Note(noteKey);
       const isActive = this.#selectedNotes.includes(noteKey);
-      const isActiveClass = isActive ? "active btn-primary" : "btn-outline-primary";
+      const isActiveClasses = isActive ? "active btn-primary" : "btn-outline-primary";
 
       return html`
         <button
           type="button"
-          class="scale-finder-note btn d-flex flex-column align-items-center ${isActiveClass}"
-          data-key="${noteKey}"
-          data-name="${new Note(noteKey).name}"
+          class="scale-finder-note btn d-flex flex-column align-items-center ${isActiveClasses}"
           @click=${() => this.#toggleNoteSelection(noteKey)}
         >
-          ${noteKey}
+          ${note.toPrintableString()}
         </button>
       `;
     });

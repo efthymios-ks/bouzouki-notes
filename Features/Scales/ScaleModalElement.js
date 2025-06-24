@@ -1,5 +1,6 @@
 import { LitElement, html } from "../../Libraries/lit/lit.min.js";
 import { Chord } from "../Chords/Chord.js";
+import { Note } from "../Notes/Note.js";
 
 export class ScaleModal extends LitElement {
   static properties = {
@@ -40,10 +41,11 @@ export class ScaleModal extends LitElement {
 
     const intervalsHtml = titleWithText("Διαστήματα:", scale.intervals.join("-"));
 
-    const noteBadgesHtml = scale.normalizedNotes.map((note) => {
-      const isTonic = note === scale.tonic;
+    const noteBadgesHtml = scale.normalizedNotes.map((noteKey) => {
+      const note = new Note(noteKey);
+      const isTonic = note.key === scale.tonic;
       const noteBgColor = isTonic ? "bg-info" : "bg-secondary";
-      return html`<span class="badge me-1 mb-1 ${noteBgColor}">${note}</span>`;
+      return html`<span class="badge me-1 mb-1 ${noteBgColor}">${note.toPrintableString()}</span>`;
     });
     const notesHtml = titleWithText("Νότες:", noteBadgesHtml);
 
@@ -54,10 +56,18 @@ export class ScaleModal extends LitElement {
         const transposedChordNotes = Chord.getNotes(transposedChord);
 
         const normalizedChord = scale.normalizeChord(transposedChord);
-        const normalizedChordNotes = transposedChordNotes.map((note) => scale.normalizeNote(note));
+        const normalizedChordNotes = transposedChordNotes.map((noteKey) => {
+          noteKey = scale.normalizeNote(noteKey);
+          const transposedChordNote = new Note(noteKey);
+          return transposedChordNote.toPrintableString();
+        });
 
-        const note = scale.normalizedNotes[index];
-        return { note, chord: normalizedChord, notes: normalizedChordNotes };
+        const note = new Note(scale.normalizedNotes[index]);
+        return {
+          note: note.toPrintableString(),
+          chord: Note.toPrintableString(normalizedChord),
+          notes: normalizedChordNotes,
+        };
       });
 
       const rows = chords.map(
@@ -65,13 +75,17 @@ export class ScaleModal extends LitElement {
           <tr>
             <td>${note}</td>
             <td>${chord}</td>
-            <td>${notes.join(" ")}</td>
+            <td>
+              <div class="d-flex flex-row justify-content-around">
+                ${notes.map((note) => html`<span>${note}</span>`)}
+              </div>
+            </td>
           </tr>
         `
       );
 
       chordsHtml = titleWithText(
-        "Συγχορδίες:",
+        "Εναρμόνιση",
         html`
           <div class="table-responsive mt-2 w-100">
             <table class="table table-sm table-bordered mb-0 text-center">

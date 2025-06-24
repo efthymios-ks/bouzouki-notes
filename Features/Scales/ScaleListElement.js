@@ -21,17 +21,17 @@ export class ScaleList extends LitElement {
 
   render() {
     const noteOptions = Note.sharpNotes
-      .map((key) => {
-        const note = new Note(key);
+      .map((noteKey) => {
+        const note = new Note(noteKey);
         return {
-          key: key,
-          name: note.name,
-          isSelected: key === this.#tonic,
+          key: noteKey,
+          name: note.toPrintableString(),
+          isSelected: noteKey === this.#tonic,
         };
       })
       .map(
         ({ key, name, isSelected }) =>
-          html`<option value="${key}" ?selected=${isSelected}>${key} (${name})</option>`
+          html`<option value="${key}" ?selected=${isSelected}>${name}</option>`
       );
 
     return html`

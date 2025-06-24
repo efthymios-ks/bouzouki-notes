@@ -54,4 +54,16 @@ export class Note {
   get name() {
     return this.#name;
   }
+
+  toPrintableString() {
+    return Note.toPrintableString(this.key);
+  }
+
+  static toPrintableString(note) {
+    if (note instanceof Note) {
+      note = note.key;
+    }
+
+    return note.replace("b", "♭").replace("#", "♯");
+  }
 }
