@@ -42,6 +42,11 @@ export class Scale {
     this.#variants = variants || {};
 
     Scale.#setTonic(this, tonic);
+
+    if (this.#name === "Σεγκιάχ") {
+      console.log(this.#notes);
+      console.log(this.#normalizedNotes);
+    }
   }
 
   get name() {
@@ -267,7 +272,23 @@ export class Scale {
       return acc;
     }, {});
 
-    let currentSemitone = this.#getSemitone(this.#tonic);
+    const getSemitone = (note) => {
+      const baseSemitone = Note.semitoneMap[note[0]];
+      const allTonicsLength = Note.sharpNotes.length;
+      if (note.length > 1) {
+        if (note[1] === "#") {
+          return (baseSemitone + 1) % allTonicsLength;
+        }
+
+        if (note[1] === "b") {
+          return (baseSemitone + (allTonicsLength - 1)) % allTonicsLength;
+        }
+      }
+
+      return baseSemitone;
+    };
+
+    let currentSemitone = getSemitone(this.#tonic);
 
     const notes = [];
     notes.push(this.#tonic);
@@ -280,51 +301,56 @@ export class Scale {
   }
 
   #calculateNormalizedNotes() {
-    const sharpToFlat = {
-      "A#": "Bb",
-      "C#": "Db",
-      "D#": "Eb",
-      "F#": "Gb",
-      "G#": "Ab",
-    };
-
-    const notes = [];
-    const seenBaseNotes = new Set();
-
-    for (let i = 0; i < this.#notes.length; i++) {
-      let note = this.#notes[i];
-
-      // Convert sharp to flat if base note already seen
-      if (i !== this.#notes.length - 1 && seenBaseNotes.has(note[0]) && sharpToFlat[note]) {
-        note = sharpToFlat[note];
+    const getSemitone = (note) => {
+      const baseSemitone = Note.semitoneMap[note[0]];
+      if (note.length === 1) {
+        return baseSemitone;
       }
 
-      if (!seenBaseNotes.has(note[0])) {
-        notes.push(note);
-        seenBaseNotes.add(note[0]);
-      } else if (i === this.#notes.length - 1) {
-        // For last note, always add even if base note seen before
-        notes.push(note);
-      }
-    }
-
-    return notes;
-  }
-
-  #getSemitone(note) {
-    const baseSemitone = Note.semitoneMap[note[0]];
-    const allTonicsLength = Note.sharpNotes.length;
-    if (note.length > 1) {
       if (note[1] === "#") {
-        return (baseSemitone + 1) % allTonicsLength;
+        return (baseSemitone + 1) % 12;
       }
 
       if (note[1] === "b") {
-        return (baseSemitone + (allTonicsLength - 1)) % allTonicsLength;
+        return (baseSemitone + 11) % 12;
       }
+
+      return baseSemitone;
+    };
+
+    const composeNote = (baseLetter, accidental) => baseLetter + (accidental || "");
+
+    const notes = [];
+    let tonicLetter = this.#tonic[0];
+    let tonicIndex = Note.naturalNotes.indexOf(tonicLetter);
+
+    for (let i = 0; i < this.#notes.length; i++) {
+      const targetSemitone = getSemitone(this.#notes[i]);
+
+      // Determine expected base letter for this position
+      const expectedLetter = Note.naturalNotes[(tonicIndex + i) % Note.naturalNotes.length];
+      const baseSemitone = Note.semitoneMap[expectedLetter];
+
+      // Calculate difference in semitones between target and base letter
+      let diff = (targetSemitone - baseSemitone + 12) % 12;
+
+      // Determine accidental based on diff
+      let accidental = "";
+      if (diff === 1) {
+        accidental = "#";
+      } else if (diff === 11) {
+        accidental = "b";
+      } else if (diff !== 0) {
+        // Handle rare double sharps/flats if needed or fallback to original note
+        // For now fallback:
+        notes.push(this.#notes[i]);
+        continue;
+      }
+
+      notes.push(composeNote(expectedLetter, accidental));
     }
 
-    return baseSemitone;
+    return notes;
   }
 
   #notesMatch(inputNotes) {

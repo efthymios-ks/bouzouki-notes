@@ -26,21 +26,6 @@ export class Note {
     "B",
   ]);
 
-  static flatNotes = Object.freeze([
-    "C",
-    "Db",
-    "D",
-    "Eb",
-    "E",
-    "F",
-    "Gb",
-    "G",
-    "Ab",
-    "A",
-    "Bb",
-    "B",
-  ]);
-
   #key;
   #name;
 

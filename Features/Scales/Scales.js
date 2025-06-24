@@ -13,17 +13,25 @@ export default [
     otherNames: ["Φυσικό μινόρε", "Νησιώτικο μινόρε", "Αιολικός", "Μπουσελίκ"],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "C", "F", "Gm", "Dm", "A#", "C"],
+      chords: ["Dm", "C", "F", "Gm", "Am", "A#", "C"],
     },
   },
   {
     name: "Καρτζιγάρ",
     intervals: [2, 1, 2, 1, 3, 1, 2],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "Em", "Fm", "G", "Fm", "Em", "C"],
+    },
   },
   {
     name: "Κιουρδί",
     intervals: [2, 1, 2, 2, 2, 1, 2],
     otherNames: ["Δωρικός", "Νεβά"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "Em", "F", "G", "Am", "Em", "C"],
+    },
   },
   {
     name: "Λοκρικός",
@@ -38,7 +46,7 @@ export default [
     intervals: [2, 1, 2, 2, 2, 2, 1],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "Em", "Dm", "G", "A", "G", "A"],
+      chords: ["Dm", "Em", "Dm", "G", "A", "Em", "A"],
     },
     variants: [
       {
@@ -48,12 +56,16 @@ export default [
     ],
   },
   {
+    name: "Μιξολυδικός",
+    intervals: [2, 2, 1, 2, 2, 1, 2],
+  },
+  {
     name: "Νιαβέντ",
     intervals: [2, 1, 3, 1, 1, 3, 1],
     otherNames: ["Τσιγγάνικο μινόρε"],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "A", "Dm", "G#dim", "Dm", "A#", "A"],
+      chords: ["Dm", "A", "Dm", "G#dim", "A", "A#", "C#m"],
     },
   },
   {
@@ -61,22 +73,17 @@ export default [
     intervals: [2, 1, 3, 1, 2, 2, 1],
   },
   {
+    name: "Ουζάλ",
+    intervals: [1, 3, 1, 2, 2, 1, 2],
+  },
+  {
     name: "Ουσάκ",
     intervals: [1, 2, 2, 2, 1, 2, 2],
     otherNames: ["Φρυγικός"],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "D#", "F", "Gm", "Dm", "D#", "Cm"],
+      chords: ["Dm", "D#", "F", "Gm", "Dm", "A#", "Cm"],
     },
-  },
-  {
-    name: "Ουζάλ",
-    intervals: [1, 3, 1, 2, 2, 1, 2],
-  },
-  {
-    name: "Ποιμενικό μινόρε",
-    intervals: [2, 1, 3, 1, 2, 1, 2],
-    otherNames: ["Ρουμάνικο μινόρε"],
   },
   {
     name: "Πειραιώτικος",
@@ -84,14 +91,27 @@ export default [
     variants: [
       {
         name: "Παραλλαγή",
-        intervals: [1, 4, 1, 1, 1, 3, 1],
+        intervals: [1, 3, 1, 2, 1, 3, 1],
       },
     ],
+  },
+  {
+    name: "Ποιμενικό μινόρε",
+    intervals: [2, 1, 3, 1, 2, 1, 2],
+    otherNames: ["Ρουμάνικο μινόρε"],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "E", "Fm", "G#dim", "Am", "E", "Fm"],
+    },
   },
   {
     name: "Ραστ",
     intervals: [2, 2, 1, 2, 2, 2, 1],
     otherNames: ["Ματζόρε", "Ιωνικός"],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "Em", "F#m", "G", "A", "Bm", "F#m"],
+    },
     variants: [
       {
         name: "Κατιούσα",
@@ -100,15 +120,11 @@ export default [
     ],
   },
   {
-    name: "Μιξολυδικός",
-    intervals: [2, 2, 1, 2, 2, 1, 2],
-  },
-  {
     name: "Σαμπάχ",
     intervals: [2, 1, 1, 3, 1, 2, 2],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "C", "F", "F#", "Dm", "A#", "C"],
+      chords: ["Dm", "Em", "F", "F#", "Dm", "A#", "C"],
     },
     variants: [
       {
@@ -120,6 +136,10 @@ export default [
   {
     name: "Σεγκιάχ",
     intervals: [3, 1, 1, 2, 1, 3, 1],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "Dm", "F#m", "Gm", "D", "A#", "F#m"],
+    },
   },
   {
     name: "Σουζινάκ",
