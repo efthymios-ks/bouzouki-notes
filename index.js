@@ -19,6 +19,9 @@
       btn.classList.toggle("btn-outline-primary", !isActive);
     });
 
+    const event = new CustomEvent("navSectionChanged", { detail: sectionId });
+    document.dispatchEvent(event);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
