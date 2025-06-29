@@ -85,7 +85,7 @@ export class ScaleModal extends LitElement {
       );
 
       chordsHtml = titleWithText(
-        "Εναρμόνιση",
+        "Εναρμόνιση:",
         html`
           <div class="table-responsive mt-2 w-100">
             <table class="table table-sm table-bordered mb-0 text-center">
