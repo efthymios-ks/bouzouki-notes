@@ -1,6 +1,7 @@
 import { LitElement, html } from "../../Libraries/lit/lit.min.js";
 import { Chord } from "../Chords/Chord.js";
 import { Note } from "../Notes/Note.js";
+import "./ScaleFretboardOffCanvasElement.js";
 
 export class ScaleModal extends LitElement {
   static properties = {
@@ -10,6 +11,10 @@ export class ScaleModal extends LitElement {
   constructor() {
     super();
     this.scale = null;
+
+    this.selectFretFunction = (stringNumber, stringNote, fretNumber, fretNote) => {
+      return this.scale.notes.includes(fretNote);
+    };
   }
 
   createRenderRoot() {
@@ -26,6 +31,104 @@ export class ScaleModal extends LitElement {
     this.requestUpdate();
   }
 
+  render() {
+    if (!this.scale) {
+      return html``;
+    }
+
+    const isVisible = !!this.scale;
+    const variants = this.scale?.variants || [];
+    const allScales = this.scale ? [this.scale, ...variants] : [];
+    const isSingleScale = allScales.length === 1;
+    const renderSingleScale = () => {
+      return html`<div class="text-center">${this.renderScaleSlide(this.scale)}</div> `;
+    };
+
+    const renderMultipleScales = () => {
+      const renderTabsHeader = () =>
+        allScales.map(
+          (scale, scaleIndex) => html`
+            <li class="nav-item" role="presentation">
+              <button
+                id="tab-${scaleIndex}"
+                class="nav-link ${scaleIndex === 0 ? "active" : ""}"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-${scaleIndex}"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-${scaleIndex}"
+                aria-selected="${scaleIndex === 0 ? "true" : "false"}"
+              >
+                ${scaleIndex === 0 ? "Βάση" : scale.name}
+              </button>
+            </li>
+          `
+        );
+
+      const renderTabsContent = () =>
+        allScales.map((scale, scaleIndex) => {
+          const isActiveClass = scaleIndex === 0 ? "show active" : "";
+          return html`
+            <div
+              id="tab-pane-${scaleIndex}"
+              class="tab-pane fade ${isActiveClass}"
+              role="tabpanel"
+              aria-labelledby="tab-${scaleIndex}"
+              tabindex="0"
+            >
+              ${this.renderScaleSlide(scale)}
+            </div>
+          `;
+        });
+
+      return html`
+        <div>
+          <ul id="scale-tabs" class="nav nav-tabs" role="tablist">
+            ${renderTabsHeader()}
+          </ul>
+
+          <div id="scale-tab-content" class="tab-content mt-3">${renderTabsContent()}</div>
+        </div>
+      `;
+    };
+
+    return html`
+      <div
+        class="modal fade ${isVisible ? "show" : ""}"
+        tabindex="-1"
+        aria-modal="true"
+        style="${isVisible ? "display: block;" : "display: none;"}"
+        @click=${this.#onModalClick}
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header d-flex flex-column align-items-center border-0 pb-1 px-3 py-3">
+              <h5 class="modal-title fw-bold text-center w-100" id="scale-modal-label">
+                ${this.scale?.name}
+              </h5>
+
+              <button
+                type="button"
+                class="btn-close position-absolute end-0 me-2"
+                @click="${() => this.#hide()}"
+                aria-label="Κλείσιμο"
+              ></button>
+            </div>
+
+            <div class="modal-body text-start px-3 py-3">
+              ${isSingleScale ? renderSingleScale() : renderMultipleScales()}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal-backdrop fade ${isVisible ? "show" : ""}"
+        style="${isVisible ? "display: block;" : "display: none;"}"
+      ></div>
+    `;
+  }
+
   renderScaleSlide(scale) {
     const titleWithText = (label, content) => html`
       <div class="mb-2">
@@ -34,23 +137,35 @@ export class ScaleModal extends LitElement {
       </div>
     `;
 
-    const otherNamesHtml =
-      scale.otherNames?.length > 0
-        ? titleWithText("Άλλες ονομασίες:", scale.otherNames.join(", "))
-        : "";
+    const otherNamesHtml = () => {
+      if (!scale.otherNames || scale.otherNames.length === 0) {
+        return "";
+      }
 
-    const intervalsHtml = titleWithText("Διαστήματα:", scale.intervals.join("-"));
+      return titleWithText("Άλλες ονομασίες:", scale.otherNames.join(", "));
+    };
 
-    const noteBadgesHtml = scale.normalizedNotes.map((noteKey) => {
-      const note = new Note(noteKey);
-      const isTonic = note.key === scale.tonic;
-      const noteBgColor = isTonic ? "bg-info" : "bg-secondary";
-      return html`<span class="badge me-1 mb-1 ${noteBgColor}">${note.toPrintableString()}</span>`;
-    });
-    const notesHtml = titleWithText("Νότες:", noteBadgesHtml);
+    const intervalsHtml = () => titleWithText("Διαστήματα:", scale.intervals.join("-"));
 
-    let chordsHtml = html``;
-    if (scale.chords && scale.chords.chords.length) {
+    const notesHtml = () => {
+      const noteBadgesHtml = scale.normalizedNotes.map((noteKey) => {
+        const note = new Note(noteKey);
+        const isTonic = note.key === scale.tonic;
+        const noteBackgroundColor = isTonic ? "bg-info" : "bg-secondary";
+
+        return html`<span class="badge me-1 mb-1 ${noteBackgroundColor}"
+          >${note.toPrintableString()}</span
+        >`;
+      });
+
+      return titleWithText("Νότες:", noteBadgesHtml);
+    };
+
+    const chordsHtml = () => {
+      if (!(scale.chords && scale.chords.chords.length)) {
+        return html``;
+      }
+
       const chords = scale.chords.chords.map((chord, index) => {
         const transposedChord = Chord.transpose(chord, scale.chords.baseNote, scale.tonic);
         const transposedChordNotes = Chord.getNotes(transposedChord);
@@ -63,6 +178,7 @@ export class ScaleModal extends LitElement {
         });
 
         const note = new Note(scale.normalizedNotes[index]);
+
         return {
           note: note.toPrintableString(),
           chord: Note.toPrintableString(normalizedChord),
@@ -84,7 +200,7 @@ export class ScaleModal extends LitElement {
         `
       );
 
-      chordsHtml = titleWithText(
+      return titleWithText(
         "Εναρμόνιση:",
         html`
           <div class="table-responsive mt-2 w-100">
@@ -95,6 +211,7 @@ export class ScaleModal extends LitElement {
                   <th class="text-center" colspan="2">Συγχορδία</th>
                 </tr>
               </thead>
+
               <tbody>
                 ${rows}
               </tbody>
@@ -102,84 +219,14 @@ export class ScaleModal extends LitElement {
           </div>
         `
       );
-    }
+    };
 
-    return html`${otherNamesHtml}${intervalsHtml}${notesHtml}${chordsHtml}`;
-  }
-
-  render() {
-    if (!this.scale) {
-      return html``;
-    }
-
-    const isVisible = !!this.scale;
-    const variants = this.scale?.variants || [];
-    const allScales = this.scale ? [this.scale, ...variants] : [];
+    const fretboardOffCanvasHtml = () => {
+      return html`<scale-fretboard-offcanvas .scale=${scale}></scale-fretboard-offcanvas>`;
+    };
 
     return html`
-      <div
-        class="modal fade ${isVisible ? "show" : ""}"
-        tabindex="-1"
-        aria-modal="true"
-        style="${isVisible ? "display: block;" : "display: none;"}"
-        @click=${this.#onModalClick}
-      >
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header d-flex flex-column align-items-center border-0 pb-1 px-3 py-3">
-              <h5 class="modal-title fw-bold text-center w-100" id="scale-modal-label">
-                ${this.scale?.name}
-              </h5>
-              <button
-                type="button"
-                class="btn-close position-absolute end-0 me-2"
-                @click="${() => this.#hide()}"
-                aria-label="Κλείσιμο"
-              ></button>
-            </div>
-
-            <div class="modal-body text-start px-3 py-3">
-              ${variants.length === 0
-                ? this.renderScaleSlide(this.scale)
-                : html`
-                    <div class="accordion" id="scale-accordion">
-                      ${allScales.map(
-                        (scale, scaleIndex) => html`
-                          <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading-${scaleIndex}">
-                              <button
-                                class="accordion-button ${scaleIndex !== 0 ? "collapsed" : ""}"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#collapse-${scaleIndex}"
-                                aria-expanded="${scaleIndex === 0 ? "true" : "false"}"
-                                aria-controls="collapse-${scaleIndex}"
-                              >
-                                ${scaleIndex === 0 ? "Βάση" : scale.name}
-                              </button>
-                            </h2>
-                            <div
-                              id="collapse-${scaleIndex}"
-                              class="accordion-collapse collapse ${scaleIndex === 0 ? "show" : ""}"
-                              aria-labelledby="heading-${scaleIndex}"
-                              data-bs-parent="#scale-accordion"
-                            >
-                              <div class="accordion-body">${this.renderScaleSlide(scale)}</div>
-                            </div>
-                          </div>
-                        `
-                      )}
-                    </div>
-                  `}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="modal-backdrop fade ${isVisible ? "show" : ""}"
-        style="${isVisible ? "display: block;" : "display: none;"}"
-      ></div>
+      ${otherNamesHtml()}${intervalsHtml()}${notesHtml()}${chordsHtml()}${fretboardOffCanvasHtml()}
     `;
   }
 
