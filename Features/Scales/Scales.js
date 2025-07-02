@@ -36,10 +36,18 @@ export default [
   {
     name: "Λοκρικός",
     intervals: [1, 2, 2, 1, 2, 2, 2],
+    chords: {
+      baseNote: "D",
+      chords: ["Gm", "D#", "Fm", "Gm", "Fm", "A#", "Fm"],
+    },
   },
   {
     name: "Λυδικός",
     intervals: [2, 2, 2, 1, 2, 2, 1],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "E", "F#m", "C#m", "A", "Bm", "C#m"],
+    },
   },
   {
     name: "Μελωδικό μινόρε",
@@ -58,6 +66,10 @@ export default [
   {
     name: "Μιξολυδικός",
     intervals: [2, 2, 1, 2, 2, 1, 2],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "Em", "Bm", "G", "Am", "Bm", "C"],
+    },
   },
   {
     name: "Νιαβέντ",
@@ -65,16 +77,24 @@ export default [
     otherNames: ["Τσιγγάνικο μινόρε"],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "A", "Dm", "G#dim", "A", "A#", "C#m"],
+      chords: ["Dm", "A", "Dm", "A#dim", "A", "A#", "C#m"],
     },
   },
   {
     name: "Νικρίζ",
     intervals: [2, 1, 3, 1, 2, 2, 1],
+    chords: {
+      baseNote: "D",
+      chords: ["Dm", "E", "Dm", "C#m", "A", "E", "C#m"],
+    },
   },
   {
     name: "Ουζάλ",
     intervals: [1, 3, 1, 2, 2, 1, 2],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "Cm", "Bm", "G", "D", "Bm", "Cm"],
+    },
   },
   {
     name: "Ουσάκ",
@@ -98,16 +118,16 @@ export default [
   {
     name: "Ποιμενικό μινόρε",
     intervals: [2, 1, 3, 1, 2, 1, 2],
-    otherNames: ["Ρουμάνικο μινόρε"],
+    otherNames: ["Ρουμάνικο μινόρε", "Σουζινάκ"],
     chords: {
       baseNote: "D",
-      chords: ["Dm", "E", "Fm", "G#dim", "Am", "E", "Fm"],
+      chords: ["Dm", "E", "Fm", "E", "Am", "E", "Fm"],
     },
   },
   {
     name: "Ραστ",
     intervals: [2, 2, 1, 2, 2, 2, 1],
-    otherNames: ["Ματζόρε", "Ιωνικός"],
+    otherNames: ["Ματζόρε", "Ιωνικός", "Καργκάχ"],
     chords: {
       baseNote: "D",
       chords: ["D", "Em", "F#m", "G", "A", "Bm", "F#m"],
@@ -138,16 +158,16 @@ export default [
     intervals: [3, 1, 1, 2, 1, 3, 1],
     chords: {
       baseNote: "D",
-      chords: ["D", "Dm", "F#m", "Gm", "D", "A#", "F#m"],
+      chords: ["D", "A#", "F#m", "Gm", "D", "A#", "F#m"],
     },
-  },
-  {
-    name: "Σουζινάκ",
-    intervals: [2, 1, 3, 1, 1, 2, 2],
   },
   {
     name: "Ταμπαχανιώτικος",
     intervals: [2, 2, 1, 2, 1, 3, 1],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "A", "F#m", "Gm", "A", "Gm", "F#m"],
+    },
   },
   {
     name: "Χιτζάζ",
@@ -155,20 +175,32 @@ export default [
     otherNames: ["Χιουμαγιούν"],
     chords: {
       baseNote: "D",
-      chords: ["D", "D#", "D", "Gm", "D", "Gm", "Cm"],
+      chords: ["D", "D#", "D", "Gm", "D", "D#", "Cm"],
     },
   },
   {
     name: "Χιτζαζκιάρ",
     intervals: [1, 3, 1, 2, 1, 3, 1],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "D#", "F#m", "Gm", "D", "D#", "F#m"],
+    },
   },
   {
     name: "Χουζάμ",
     intervals: [3, 1, 1, 2, 2, 2, 1],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "Gdim", "F#m", "G", "D", "Bm", "F#m"],
+    },
   },
   {
     name: "Χουσεΐνι",
     intervals: [2, 2, 1, 2, 2, 1, 2],
+    chords: {
+      baseNote: "D",
+      chords: ["D", "Em", "Bm", "G", "Am", "Bm", "C"],
+    },
     variants: [
       {
         name: "Κατιούσα",
