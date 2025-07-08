@@ -203,7 +203,7 @@ export class ScaleModal extends LitElement {
       return titleWithText(
         "Εναρμόνιση:",
         html`
-          <div class="table-responsive mt-2 w-100">
+          <div class="table-responsive w-100">
             <table class="table table-sm table-bordered mb-0 text-center">
               <thead>
                 <tr>
@@ -225,9 +225,9 @@ export class ScaleModal extends LitElement {
       return html`<scale-fretboard-offcanvas .scale=${scale}></scale-fretboard-offcanvas>`;
     };
 
-    return html`
+    return html`<div class="d-flex flex-column gap-3">
       ${otherNamesHtml()}${intervalsHtml()}${notesHtml()}${chordsHtml()}${fretboardOffCanvasHtml()}
-    `;
+    </div>`;
   }
 
   #onModalClick(e) {
