@@ -3,53 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <title>Μπουζουκοτεφτέρι</title>
 
     <link rel="icon" href="Assets/bouzouki.png" type="image/png" />
     <link href="Libraries/Bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
   </head>
-
   <body>
-    <nav
-      id="main-navbar"
-      class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm"
-    >
-      <div class="w-100">
-        <div class="d-flex flex-wrap gap-1 justify-content-center">
-          <button
-            id="nav-scales-list"
-            class="btn btn-outline-primary"
-            data-section="scales-list-container"
-          >
-            Δρόμοι
-          </button>
-
-          <button
-            id="nav-scale-finder"
-            class="btn btn-outline-primary"
-            data-section="scale-finder-container"
-          >
-            Βρες το δρόμο
-          </button>
-
-          <button
-            id="nav-metronome"
-            class="btn btn-outline-primary"
-            data-section="metronome-container"
-          >
-            Μετρονόμος
-          </button>
-        </div>
+    <nav class="navbar bg-light sticky-top shadow-sm py-1 px-2">
+      <div class="d-flex align-items-center w-100 position-relative">
+        <sidebar-button></sidebar-button>
+        <span id="navbar-title" class="h4 mx-auto my-0"></span>
       </div>
     </nav>
+
+    <sidebar-element></sidebar-element>
 
     <div id="main-container" class="container my-4 d-flex flex-column align-items-center">
       <div id="scales-list-container" class="w-100" style="max-width: 700px">
         <scale-list></scale-list>
       </div>
 
-      <div id="scale-finder-container" class="w-100" style="max-width: 700px">
+      <div id="scale-finder-container" class="w-100 d-none" style="max-width: 700px">
         <scale-finder></scale-finder>
       </div>
 
@@ -59,10 +37,11 @@
     </div>
 
     <script src="Libraries/Bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="Features/Layout/SidebarElement.js"></script>
+    <script type="module" src="Features/Layout/SidebarButtonElement.js"></script>
     <script type="module" src="Features/Scales/ScaleListElement.js"></script>
     <script type="module" src="Features/Scales/ScaleFinderElement.js"></script>
     <script type="module" src="Features/Metronome/MetronomeElement.js"></script>
-
     <script type="module" src="index.js"></script>
   </body>
 </html>
