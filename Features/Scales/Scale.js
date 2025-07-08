@@ -1,5 +1,7 @@
 import { Chord } from "../Chords/Chord.js";
 import { Note } from "../Notes/Note.js";
+import { Interval } from "../Intervals/Interval.js";
+import { ScaleUnit } from "./ScaleUnit.js";
 import Scales from "./Scales.js";
 
 export class Scale {
@@ -13,8 +15,18 @@ export class Scale {
   #variants = [];
   #notes = [];
   #normalizedNotes = [];
+  #units = [];
 
-  constructor({ id, name, tonic, intervals, otherNames = [], chords = null, variants = {} }) {
+  constructor({
+    id,
+    name,
+    tonic,
+    intervals,
+    otherNames = [],
+    chords = null,
+    variants = {},
+    unitIds = [],
+  }) {
     if (!name) {
       throw new Error("Name must be a non-empty string");
     }
@@ -37,14 +49,25 @@ export class Scale {
       throw new Error("Chords array must have the same length as the number of notes in the scale");
     }
 
+    unitIds = Array.isArray(unitIds) ? unitIds : [];
+    if (unitIds.length > 0 && unitIds.length != 2) {
+      throw new Error(`Scale units must have exactly 2 elements, got ${unitIds.length}`);
+    }
+
     this.#id = id;
     this.#name = name;
     this.#intervals = intervals;
-    this.#intervalsAsNames = intervals.map(Scale.#getIntervalName);
+    this.#intervalsAsNames = intervals.map(Interval.getName);
 
     this.#otherNames = otherNames || [];
     this.#chords = chords || null;
     this.#variants = variants || {};
+
+    if (unitIds.some((unitId) => !unitId || unitId === "")) {
+      throw new Error(`Invalid unit IDs provided for scale ${name}`);
+    }
+
+    this.#units = unitIds.map((unitId) => ScaleUnit.findById(unitId));
 
     Scale.#setTonic(this, tonic);
   }
@@ -83,6 +106,10 @@ export class Scale {
 
   get variants() {
     return this.#variants;
+  }
+
+  get units() {
+    return this.#units;
   }
 
   transpose(tonic) {
@@ -235,6 +262,14 @@ export class Scale {
     scale.#notes = scale.#calculateNotes();
     scale.#normalizedNotes = scale.#calculateNormalizedNotes();
 
+    // Update units with the new tonic
+    let currentNoteIndex = 0;
+    for (let i = 0; i < scale.#units.length; i++) {
+      const unit = scale.#units[i];
+      unit.baseNote = scale.#normalizedNotes[currentNoteIndex];
+      currentNoteIndex += unit.intervals.length;
+    }
+
     if (scale.#variants && scale.#variants.length > 0) {
       scale.#variants.forEach((variant) => Scale.#setTonic(variant, tonic));
     }
@@ -268,6 +303,7 @@ export class Scale {
       otherNames: [...this.otherNames],
       chords: this.chords,
       variants: this.variants.map((variant) => variant.#deconstruct()),
+      unitIds: this.units.map((unit) => unit.id),
     };
   }
 
@@ -364,21 +400,5 @@ export class Scale {
     }
 
     return inputNotes.every((note) => this.notes.includes(note));
-  }
-
-  static #getIntervalName(interval) {
-    if (interval === 1) {
-      return "H";
-    }
-
-    if (interval === 2) {
-      return "T";
-    }
-
-    if (interval === 3) {
-      return "3H";
-    }
-
-    throw new Error(`Invalid interval value '${interval}'`);
   }
 }

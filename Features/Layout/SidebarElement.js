@@ -5,13 +5,20 @@ export class SidebarElement extends LitElement {
     selected: { type: String },
   };
 
+  static #menuItems = Object.freeze([
+    { id: "scales-list-container", label: "Δρόμοι" },
+    { id: "scale-finder-container", label: "Βρες το δρόμο" },
+    { id: "scale-unit-list-container", label: "Μελωδικές δομές" },
+    { id: "metronome-container", label: "Μετρονόμος" },
+    { id: "about-container", label: "Σχετικά" },
+  ]);
+
   constructor() {
     super();
     this.selected = "scales-list-container";
   }
 
   createRenderRoot() {
-    // Use light DOM for Bootstrap compatibility
     return this;
   }
 
@@ -30,6 +37,22 @@ export class SidebarElement extends LitElement {
   }
 
   render() {
+    const menuItemsHtml = SidebarElement.#menuItems.map(
+      (item) => html`
+        <li class="nav-item">
+          <a
+            href="#"
+            class="nav-link ${this.selected === item.id ? "active" : ""}"
+            data-section="${item.id}"
+            data-bs-dismiss="offcanvas"
+            @click=${this.handleClick}
+          >
+            ${item.label}
+          </a>
+        </li>
+      `
+    );
+
     return html`
       <div
         class="offcanvas offcanvas-start"
@@ -48,39 +71,7 @@ export class SidebarElement extends LitElement {
         </div>
         <div class="offcanvas-body p-0">
           <ul class="nav flex-column nav-pills">
-            <li class="nav-item">
-              <a
-                href="#"
-                class="nav-link ${this.selected === "scales-list-container" ? "active" : ""}"
-                data-section="scales-list-container"
-                data-bs-dismiss="offcanvas"
-                @click=${this.handleClick}
-              >
-                Δρόμοι
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="#"
-                class="nav-link ${this.selected === "scale-finder-container" ? "active" : ""}"
-                data-section="scale-finder-container"
-                data-bs-dismiss="offcanvas"
-                @click=${this.handleClick}
-              >
-                Βρες το δρόμο
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="#"
-                class="nav-link ${this.selected === "metronome-container" ? "active" : ""}"
-                data-section="metronome-container"
-                data-bs-dismiss="offcanvas"
-                @click=${this.handleClick}
-              >
-                Μετρονόμος
-              </a>
-            </li>
+            ${menuItemsHtml}
           </ul>
         </div>
       </div>

@@ -131,7 +131,7 @@ export class ScaleModal extends LitElement {
 
   renderScaleSlide(scale) {
     const titleWithText = (label, content) => html`
-      <div class="mb-2">
+      <div>
         <div class="fw-bold text-start">${label}</div>
         <div class="text-start">${content}</div>
       </div>
@@ -145,7 +145,82 @@ export class ScaleModal extends LitElement {
       return titleWithText("Άλλες ονομασίες:", scale.otherNames.join(", "));
     };
 
-    const intervalsHtml = () => titleWithText("Διαστήματα:", scale.intervalsAsNames.join("-"));
+    const intervalsHtml = () => {
+      const allIntervals = scale.intervalsAsNames;
+      const leftUnitIntervals = scale.units.length > 0 ? scale.units[0].intervalNames : [];
+      const rightUnitIntervals =
+        scale.units.length > 1 ? scale.units[scale.units.length - 1].intervalNames : [];
+
+      // Count how many intervals from the left match first unit's intervals
+      let leftHighlightCount = 0;
+      for (
+        let intervalIndex = 0;
+        intervalIndex < leftUnitIntervals.length && intervalIndex < allIntervals.length;
+        intervalIndex++
+      ) {
+        if (allIntervals[intervalIndex] === leftUnitIntervals[intervalIndex]) leftHighlightCount++;
+        else break;
+      }
+
+      // Count how many intervals from the right match last unit's intervals
+      let rightHighlightCount = 0;
+      for (let i = 0; i < rightUnitIntervals.length && i < allIntervals.length; i++) {
+        if (
+          allIntervals[allIntervals.length - 1 - i] ===
+          rightUnitIntervals[rightUnitIntervals.length - 1 - i]
+        )
+          rightHighlightCount++;
+        else break;
+      }
+
+      const leftColor = "primary";
+      const rightColor = "success";
+
+      // Print intervals with highlights for left and right units
+      const getIntervalClasses = (color) => `border-bottom border-2 border-${color} text-${color}`;
+      const leftIntervalClasses = getIntervalClasses(leftColor);
+      const rightIntervalClasses = getIntervalClasses(rightColor);
+      const intervalsSpans = allIntervals.map((interval, intervalIndex) => {
+        let classes = "d-inline-block me-0 px-2";
+
+        // Left intervals
+        if (intervalIndex < leftHighlightCount) {
+          classes += ` ${leftIntervalClasses}`;
+        }
+
+        // Right intervals
+        if (intervalIndex >= allIntervals.length - rightHighlightCount) {
+          classes += ` ${rightIntervalClasses}`;
+        }
+
+        return html`<span class="${classes}">${interval}</span>`;
+      });
+
+      // Unit names to display under intervals
+      const leftUnitName = scale.units.length > 0 ? scale.units[0].fullName : "";
+      const rightUnitName =
+        scale.units.length > 1 ? scale.units[scale.units.length - 1].fullName : "";
+
+      // Table
+      // Row 1: Highlighted intervals
+      // Row 2: Unit names
+      return html`
+        <div>
+          <div class="text-start"><strong>Διαστήματα:</strong></div>
+          <table class="table table-sm mb-0" style="width: max-content;">
+            <tbody>
+              <tr>
+                <td colspan="2" class="border-0 pb-0" style="line-height: 1;">${intervalsSpans}</td>
+              </tr>
+              <tr>
+                <td class="border-0 text-${leftColor}">${leftUnitName}</td>
+                <td class="border-0 text-${rightColor}">${rightUnitName}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    };
 
     const notesHtml = () => {
       const noteBadgesHtml = scale.normalizedNotes.map((noteKey) => {
@@ -200,25 +275,24 @@ export class ScaleModal extends LitElement {
         `
       );
 
-      return titleWithText(
-        "Εναρμόνιση:",
-        html`
-          <div class="table-responsive w-100">
-            <table class="table table-sm table-bordered mb-0 text-center">
-              <thead>
-                <tr>
-                  <th class="text-center">Νότα</th>
-                  <th class="text-center" colspan="2">Συγχορδία</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                ${rows}
-              </tbody>
-            </table>
-          </div>
-        `
-      );
+      return html`
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered table-hover align-middle text-center">
+            <caption class="caption-top fw-bold text-center">
+              Συγχορδίες
+            </caption>
+            <thead class="table-light">
+              <tr>
+                <th class="text-center">Νότα</th>
+                <th class="text-center" colspan="2">Συγχορδία</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+      `;
     };
 
     const fretboardOffCanvasHtml = () => {

@@ -31,27 +31,29 @@ export class ScaleCard extends LitElement {
       const note = new Note(noteKey);
       const isTonic = note.key === this.scale.tonic;
       const noteName = note.toPrintableString();
-      const colorClass = isTonic ? "bg-info" : "bg-secondary";
-      return html`<span class="badge me-1 mb-1 ${colorClass}">${noteName}</span>`;
+      const colorClass = isTonic ? "bg-info text-dark" : "bg-secondary";
+      return html`<span class="badge ${colorClass} me-1 mb-1">${noteName}</span>`;
     });
 
     return html`
       <div
-        class="d-flex flex-column justify-content-between border border-secondary rounded p-3 shadow-sm position-relative"
+        class="card shadow-sm border border-1 border-secondary-subtle text-center"
         style="min-width: 20rem;"
       >
-        <div>
-          <h5 class="fw-bold mb-1">${this.scale.name}</h5>
-          <div class="fw-semibold mb-2">
+        <div class="card-header bg-light fw-bold py-1">${this.scale.name}</div>
+
+        <div class="card-body d-flex flex-column align-items-center justify-content-between gap-2">
+          <p class="card-subtitle text-body-secondary">
             <strong>Διαστήματα:</strong> ${this.scale.intervalsAsNames.join("-")}
-          </div>
-          <div class="mb-2">${notesHtml}</div>
+          </p>
+
+          <div>${notesHtml}</div>
         </div>
 
-        <div class="mt-2 text-center">
+        <div class="card-footer text-center bg-light py-2">
           <button
             type="button"
-            class="btn btn-sm btn-outline-secondary"
+            class="btn btn-outline-secondary btn-sm border-0"
             @click="${this.onMoreClick}"
           >
             Περισσότερα

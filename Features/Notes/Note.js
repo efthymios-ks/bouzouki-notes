@@ -66,4 +66,25 @@ export class Note {
 
     return note.replace("b", "♭").replace("#", "♯");
   }
+
+  static transpose(note, interval) {
+    const key = note instanceof Note ? note.key : note;
+    const semitone = Note.getSemitone(key);
+    const newSemitone = (semitone + interval + 12) % 12;
+    return Note.sharpNotes[newSemitone];
+  }
+
+  static getSemitone(note) {
+    const key = note instanceof Note ? note.key : note;
+
+    const base = key[0];
+    const accidental = key[1] === "#" ? 1 : key[1] === "b" ? -1 : 0;
+
+    const baseSemitone = Note.semitoneMap[base];
+    if (baseSemitone === undefined) {
+      throw new Error(`Invalid note: ${note}`);
+    }
+
+    return (baseSemitone + accidental + 12) % 12;
+  }
 }
