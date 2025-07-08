@@ -43,7 +43,7 @@ export class ScaleCard extends LitElement {
         <div>
           <h5 class="fw-bold mb-1">${this.scale.name}</h5>
           <div class="fw-semibold mb-2">
-            <strong>Διαστήματα:</strong> ${this.scale.intervals.join("-")}
+            <strong>Διαστήματα:</strong> ${this.scale.intervalsAsNames.join("-")}
           </div>
           <div class="mb-2">${notesHtml}</div>
         </div>

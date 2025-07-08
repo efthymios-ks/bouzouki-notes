@@ -6,6 +6,7 @@ export class Scale {
   #name;
   #tonic;
   #intervals = [];
+  #intervalsAsNames = [];
   #otherNames = [];
   #chords = null;
   #variants = [];
@@ -37,6 +38,8 @@ export class Scale {
 
     this.#name = name;
     this.#intervals = intervals;
+    this.#intervalsAsNames = intervals.map(Scale.#getIntervalName);
+
     this.#otherNames = otherNames || [];
     this.#chords = chords || null;
     this.#variants = variants || {};
@@ -70,6 +73,10 @@ export class Scale {
 
   get normalizedNotes() {
     return this.#normalizedNotes;
+  }
+
+  get intervalsAsNames() {
+    return this.#intervalsAsNames;
   }
 
   get variants() {
@@ -354,5 +361,21 @@ export class Scale {
     }
 
     return inputNotes.every((note) => this.notes.includes(note));
+  }
+
+  static #getIntervalName(interval) {
+    if (interval === 1) {
+      return "H";
+    }
+
+    if (interval === 2) {
+      return "T";
+    }
+
+    if (interval === 3) {
+      return "3H";
+    }
+
+    throw new Error(`Invalid interval value '${interval}'`);
   }
 }

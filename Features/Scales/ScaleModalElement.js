@@ -145,7 +145,7 @@ export class ScaleModal extends LitElement {
       return titleWithText("Άλλες ονομασίες:", scale.otherNames.join(", "));
     };
 
-    const intervalsHtml = () => titleWithText("Διαστήματα:", scale.intervals.join("-"));
+    const intervalsHtml = () => titleWithText("Διαστήματα:", scale.intervalsAsNames.join("-"));
 
     const notesHtml = () => {
       const noteBadgesHtml = scale.normalizedNotes.map((noteKey) => {
