@@ -1,5 +1,6 @@
 export default [
   {
+    id: "AMN",
     name: "Αρμονικό μινόρε",
     intervals: [2, 1, 2, 2, 1, 3, 1],
     chords: {
@@ -8,6 +9,7 @@ export default [
     },
   },
   {
+    id: "DMN",
     name: "Διατονικό μινόρε",
     intervals: [2, 1, 2, 2, 1, 2, 2],
     otherNames: ["Φυσικό μινόρε", "Νησιώτικο μινόρε", "Αιολικός", "Μπουσελίκ"],
@@ -17,6 +19,7 @@ export default [
     },
   },
   {
+    id: "KAR",
     name: "Καρτζιγάρ",
     intervals: [2, 1, 2, 1, 3, 1, 2],
     chords: {
@@ -25,6 +28,7 @@ export default [
     },
   },
   {
+    id: "KYR",
     name: "Κιουρδί",
     intervals: [2, 1, 2, 2, 2, 1, 2],
     otherNames: ["Δωρικός", "Νεβά"],
@@ -34,6 +38,7 @@ export default [
     },
   },
   {
+    id: "LOC",
     name: "Λοκρικός",
     intervals: [1, 2, 2, 1, 2, 2, 2],
     chords: {
@@ -42,6 +47,7 @@ export default [
     },
   },
   {
+    id: "LYD",
     name: "Λυδικός",
     intervals: [2, 2, 2, 1, 2, 2, 1],
     chords: {
@@ -50,6 +56,7 @@ export default [
     },
   },
   {
+    id: "MMN",
     name: "Μελωδικό μινόρε",
     intervals: [2, 1, 2, 2, 2, 2, 1],
     chords: {
@@ -64,6 +71,7 @@ export default [
     ],
   },
   {
+    id: "MXD",
     name: "Μιξολυδικός",
     intervals: [2, 2, 1, 2, 2, 1, 2],
     chords: {
@@ -72,6 +80,7 @@ export default [
     },
   },
   {
+    id: "NVB",
     name: "Νιαβέντ",
     intervals: [2, 1, 3, 1, 1, 3, 1],
     otherNames: ["Τσιγγάνικο μινόρε"],
@@ -81,6 +90,7 @@ export default [
     },
   },
   {
+    id: "NKR",
     name: "Νικρίζ",
     intervals: [2, 1, 3, 1, 2, 2, 1],
     chords: {
@@ -89,6 +99,7 @@ export default [
     },
   },
   {
+    id: "UZL",
     name: "Ουζάλ",
     intervals: [1, 3, 1, 2, 2, 1, 2],
     chords: {
@@ -97,6 +108,7 @@ export default [
     },
   },
   {
+    id: "USK",
     name: "Ουσάκ",
     intervals: [1, 2, 2, 2, 1, 2, 2],
     otherNames: ["Φρυγικός"],
@@ -106,6 +118,7 @@ export default [
     },
   },
   {
+    id: "PRT",
     name: "Πειραιώτικος",
     intervals: [1, 3, 2, 1, 1, 3, 1],
     variants: [
@@ -116,6 +129,7 @@ export default [
     ],
   },
   {
+    id: "PMN",
     name: "Ποιμενικό μινόρε",
     intervals: [2, 1, 3, 1, 2, 1, 2],
     otherNames: ["Ρουμάνικο μινόρε", "Σουζινάκ"],
@@ -125,6 +139,7 @@ export default [
     },
   },
   {
+    id: "RST",
     name: "Ραστ",
     intervals: [2, 2, 1, 2, 2, 2, 1],
     otherNames: ["Ματζόρε", "Ιωνικός", "Καργκάχ"],
@@ -140,6 +155,7 @@ export default [
     ],
   },
   {
+    id: "SBH",
     name: "Σαμπάχ",
     intervals: [2, 1, 1, 3, 1, 2, 2],
     chords: {
@@ -154,6 +170,7 @@ export default [
     ],
   },
   {
+    id: "SGH",
     name: "Σεγκιάχ",
     intervals: [3, 1, 1, 2, 1, 3, 1],
     chords: {
@@ -162,6 +179,7 @@ export default [
     },
   },
   {
+    id: "TBH",
     name: "Ταμπαχανιώτικος",
     intervals: [2, 2, 1, 2, 1, 3, 1],
     chords: {
@@ -170,6 +188,7 @@ export default [
     },
   },
   {
+    id: "HTZ",
     name: "Χιτζάζ",
     intervals: [1, 3, 1, 2, 1, 2, 2],
     otherNames: ["Χιουμαγιούν"],
@@ -179,6 +198,7 @@ export default [
     },
   },
   {
+    id: "HTK",
     name: "Χιτζαζκιάρ",
     intervals: [1, 3, 1, 2, 1, 3, 1],
     chords: {
@@ -187,6 +207,7 @@ export default [
     },
   },
   {
+    id: "HUM",
     name: "Χουζάμ",
     intervals: [3, 1, 1, 2, 2, 2, 1],
     chords: {
@@ -195,6 +216,7 @@ export default [
     },
   },
   {
+    id: "HSN",
     name: "Χουσεΐνι",
     intervals: [2, 2, 1, 2, 2, 1, 2],
     chords: {

@@ -3,6 +3,7 @@ import { Note } from "../Notes/Note.js";
 import Scales from "./Scales.js";
 
 export class Scale {
+  #id;
   #name;
   #tonic;
   #intervals = [];
@@ -13,7 +14,7 @@ export class Scale {
   #notes = [];
   #normalizedNotes = [];
 
-  constructor({ name, tonic, intervals, otherNames = [], chords = null, variants = {} }) {
+  constructor({ id, name, tonic, intervals, otherNames = [], chords = null, variants = {} }) {
     if (!name) {
       throw new Error("Name must be a non-empty string");
     }
@@ -36,6 +37,7 @@ export class Scale {
       throw new Error("Chords array must have the same length as the number of notes in the scale");
     }
 
+    this.#id = id;
     this.#name = name;
     this.#intervals = intervals;
     this.#intervalsAsNames = intervals.map(Scale.#getIntervalName);
@@ -259,6 +261,7 @@ export class Scale {
 
   #deconstruct() {
     return {
+      id: this.#id,
       name: this.name,
       tonic: this.tonic,
       intervals: [...this.intervals],
