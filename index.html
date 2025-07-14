@@ -15,7 +15,7 @@
   <body>
     <nav class="navbar bg-light sticky-top shadow-sm py-1 px-2">
       <div class="d-flex align-items-center w-100 position-relative">
-        <sidebar-button></sidebar-button>
+        <sidebar-toggle-button-element> </sidebar-toggle-button-element>
         <span id="navbar-title" class="h4 mx-auto my-0"></span>
       </div>
     </nav>
@@ -23,30 +23,31 @@
     <sidebar-element></sidebar-element>
 
     <div id="main-container" class="container my-4 d-flex flex-column align-items-center">
-      <div id="scales-list-container" class="w-100" style="max-width: 700px">
-        <scale-list></scale-list>
+      <div id="scales-list-container" class="w-100">
+        <scale-list-element></scale-list-element>
       </div>
 
-      <div id="scale-finder-container" class="w-100 d-none" style="max-width: 700px">
-        <scale-finder></scale-finder>
+      <div id="scale-finder-container" class="w-100 d-none">
+        <scale-finder-element></scale-finder-element>
       </div>
 
-      <div id="metronome-container" class="w-100 d-none" style="max-width: 700px">
+      <div id="scale-unit-list-container" class="w-100 d-none">
+        <scale-unit-list-element></scale-unit-list-element>
+      </div>
+      </div>
+
+      <div id="metronome-container" class="w-100 d-none">
         <metronome-element></metronome-element>
       </div>
 
-      <div id="scale-unit-list-container" class="w-100 d-none" style="max-width: 700px">
-        <scale-unit-list></scale-unit-list>
-      </div>
-
-      <div id="about-container" class="w-100 d-none" style="max-width: 700px">
+      <div id="about-container" class="w-100 d-none">
         <about-element></about-element>
       </div>
     </div>
 
     <script src="Libraries/Bootstrap/bootstrap.bundle.min.js"></script>
     <script type="module" src="Features/Layout/SidebarElement.js"></script>
-    <script type="module" src="Features/Layout/SidebarButtonElement.js"></script>
+    <script type="module" src="Features/Layout/SidebarToggleButtonElement.js"></script>
     <script type="module" src="Features/Scales/ScaleListElement.js"></script>
     <script type="module" src="Features/Scales/ScaleFinderElement.js"></script>
     <script type="module" src="Features/Scales/ScaleUnitListElement.js"></script>

@@ -19,15 +19,15 @@ export class ScaleCards extends LitElement {
 
   render() {
     const scaleCards = this.scales.map(
-      (scale) => html`<scale-card
+      (scale) => html`<scale-card-element
         .scale=${scale}
         @onMoreClicked=${() => this.#openModal(scale)}
-      ></scale-card>`
+      ></scale-card-element>`
     );
 
     return html` 
         <div id="list" class="d-flex flex-wrap justify-content-center gap-3">${scaleCards}</div> 
-        <scale-modal id="scale-modal"></scale-modal>
+        <scale-modal-element id="scale-modal"></scale-modal-element>
       </div>
     `;
   }

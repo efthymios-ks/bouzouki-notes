@@ -3,7 +3,7 @@ import { Chord } from "../Chords/Chord.js";
 import { Note } from "../Notes/Note.js";
 import "./ScaleFretboardOffCanvasElement.js";
 
-export class ScaleModal extends LitElement {
+export class ScaleModalElement extends LitElement {
   static properties = {
     scale: { type: Object },
   };
@@ -331,4 +331,4 @@ export class ScaleModal extends LitElement {
   }
 }
 
-customElements.define("scale-modal", ScaleModal);
+customElements.define("scale-modal-element", ScaleModalElement);

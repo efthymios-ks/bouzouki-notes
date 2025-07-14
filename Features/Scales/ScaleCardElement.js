@@ -1,7 +1,7 @@
 import { LitElement, html } from "../../Libraries/lit/lit.min.js";
 import { Note } from "../Notes/Note.js";
 
-export class ScaleCard extends LitElement {
+export class ScaleCardElement extends LitElement {
   static properties = {
     scale: { type: Object },
   };
@@ -64,4 +64,4 @@ export class ScaleCard extends LitElement {
   }
 }
 
-customElements.define("scale-card", ScaleCard);
+customElements.define("scale-card-element", ScaleCardElement);

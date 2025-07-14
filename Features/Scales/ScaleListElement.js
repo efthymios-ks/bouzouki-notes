@@ -3,7 +3,7 @@ import "./ScaleCardsElement.js";
 import { Scale } from "./Scale.js";
 import { Note } from "../Notes/Note.js";
 
-export class ScaleList extends LitElement {
+export class ScaleListElement extends LitElement {
   static properties = {};
 
   #tonic = "D";
@@ -65,4 +65,4 @@ export class ScaleList extends LitElement {
   }
 }
 
-customElements.define("scale-list", ScaleList);
+customElements.define("scale-list-element", ScaleListElement);

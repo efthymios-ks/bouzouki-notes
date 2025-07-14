@@ -3,7 +3,7 @@ import { Note } from "../Notes/Note.js";
 import { Scale } from "./Scale.js";
 import "./ScaleCardsElement.js";
 
-export class ScaleFinder extends LitElement {
+export class ScaleFinderElement extends LitElement {
   static properties = {};
 
   #selectedNotes;
@@ -99,4 +99,4 @@ export class ScaleFinder extends LitElement {
   }
 }
 
-customElements.define("scale-finder", ScaleFinder);
+customElements.define("scale-finder-element", ScaleFinderElement);

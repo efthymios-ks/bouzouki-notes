@@ -84,4 +84,4 @@ export class ScaleUnitListElement extends LitElement {
   }
 }
 
-customElements.define("scale-unit-list", ScaleUnitListElement);
+customElements.define("scale-unit-list-element", ScaleUnitListElement);
