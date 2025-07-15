@@ -9,6 +9,7 @@ export class SidebarElement extends LitElement {
     { id: "scales-list-container", label: "Δρόμοι" },
     { id: "scale-finder-container", label: "Βρες το δρόμο" },
     { id: "scale-unit-list-container", label: "Μελωδικές δομές" },
+    { id: "bouzouki-fretboard-container", label: "Ταστιέρα" },
     { id: "metronome-container", label: "Μετρονόμος" },
     { id: "about-container", label: "Σχετικά" },
   ]);

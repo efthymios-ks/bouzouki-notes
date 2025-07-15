@@ -72,6 +72,10 @@ export class Scale {
     Scale.#setTonic(this, tonic);
   }
 
+  get id() {
+    return this.#id;
+  }
+
   get name() {
     return this.#name;
   }

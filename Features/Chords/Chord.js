@@ -1,6 +1,28 @@
 import { Note } from "../Notes/Note.js";
 
 export class Chord {
+  static #chords = Object.freeze([
+    {
+      name: "Ματζόρε",
+      key: "",
+      intervals: [0, 4, 7],
+    },
+    {
+      name: "Μινόρε",
+      key: "m",
+      intervals: [0, 3, 7],
+    },
+    {
+      name: "Ντιμινουίτα",
+      key: "dim",
+      intervals: [0, 4, 7, 10],
+    },
+  ]);
+
+  static getAll() {
+    return Chord.#chords;
+  }
+
   static parse(chord) {
     const roots = [...new Set(Note.sharpNotes.map((note) => note.toUpperCase()))].join("");
     const regex = new RegExp(`^([${roots}][#b]?)(m|dim)?$`);
@@ -47,16 +69,11 @@ export class Chord {
       throw new Error(`Invalid chord root: ${root}`);
     }
 
-    const intervals = {
-      "": [0, 4, 7],
-      m: [0, 3, 7],
-      dim: [0, 4, 7, 10],
-    }[suffix];
-
-    if (!intervals) {
+    const chordDefinition = this.#chords.find((c) => c.key === suffix);
+    if (!chordDefinition) {
       throw new Error(`Unknown chord suffix: ${suffix}`);
     }
 
-    return intervals.map((i) => noteMap[(rootIndex + i) % noteMap.length]);
+    return chordDefinition.intervals.map((i) => noteMap[(rootIndex + i) % noteMap.length]);
   }
 }

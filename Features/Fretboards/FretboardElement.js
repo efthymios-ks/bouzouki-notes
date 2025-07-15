@@ -95,18 +95,22 @@ export class FretboardElement extends LitElement {
     }
   `;
 
-  #chordLayout = ["D", "A", "F", "C"];
+  static properties = {
+    chordLayout: { type: Array },
+    selectFretFunction: { type: Function },
+  };
+
   #maxFrets = 25;
   #sharpNotes = Note.sharpNotes;
   #dottedTastes = [0, 3, 5, 7, 10];
 
   constructor() {
     super();
+    this.chordLayout = this.chordLayout || ["D", "A", "F", "C"];
+    this.selectFretFunction = () => false;
   }
 
-  selectFretFunction = null;
-
-  getNoteFrom(startNote, steps) {
+  #getNoteFrom(startNote, steps) {
     const index = this.#sharpNotes.indexOf(startNote);
     return this.#sharpNotes[(index + steps) % this.#sharpNotes.length];
   }
@@ -114,9 +118,9 @@ export class FretboardElement extends LitElement {
   render() {
     const rows = [];
 
-    const totalStrings = this.#chordLayout.length;
+    const totalStrings = this.chordLayout.length;
     for (let stringNumber = 0; stringNumber < totalStrings; stringNumber++) {
-      const stringNote = this.#chordLayout[stringNumber];
+      const stringNote = this.chordLayout[stringNumber];
       const isTop = stringNumber === 0;
       const isBottom = stringNumber === totalStrings - 1;
       const chordSeparatorClass = stringNumber > 0 && stringNumber < totalStrings;
@@ -128,7 +132,7 @@ export class FretboardElement extends LitElement {
             : ""} ${isBottom ? "outer-bottom" : ""}"
         >
           ${Array.from({ length: this.#maxFrets + 1 }, (_, fretNumber) => {
-            const fretNote = this.getNoteFrom(stringNote, fretNumber);
+            const fretNote = this.#getNoteFrom(stringNote, fretNumber);
 
             const selectFretFunction =
               typeof this.selectFretFunction === "function" ? this.selectFretFunction : () => false;

@@ -1,7 +1,6 @@
 import { LitElement, html } from "../../Libraries/lit/lit.min.js";
 import { Chord } from "../Chords/Chord.js";
 import { Note } from "../Notes/Note.js";
-import "./ScaleFretboardOffCanvasElement.js";
 
 export class ScaleModalElement extends LitElement {
   static properties = {
@@ -295,12 +294,8 @@ export class ScaleModalElement extends LitElement {
       `;
     };
 
-    const fretboardOffCanvasHtml = () => {
-      return html`<scale-fretboard-offcanvas .scale=${scale}></scale-fretboard-offcanvas>`;
-    };
-
     return html`<div class="d-flex flex-column gap-3">
-      ${otherNamesHtml()}${intervalsHtml()}${notesHtml()}${chordsHtml()}${fretboardOffCanvasHtml()}
+      ${otherNamesHtml()}${intervalsHtml()}${notesHtml()}${chordsHtml()}
     </div>`;
   }
 
