@@ -11,7 +11,14 @@
 
   function showSection(sectionId) {
     sections.forEach((section) => {
-      section.classList.toggle("d-none", section.id !== sectionId);
+      const isActive = section.id === sectionId;
+      if (!isActive) {
+        const firstChild = section.firstElementChild;
+        if (typeof firstChild?.stop === "function") {
+          firstChild.stop();
+        }
+      }
+      section.classList.toggle("d-none", !isActive);
     });
   }
 

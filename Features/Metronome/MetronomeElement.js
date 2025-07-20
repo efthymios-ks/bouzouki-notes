@@ -1,323 +1,178 @@
 import { LitElement, html } from "../../Libraries/lit/lit.min.js";
 
 export class MetronomeElement extends LitElement {
-  static properties = {};
+  static properties = {
+    bpm: { type: Number },
+    running: { type: Boolean, state: true },
+  };
 
-  #bpm = 100;
-  #minBpm = 1;
-  #maxBpm = 320;
-  #intervalId = null;
-  #currentBeat = 0;
-  #subdivision = 1;
-  #timeSignature = "4/4";
+  bpm = 80;
+  running = false;
 
-  #audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  static #minBpm = 30;
+  static #maxBpm = 1000;
+  static #volumegain = 0.8;
 
-  #bpmSteps = [1, 5];
-  #timeSignatureOptions = [
-    { label: "1/4", value: "1/4", states: ["2"] },
-    { label: "2/4", value: "2/4", states: ["2", "1"] },
-    { label: "3/4", value: "3/4", states: ["2", "1", "1"] },
-    { label: "4/4", value: "4/4", states: ["2", "1", "1", "1"] },
-    { label: "5/4", value: "5/4", states: ["2", "1", "1", "1", "1"] },
-    { label: "6/4", value: "6/4", states: ["2", "1", "1", "1", "1", "1"] },
-    { label: "3/8", value: "3/8", states: ["2", "1", "1"] },
-    { label: "5/8", value: "5/8", states: ["2", "1", "1", "1", "1"] },
-    { label: "6/8", value: "6/8", states: ["2", "1", "1", "1", "1", "1"] },
-    { label: "7/8", value: "7/8", states: ["2", "1", "1", "1", "1", "1", "1"] },
-    { label: "9/8", value: "9/8", states: ["2", "1", "1", "1", "1", "1", "1", "1", "1"] },
-    {
-      label: "12/8",
-      value: "12/8",
-      states: ["2", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"],
-    },
-  ];
-
-  #subdivisionOptions = [
-    { icon: "1/8", value: 1 },
-    { icon: "1/16", value: 2 },
-    { icon: "1/32", value: 3 },
-    { icon: "1/64", value: 4 },
-    { icon: "1/128", value: 5 },
-  ];
+  #audioContext = new window.AudioContext();
+  #startTime = 0;
+  #lastBeepSide = null;
+  #requestId = null;
 
   createRenderRoot() {
     return this;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    document.addEventListener("navSectionChanged", this.#onNavSectionChanged);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    document.removeEventListener("navSectionChanged", this.#onNavSectionChanged);
-  }
-
-  updated(changedProps) {
-    super.updated?.(changedProps);
-    this.#renderBars();
-  }
-
   render() {
     return html`
-      <div class="container text-center">
-        <div class="d-flex justify-content-center align-items-center mb-4">
+      <div class="d-flex flex-column align-items-center justify-content-center gap-3">
+        <div
+          id="stick"
+          class="bg-primary mx-auto"
+          style="width: 0.25rem; height: 12.5rem; position: relative; transform-origin: bottom center;"
+        >
           <div
-            id="visual"
-            class="d-flex flex-wrap justify-content-center gap-2 w-100"
-            style="min-height: auto;"
+            id="ball"
+            class="bg-primary rounded-circle position-absolute"
+            style="width: 1.25rem; height: 1.25rem; top: -0.625rem; left: 50%; transform: translateX(-50%);"
           ></div>
         </div>
 
-        <div class="mb-3">
-          <div class="d-flex justify-content-center align-items-center gap-2 mb-2 flex-nowrap">
-            <div class="btn-group">
-              ${[...this.#bpmSteps]
-                .sort((a, b) => b - a)
-                .map(
-                  (step) =>
-                    html`<button
-                      class="btn btn-outline-secondary"
-                      @click=${() => this.#adjustBpm(-step)}
-                    >
-                      −${step}
-                    </button>`
-                )}
-            </div>
+        <div
+          id="controls-container"
+          class="d-flex flex-column justify-content-center align-items-center gap-2"
+        >
+          <div
+            id="bpm-container"
+            class="d-flex flex-column align-items-center justify-content-center"
+          >
+            <label for="bpm-input" class="form-label fw-bold">BPM</label>
 
-            <input
-              type="number"
-              class="form-control text-center"
-              style="width: 6rem; min-width: 4rem;"
-              .value=${this.#bpm}
-              min=${this.#minBpm}
-              max=${this.#maxBpm}
-              @input=${this.#onBpmInput}
-            />
+            <div class="d-flex justify-content-center align-items-center gap-2">
+              <button class="btn btn-outline-secondary" @click="${() => this.#adjustBpm(-5)}">
+                −5
+              </button>
 
-            <div class="btn-group">
-              ${[...this.#bpmSteps]
-                .sort((a, b) => a - b)
-                .map(
-                  (step) =>
-                    html`<button
-                      class="btn btn-outline-secondary"
-                      @click=${() => this.#adjustBpm(step)}
-                    >
-                      +${step}
-                    </button>`
-                )}
+              <input
+                id="bpm-input"
+                type="number"
+                min="${MetronomeElement.#minBpm}"
+                max="${MetronomeElement.#maxBpm}"
+                class="form-control text-center"
+                .value="${this.bpm}"
+                @input="${this.#onBpmInput}"
+              />
+
+              <button class="btn btn-outline-secondary" @click="${() => this.#adjustBpm(5)}">
+                +5
+              </button>
             </div>
           </div>
 
-          <input
-            type="range"
-            class="form-range"
-            min=${this.#minBpm}
-            max=${this.#maxBpm}
-            .value=${this.#bpm}
-            @input=${this.#onBpmSliderInput}
-          />
-        </div>
-
-        <div>
-          <label class="form-label fw-bold">Μέτρο</label>
-          <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
-            ${this.#timeSignatureOptions.map(
-              (ts) => html`
-                <button
-                  class="btn btn-outline-secondary tile ${ts.value === this.#timeSignature
-                    ? "active"
-                    : ""}"
-                  @click=${() => this.#setTimeSignature(ts.value)}
-                >
-                  ${ts.label}
-                </button>
-              `
-            )}
+          <div>
+            <button id="toggle-btn" class="btn btn-primary" @click="${this.#toggleStartStop}">
+              ${this.running ? "Διακοπή" : "Έναρξη"}
+            </button>
           </div>
         </div>
-
-        <div>
-          <label class="form-label fw-bold">Υποδιαίρεση</label>
-          <div class="d-flex flex-wrap gap-2 justify-content-center">
-            ${this.#subdivisionOptions.map(
-              (opt) => html`
-                <button
-                  class="btn btn-outline-secondary tile ${opt.value === this.#subdivision
-                    ? "active"
-                    : ""}"
-                  @click=${() => this.#setSubdivision(opt.value)}
-                >
-                  ${opt.icon}
-                </button>
-              `
-            )}
-          </div>
-        </div>
-
-        <button class="btn btn-primary my-4" @click=${this.#toggleStartStop}>
-          ${this.#intervalId ? "Διακοπή" : "Έναρξη"}
-        </button>
       </div>
     `;
   }
 
-  #onNavSectionChanged = (event) => {
-    const isVisible = event.detail === this.id || this.closest(`#${event.detail}`) !== null;
-    if (!isVisible && this.#intervalId) {
+  stop() {
+    if (this.running) {
       this.#stopMetronome();
       this.requestUpdate();
     }
-  };
-
-  #onBpmInput(e) {
-    const value = parseInt(e.target.value, 10) || this.#minBpm;
-    this.#bpm = Math.max(this.#minBpm, Math.min(this.#maxBpm, value));
-    this.requestUpdate();
-    this.#resetMetronome();
   }
 
-  #onBpmSliderInput(e) {
-    this.#bpm = parseInt(e.target.value, 10);
-    this.requestUpdate();
+  #onBpmInput(event) {
+    const value = Math.max(
+      MetronomeElement.#minBpm,
+      Math.min(
+        MetronomeElement.#maxBpm,
+        parseInt(event.target.value, 10) || MetronomeElement.#minBpm
+      )
+    );
+    this.bpm = value;
     this.#resetMetronome();
+    this.requestUpdate();
   }
 
   #adjustBpm(delta) {
-    this.#bpm = Math.max(this.#minBpm, Math.min(this.#maxBpm, this.#bpm + delta));
-    this.requestUpdate();
+    this.bpm = Math.max(
+      MetronomeElement.#minBpm,
+      Math.min(MetronomeElement.#maxBpm, this.bpm + delta)
+    );
     this.#resetMetronome();
-  }
-
-  #setTimeSignature(value) {
-    this.#timeSignature = value;
     this.requestUpdate();
-    this.#resetMetronome();
-  }
-
-  #setSubdivision(value) {
-    this.#subdivision = value;
-    this.requestUpdate();
-    this.#resetMetronome();
   }
 
   #toggleStartStop() {
-    if (this.#intervalId) {
+    if (this.running) {
       this.#stopMetronome();
     } else {
-      this.#audioContext.resume().then(() => {
-        this.#startMetronome();
-      });
+      this.#audioContext.resume().then(() => this.#startMetronome());
     }
+
+    this.requestUpdate();
   }
 
   #startMetronome() {
-    const intervalMs = (60 * 1000) / (this.#bpm * this.#subdivision);
-    this.#currentBeat = 0;
-    this.#intervalId = setInterval(() => this.#tick(), intervalMs);
-    this.requestUpdate();
+    this.running = true;
+    this.#startTime = performance.now();
+    this.#requestId = requestAnimationFrame(this.#animate.bind(this));
   }
 
   #stopMetronome() {
-    clearInterval(this.#intervalId);
-    this.#intervalId = null;
-    this.#updateActiveBar(-1);
-    this.requestUpdate();
+    this.running = false;
+    cancelAnimationFrame(this.#requestId);
+    const stick = document.getElementById("stick");
+    stick.style.transform = "rotate(0deg)";
+    this.#lastBeepSide = null;
   }
 
   #resetMetronome() {
-    const playing = !!this.#intervalId;
+    const wasRunning = this.running;
     this.#stopMetronome();
-    this.#renderBars();
-    if (playing) {
-      this.#audioContext.resume().then(() => {
-        this.#startMetronome();
-      });
+    if (wasRunning) {
+      this.#startMetronome();
     }
   }
 
-  #tick() {
-    const [beatsPerMeasure] = this.#timeSignature.split("/").map(Number);
-    const totalSubBeats = beatsPerMeasure * this.#subdivision;
+  #animate(now) {
+    if (!this.running) {
+      return;
+    }
 
-    const activeIndex = Math.floor(this.#currentBeat / this.#subdivision);
-    const isDownbeat = this.#currentBeat % this.#subdivision === 0;
+    const stick = document.getElementById("stick");
+    const beatDuration = 60000 / this.bpm;
+    const swingDuration = beatDuration * 2;
+    const elapsed = now - this.#startTime;
+    const t = (elapsed % swingDuration) / swingDuration;
+    const angle = Math.sin(t * 2 * Math.PI) * 25;
+    if (stick) stick.style.transform = `rotate(${angle}deg)`;
 
-    const visual = this.querySelector("#visual");
-    const activeBar = visual?.children[activeIndex];
-    const state = activeBar?.dataset.state || "1";
+    const side = angle > 24 ? "right" : angle < -24 ? "left" : null;
+    if (side && side !== this.#lastBeepSide) {
+      this.#playBeep();
+      this.#lastBeepSide = side;
+    }
+    if (!side) {
+      this.#lastBeepSide = null;
+    }
 
-    this.#playBeep(isDownbeat, state);
-    this.#updateActiveBar(activeIndex);
-
-    this.#currentBeat = (this.#currentBeat + 1) % totalSubBeats;
+    this.#requestId = requestAnimationFrame(this.#animate.bind(this));
   }
 
-  #playBeep(isDownbeat, state) {
+  #playBeep() {
     const oscillator = this.#audioContext.createOscillator();
     const gain = this.#audioContext.createGain();
-
-    if (state === "2" && isDownbeat) {
-      oscillator.frequency.value = 660; // higher beep only on first beat of state 2
-    } else if (state === "2") {
-      oscillator.frequency.value = 440; // normal beep for other beats in state 2
-    } else {
-      oscillator.frequency.value = 440; // normal beep for state 1
-    }
-
-    gain.gain.value = 0.2;
+    oscillator.frequency.value = 880;
+    gain.gain.value = MetronomeElement.#volumegain;
     oscillator.connect(gain);
     gain.connect(this.#audioContext.destination);
     oscillator.start();
     oscillator.stop(this.#audioContext.currentTime + 0.05);
-  }
-
-  #renderBars() {
-    const beatsPerMeasure = Number(this.#timeSignature.split("/")[0]);
-    const tsObj = this.#timeSignatureOptions.find((ts) => ts.value === this.#timeSignature);
-    const states = tsObj?.states || [];
-
-    const visual = this.querySelector("#visual");
-    if (!visual) {
-      return;
-    }
-
-    visual.innerHTML = "";
-    for (let i = 0; i < beatsPerMeasure; i++) {
-      const bar = document.createElement("div");
-      bar.className =
-        "bg-secondary rounded d-flex align-items-center justify-content-center text-center text-white fs-1";
-      bar.dataset.index = i;
-      bar.dataset.state = states[i] || "1";
-      bar.style.width = "3rem";
-      bar.style.minHeight = "10rem";
-      bar.style.transition = "background-color 0.1s";
-      bar.style.cursor = "pointer";
-      bar.textContent = bar.dataset.state;
-
-      bar.addEventListener("click", () => {
-        bar.dataset.state = bar.dataset.state === "1" ? "2" : "1";
-        bar.textContent = bar.dataset.state;
-      });
-
-      visual.appendChild(bar);
-    }
-  }
-
-  #updateActiveBar(activeIndex) {
-    const visual = this.querySelector("#visual");
-    if (!visual) {
-      return;
-    }
-
-    [...visual.children].forEach((bar, i) => {
-      bar.classList.toggle("bg-danger", i === activeIndex);
-      bar.classList.toggle("bg-secondary", i !== activeIndex);
-      bar.textContent = bar.dataset.state;
-    });
   }
 }
 
