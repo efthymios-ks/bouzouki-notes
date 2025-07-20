@@ -11,6 +11,7 @@ export class SidebarElement extends LitElement {
     { id: "scale-unit-list-container", label: "Μελωδικές δομές" },
     { id: "bouzouki-fretboard-container", label: "Ταστιέρα" },
     { id: "metronome-container", label: "Μετρονόμος" },
+    { id: "rhythms-container", label: "Ρυθμοί" },
     { id: "about-container", label: "Σχετικά" },
   ]);
 

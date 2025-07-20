@@ -186,7 +186,7 @@ export default [
       baseNote: "D",
       chords: ["D", "D#", "D", "Gm", "D", "D#", "Cm"],
     },
-    unitIds: ["HTZ4", "KYR5"],
+    unitIds: ["HTZ5", "USK4"],
   },
   {
     id: "HTK",
