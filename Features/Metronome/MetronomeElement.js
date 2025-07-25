@@ -110,11 +110,13 @@ export class MetronomeElement extends LitElement {
   #toggleStartStop() {
     if (this.running) {
       this.#stopMetronome();
+      this.requestUpdate();
     } else {
-      this.#audioContext.resume().then(() => this.#startMetronome());
+      this.#audioContext.resume().then(() => {
+        this.#startMetronome();
+        this.requestUpdate();
+      });
     }
-
-    this.requestUpdate();
   }
 
   #startMetronome() {

@@ -74,7 +74,6 @@ export class BouzoukiFretboardElement extends LitElement {
   }
 
   onSelectionChanged() {
-    let intervals = [];
     if (this.selectedItemType === BouzoukiFretboardElement.#typeEnum.CHORD) {
       const chord = `${this.selectedBaseNote}${this.selectedItemKey}`;
       this.#selectednotes = Chord.getNotes(chord);
@@ -187,10 +186,12 @@ export class BouzoukiFretboardElement extends LitElement {
       <div class="fretboard-container">
         ${this.controlsHtml()}
 
-        <fretboard-element
-          .selectFretFunction=${this.#selectFretFunction}
-          .chordLayout=${this.selectedChordLayout.split("-")}
-        ></fretboard-element>
+        <div class="overflow-x-auto">
+          <fretboard-element
+            .selectFretFunction=${this.#selectFretFunction}
+            .chordLayout=${this.selectedChordLayout.split("-")}
+          ></fretboard-element>
+        </div>
       </div>
     `;
   }

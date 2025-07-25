@@ -178,10 +178,13 @@ export class RhythmPlayerElement extends LitElement {
   #toggleStartStop() {
     if (this.running) {
       this.#stopRhythm();
+      this.requestUpdate();
     } else {
-      this.#audioContext.resume().then(() => this.#startRhythm());
+      this.#audioContext.resume().then(() => {
+        this.#startRhythm();
+        this.requestUpdate();
+      });
     }
-    this.requestUpdate();
   }
 
   #startRhythm() {
