@@ -20,10 +20,14 @@ export class BouzoukiFretboardElement extends LitElement {
   static #predefinedChordLayouts = Object.freeze(["D-A-F-C", "D-A-D"]);
 
   static #allScales = Object.freeze(
-    Scale.getAll("D").map((scale) => ({
-      key: scale.id,
-      name: scale.name,
-    }))
+    Scale.getAll("D").flatMap((scale) =>
+      scale.variants.map((scaleVariant, scaleVariantIndex) => ({
+        key: BouzoukiFretboardElement.serializeScaleKey(scale.id, scaleVariantIndex),
+        name:
+          scale.name === scaleVariant.name ? scale.name : `${scale.name} - ${scaleVariant.name}`,
+        notes: scaleVariant.notes,
+      }))
+    )
   );
 
   static #allChords = Object.freeze(
@@ -42,14 +46,26 @@ export class BouzoukiFretboardElement extends LitElement {
     super();
     this.selectedChordLayout = BouzoukiFretboardElement.#predefinedChordLayouts[0];
     this.selectedBaseNote = "D";
-    this.selectedItemKey = "AMN";
-    this.selectedItemType = "Scale";
+    this.selectedItemKey = BouzoukiFretboardElement.#allScales[0].key;
+    this.selectedItemType = BouzoukiFretboardElement.#typeEnum.SCALE;
 
     this.onSelectionChanged();
   }
 
   createRenderRoot() {
     return this;
+  }
+
+  static serializeScaleKey(scaleId, scaleVariantIndex) {
+    return `${scaleId}_${scaleVariantIndex}`;
+  }
+
+  static deserializeScaleKey(scaleKey) {
+    const [scaleId, scaleVariantIndex] = scaleKey.split("_");
+    return {
+      scaleId,
+      scaleVariantIndex: parseInt(scaleVariantIndex, 10),
+    };
   }
 
   onInputChange(event) {
@@ -81,8 +97,23 @@ export class BouzoukiFretboardElement extends LitElement {
     }
 
     if (this.selectedItemType === BouzoukiFretboardElement.#typeEnum.SCALE) {
-      const scale = Scale.getAll(this.selectedBaseNote).find((s) => s.id === this.selectedItemKey);
-      this.#selectednotes = scale.notes;
+      const { scaleId, scaleVariantIndex } = BouzoukiFretboardElement.deserializeScaleKey(
+        this.selectedItemKey
+      );
+
+      const scale = Scale.getAll(this.selectedBaseNote).find((scale) => scale.id === scaleId);
+      if (!scale) {
+        this.#selectednotes = [];
+        return;
+      }
+
+      const scaleVariant = scale.variants[scaleVariantIndex];
+      if (!scaleVariant) {
+        this.#selectednotes = [];
+        return;
+      }
+
+      this.#selectednotes = scaleVariant.notes;
       return;
     }
 
@@ -96,10 +127,10 @@ export class BouzoukiFretboardElement extends LitElement {
       name: `Συγχορδία ${chord.name}`,
     }));
 
-    const scales = BouzoukiFretboardElement.#allScales.map((scale) => ({
+    const scales = BouzoukiFretboardElement.#allScales.map((variant) => ({
       type: BouzoukiFretboardElement.#typeEnum.SCALE,
-      key: scale.key,
-      name: `Δρόμος ${scale.name}`,
+      key: variant.key,
+      name: `Δρόμος ${variant.name}`,
     }));
 
     const notesOptions = [...chords, ...scales].map(

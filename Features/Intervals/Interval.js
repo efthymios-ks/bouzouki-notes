@@ -1,3 +1,5 @@
+import { Note } from "../Notes/Note.js";
+
 export class Interval {
   static getName(interval) {
     if (interval === 1) {

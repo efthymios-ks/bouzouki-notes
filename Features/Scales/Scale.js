@@ -1,75 +1,41 @@
-import { Chord } from "../Chords/Chord.js";
 import { Note } from "../Notes/Note.js";
-import { Interval } from "../Intervals/Interval.js";
-import { ScaleUnit } from "./ScaleUnit.js";
+import { ScaleVariant } from "./ScaleVariant.js";
 import Scales from "./Scales.js";
 
 export class Scale {
-  #id;
-  #name;
-  #tonic;
-  #intervals = [];
-  #intervalsAsNames = [];
-  #otherNames = [];
-  #chords = null;
+  #id = null;
+  #name = null;
+  #tonic = null;
   #variants = [];
-  #notes = [];
-  #normalizedNotes = [];
-  #units = [];
 
-  constructor({
-    id,
-    name,
-    tonic,
-    intervals,
-    otherNames = [],
-    chords = null,
-    variants = {},
-    unitIds = [],
-  }) {
+  constructor({ id, name, tonic, variants }) {
+    if (!id) {
+      throw new Error(`Id must be a non-empty string for '${name}'`);
+    }
+
     if (!name) {
-      throw new Error("Name must be a non-empty string");
+      throw new Error(`Name must be a non-empty string for '${id}'`);
     }
 
     if (!tonic || !Note.sharpNotes.includes(tonic)) {
-      throw new Error(`Invalid or missing tonic for scale ${name}`);
+      throw new Error(`Invalid or missing tonic for '${name}'`);
     }
 
-    if (!Array.isArray(intervals) || intervals.length === 0) {
-      throw new Error(`Intervals must be a non-empty array (${name})`);
-    }
-
-    if (intervals.length !== Note.naturalNotes.length) {
-      throw new Error(
-        `Intervals must produce a total ${Note.naturalNotes.length + 1} notes (${name})`
-      );
-    }
-
-    if (chords && chords.chords && chords.chords.length !== Note.naturalNotes.length) {
-      throw new Error("Chords array must have the same length as the number of notes in the scale");
-    }
-
-    unitIds = Array.isArray(unitIds) ? unitIds : [];
-    if (unitIds.length > 0 && unitIds.length != 2) {
-      throw new Error(`Scale units must have exactly 2 elements, got ${unitIds.length}`);
+    if (!variants || variants.length === 0) {
+      throw new Error(`Scale '${name}' must have at least one variant`);
     }
 
     this.#id = id;
     this.#name = name;
-    this.#intervals = intervals;
-    this.#intervalsAsNames = intervals.map(Interval.getName);
+    this.#tonic = tonic;
 
-    this.#otherNames = otherNames || [];
-    this.#chords = chords || null;
-    this.#variants = variants || {};
+    this.#variants = variants.map((variant) => {
+      if (!variant.name) {
+        variant.name = name;
+      }
 
-    if (unitIds.some((unitId) => !unitId || unitId === "")) {
-      throw new Error(`Invalid unit IDs provided for scale ${name}`);
-    }
-
-    this.#units = unitIds.map((unitId) => ScaleUnit.findById(unitId));
-
-    Scale.#setTonic(this, tonic);
+      return new ScaleVariant({ ...variant, tonic });
+    });
   }
 
   get id() {
@@ -84,325 +50,65 @@ export class Scale {
     return this.#tonic;
   }
 
-  get intervals() {
-    return this.#intervals;
-  }
-
-  get otherNames() {
-    return this.#otherNames;
-  }
-
-  get chords() {
-    return this.#chords;
-  }
-
-  get notes() {
-    return this.#notes;
-  }
-
-  get normalizedNotes() {
-    return this.#normalizedNotes;
-  }
-
-  get intervalsAsNames() {
-    return this.#intervalsAsNames;
-  }
-
   get variants() {
     return this.#variants;
   }
 
-  get units() {
-    return this.#units;
-  }
-
-  transpose(tonic) {
-    const newScale = this.#clone();
-    Scale.#setTonic(newScale, tonic);
-    return newScale;
-  }
-
-  normalizeNote(note) {
-    const indexInNormalized = this.#normalizedNotes.indexOf(note);
-    if (indexInNormalized !== -1) {
-      return note;
-    }
-
-    const indexInNotes = this.#notes.indexOf(note);
-    if (indexInNotes !== -1) {
-      return this.#normalizedNotes[indexInNotes];
-    }
-
-    console.warn(`Note "${note}" not found in scale "${this.#name} (${this.#tonic})"`);
-    return note;
-  }
-
-  normalizeChord(chord) {
-    const { root, suffix } = Chord.parse(chord);
-    const normalizedRoot = this.normalizeNote(root);
-    return normalizedRoot + suffix;
-  }
-
   static getAll(tonic) {
-    return Scales.map((scale) => Scale.#objectToScale(scale, tonic)).sort((a, b) =>
+    return Scales.map((scale) => new Scale({ ...scale, tonic })).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
   }
 
   static findScales(inputNotes) {
     if (inputNotes.length !== 7) {
+      console.warn(
+        `Input notes must be exactly 7 notes for scale matching (found ${inputNotes.length}).`
+      );
+
       return [];
     }
 
-    const allScales = Scale.getAll("C");
-    const matchingParents = []; // { scale, variantScales: [] }
-    const matchingVariants = []; // { scale, parentName }
-
-    // Collect parents
-    for (const scale of allScales) {
-      for (const tonic of Note.sharpNotes) {
-        try {
-          const transposedScale = scale.transpose(tonic);
-          if (!transposedScale.#notesMatch(inputNotes)) {
-            continue;
-          }
-
-          matchingParents.push({ scale: transposedScale, variantScales: [] });
-        } catch {
-          // Ignore errors here
+    const matchingScales = [];
+    for (const tonic of Note.sharpNotes) {
+      for (const scale of Scale.getAll(tonic)) {
+        const scaleAlreadyAdded = matchingScales.some((s) => s.id === scale.id);
+        if (scaleAlreadyAdded) {
+          continue;
         }
-      }
-    }
 
-    // Collect variants
-    for (const parentScale of allScales) {
-      for (const variantScale of parentScale.variants || []) {
-        for (const tonic of Note.sharpNotes) {
+        for (const scaleVariant of scale.variants) {
           try {
-            const transposedScale = variantScale.transpose(tonic);
-            if (!transposedScale.#notesMatch(inputNotes)) {
+            const scaleVariantNotesMatch = scaleVariant.notes.every((note) =>
+              inputNotes.includes(note)
+            );
+
+            if (!scaleVariantNotesMatch) {
               continue;
             }
 
-            matchingVariants.push({ scale: transposedScale, parentName: parentScale.name });
+            matchingScales.push(scale);
+            break;
           } catch {
-            // Ignore errors here
+            continue;
           }
         }
       }
     }
 
-    const result = [];
-    const seenNames = new Set();
-
-    // Map matching variants to parents, if possible
-    for (const matchingVariant of matchingVariants) {
-      const matchingParent = matchingParents.find(
-        (parent) => parent.scale.name === matchingVariant.parentName
-      );
-
-      if (!matchingParent) {
-        continue;
-      }
-
-      const variantAlreadyExists = matchingParent.variantScales.find(
-        (variantScale) =>
-          variantScale.name === matchingVariant.scale.name &&
-          variantScale.tonic === matchingVariant.scale.tonic
-      );
-
-      if (variantAlreadyExists) {
-        continue;
-      }
-
-      matchingParent.variantScales.push(matchingVariant.scale);
-    }
-
-    // Add parents to results and mark their names as seen
-    for (const matchingParent of matchingParents) {
-      if (seenNames.has(matchingParent.scale.name)) {
-        continue;
-      }
-
-      // Attach variants only for display
-      const parentClone = matchingParent.scale.#clone();
-      parentClone.#variants = matchingParent.variantScales;
-      result.push(parentClone);
-      seenNames.add(matchingParent.scale.name);
-    }
-
-    // Add variants that don't have a matched parent (prefix name, keep tonic)
-    for (const matchingVariant of matchingVariants) {
-      const hasMatchingParent = matchingParents.some(
-        (matchingParent) => matchingParent.scale.name === matchingVariant.parentName
-      );
-
-      if (hasMatchingParent) {
-        continue;
-      }
-
-      const prefixedScaleName = `${matchingVariant.parentName} (${matchingVariant.scale.name})`;
-      if (seenNames.has(prefixedScaleName)) {
-        continue;
-      }
-
-      result.push(new Scale({ ...matchingVariant.scale.#deconstruct(), name: prefixedScaleName }));
-      seenNames.add(prefixedScaleName);
-    }
-
-    return result.sort((a, b) => a.name.localeCompare(b.name));
+    return matchingScales.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  static #setTonic(scale, tonic) {
-    if (!scale || !(scale instanceof Scale)) {
-      throw new Error(`Scale can't be empty`);
-    }
-
-    if (!tonic) {
-      throw new Error(`Tonic can't be empty`);
-    }
-
-    scale.#tonic = tonic;
-    scale.#notes = scale.#calculateNotes();
-    scale.#normalizedNotes = scale.#calculateNormalizedNotes();
-
-    // Update units with the new tonic
-    let currentNoteIndex = 0;
-    for (let i = 0; i < scale.#units.length; i++) {
-      const unit = scale.#units[i];
-      unit.baseNote = scale.#normalizedNotes[currentNoteIndex];
-      currentNoteIndex += unit.intervals.length;
-    }
-
-    if (scale.#variants && scale.#variants.length > 0) {
-      scale.#variants.forEach((variant) => Scale.#setTonic(variant, tonic));
-    }
+  clone() {
+    return new Scale(this.deconstruct());
   }
 
-  static #objectToScale(scaleAsObject, tonic) {
-    const variants = (scaleAsObject.variants || []).map((variantAsObject) =>
-      Scale.#objectToScale(variantAsObject, tonic)
-    );
-
-    return new Scale({
-      ...scaleAsObject,
-      tonic,
-      variants,
-    });
-  }
-
-  #clone() {
-    return new Scale({
-      ...this.#deconstruct(),
-      variants: this.variants.map((variant) => variant.#clone()),
-    });
-  }
-
-  #deconstruct() {
+  deconstruct() {
     return {
       id: this.#id,
-      name: this.name,
-      tonic: this.tonic,
-      intervals: [...this.intervals],
-      otherNames: [...this.otherNames],
-      chords: this.chords,
-      variants: this.variants.map((variant) => variant.#deconstruct()),
-      unitIds: this.units.map((unit) => unit.id),
+      name: this.#name,
+      tonic: this.#tonic,
+      variants: this.#variants.map((variant) => variant.deconstruct()),
     };
-  }
-
-  #calculateNotes() {
-    const semitoneToNote = Note.sharpNotes.reduce((acc, note, index) => {
-      acc[index % 12] = note;
-      return acc;
-    }, {});
-
-    const getSemitone = (note) => {
-      const baseSemitone = Note.semitoneMap[note[0]];
-      const allTonicsLength = Note.sharpNotes.length;
-      if (note.length > 1) {
-        if (note[1] === "#") {
-          return (baseSemitone + 1) % allTonicsLength;
-        }
-
-        if (note[1] === "b") {
-          return (baseSemitone + (allTonicsLength - 1)) % allTonicsLength;
-        }
-      }
-
-      return baseSemitone;
-    };
-
-    let currentSemitone = getSemitone(this.#tonic);
-
-    const notes = [];
-    notes.push(this.#tonic);
-    for (const step of this.#intervals) {
-      currentSemitone = (currentSemitone + step) % 12;
-      notes.push(semitoneToNote[currentSemitone]);
-    }
-
-    return notes;
-  }
-
-  #calculateNormalizedNotes() {
-    const getSemitone = (note) => {
-      const baseSemitone = Note.semitoneMap[note[0]];
-      if (note.length === 1) {
-        return baseSemitone;
-      }
-
-      if (note[1] === "#") {
-        return (baseSemitone + 1) % 12;
-      }
-
-      if (note[1] === "b") {
-        return (baseSemitone + 11) % 12;
-      }
-
-      return baseSemitone;
-    };
-
-    const composeNote = (baseLetter, accidental) => baseLetter + (accidental || "");
-
-    const notes = [];
-    let tonicLetter = this.#tonic[0];
-    let tonicIndex = Note.naturalNotes.indexOf(tonicLetter);
-
-    for (let i = 0; i < this.#notes.length; i++) {
-      const targetSemitone = getSemitone(this.#notes[i]);
-
-      // Determine expected base letter for this position
-      const expectedLetter = Note.naturalNotes[(tonicIndex + i) % Note.naturalNotes.length];
-      const baseSemitone = Note.semitoneMap[expectedLetter];
-
-      // Calculate difference in semitones between target and base letter
-      let diff = (targetSemitone - baseSemitone + 12) % 12;
-
-      // Determine accidental based on diff
-      let accidental = "";
-      if (diff === 1) {
-        accidental = "#";
-      } else if (diff === 11) {
-        accidental = "b";
-      } else if (diff !== 0) {
-        // Handle rare double sharps/flats if needed or fallback to original note
-        // For now fallback:
-        notes.push(this.#notes[i]);
-        continue;
-      }
-
-      notes.push(composeNote(expectedLetter, accidental));
-    }
-
-    return notes;
-  }
-
-  #notesMatch(inputNotes) {
-    if (!Array.isArray(inputNotes)) {
-      return false;
-    }
-
-    return inputNotes.every((note) => this.notes.includes(note));
   }
 }

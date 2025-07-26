@@ -38,14 +38,14 @@ export class MetronomeElement extends LitElement {
         </div>
 
         <div
-          id="controls-container"
+          id="metronome-controls-container"
           class="d-flex flex-column justify-content-center align-items-center gap-2"
         >
           <div
-            id="bpm-container"
+            id="metronome-bpm-container"
             class="d-flex flex-column align-items-center justify-content-center"
           >
-            <label for="bpm-input" class="form-label fw-bold">BPM</label>
+            <label for="metronome-bpm-input" class="form-label fw-bold">BPM</label>
 
             <div class="d-flex justify-content-center align-items-center gap-2">
               <button class="btn btn-outline-secondary" @click="${() => this.#adjustBpm(-5)}">
@@ -53,7 +53,7 @@ export class MetronomeElement extends LitElement {
               </button>
 
               <input
-                id="bpm-input"
+                id="metronome-bpm-input"
                 type="number"
                 min="${MetronomeElement.#minBpm}"
                 max="${MetronomeElement.#maxBpm}"
@@ -69,7 +69,11 @@ export class MetronomeElement extends LitElement {
           </div>
 
           <div>
-            <button id="toggle-btn" class="btn btn-primary" @click="${this.#toggleStartStop}">
+            <button
+              id="metronome-toggle-btn"
+              class="btn btn-primary"
+              @click="${this.#toggleStartStop}"
+            >
               ${this.running ? "Διακοπή" : "Έναρξη"}
             </button>
           </div>

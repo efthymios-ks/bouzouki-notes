@@ -27,7 +27,12 @@ export class ScaleCardElement extends LitElement {
   }
 
   render() {
-    const notesHtml = this.scale.normalizedNotes.map((noteKey) => {
+    const scaleVariant = this.scale.variants[0];
+    const scaleName = this.scale.name;
+    const notes = scaleVariant.normalizedNotes;
+    const intervals = scaleVariant.intervalsAsNames;
+
+    const notesHtml = notes.map((noteKey) => {
       const note = new Note(noteKey);
       const isTonic = note.key === this.scale.tonic;
       const noteName = note.toPrintableString();
@@ -40,11 +45,11 @@ export class ScaleCardElement extends LitElement {
         class="card shadow-sm border border-1 border-secondary-subtle text-center"
         style="min-width: 20rem;"
       >
-        <div class="card-header bg-light fw-bold py-1">${this.scale.name}</div>
+        <div class="card-header bg-light fw-bold py-1">${scaleName}</div>
 
         <div class="card-body d-flex flex-column align-items-center justify-content-between gap-2">
           <p class="card-subtitle text-body-secondary">
-            <strong>Διαστήματα:</strong> ${this.scale.intervalsAsNames.join("-")}
+            <strong>Διαστήματα:</strong> ${intervals.join("-")}
           </p>
 
           <div>${notesHtml}</div>

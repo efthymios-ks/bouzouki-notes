@@ -53,14 +53,14 @@ export class RhythmPlayerElement extends LitElement {
     return html`
       <div class="d-flex flex-column align-items-center justify-content-center gap-3">
         <div
-          id="controls-container"
+          id="rhythms-controls-container"
           class="d-flex flex-column justify-content-center align-items-center gap-2"
         >
           <div
-            id="bpm-container"
+            id="rhythms-bpm-container"
             class="d-flex flex-column align-items-center justify-content-center"
           >
-            <label for="bpm-input" class="form-label fw-bold">BPM</label>
+            <label for="rhythms-bpm-input" class="form-label fw-bold">BPM</label>
 
             <div class="d-flex justify-content-center align-items-center gap-2">
               <button class="btn btn-outline-secondary" @click="${() => this.#adjustBpm(-5)}">
@@ -68,7 +68,7 @@ export class RhythmPlayerElement extends LitElement {
               </button>
 
               <input
-                id="bpm-input"
+                id="rhythms-bpm-input"
                 type="number"
                 min="${RhythmPlayerElement.#minBpm}"
                 max="${RhythmPlayerElement.#maxBpm}"
@@ -84,13 +84,13 @@ export class RhythmPlayerElement extends LitElement {
           </div>
 
           <div
-            id="rhythm-container"
+            id="rhythms-container"
             class="d-flex flex-column align-items-center justify-content-center"
           >
-            <label for="rhythm-select" class="form-label fw-bold">Ρυθμός</label>
+            <label for="rhythms-select" class="form-label fw-bold">Ρυθμός</label>
 
             <select
-              id="rhythm-select"
+              id="rhythms-select"
               class="form-select mb-3"
               @change="${this.#onRhythmChange}"
               .value="${this.selectedIndex}"
@@ -102,7 +102,11 @@ export class RhythmPlayerElement extends LitElement {
           </div>
 
           <div>
-            <button id="toggle-btn" class="btn btn-primary" @click="${this.#toggleStartStop}">
+            <button
+              id="rhythms-toggle-btn"
+              class="btn btn-primary"
+              @click="${this.#toggleStartStop}"
+            >
               ${this.running ? "Διακοπή" : "Έναρξη"}
             </button>
           </div>

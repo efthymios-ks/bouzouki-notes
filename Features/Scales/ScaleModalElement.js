@@ -36,17 +36,16 @@ export class ScaleModalElement extends LitElement {
     }
 
     const isVisible = !!this.scale;
-    const variants = this.scale?.variants || [];
-    const allScales = this.scale ? [this.scale, ...variants] : [];
-    const isSingleScale = allScales.length === 1;
+    const scaleVariants = this.scale ? this.scale.variants : [];
+    const isSingleScale = scaleVariants.length === 1;
     const renderSingleScale = () => {
-      return html`<div class="text-center">${this.renderScaleSlide(this.scale)}</div> `;
+      return html`<div class="text-center">${this.renderScaleSlide(scaleVariants[0])}</div> `;
     };
 
     const renderMultipleScales = () => {
       const renderTabsHeader = () =>
-        allScales.map(
-          (scale, scaleIndex) => html`
+        scaleVariants.map(
+          (scaleVariant, scaleIndex) => html`
             <li class="nav-item" role="presentation">
               <button
                 id="tab-${scaleIndex}"
@@ -58,14 +57,14 @@ export class ScaleModalElement extends LitElement {
                 aria-controls="tab-pane-${scaleIndex}"
                 aria-selected="${scaleIndex === 0 ? "true" : "false"}"
               >
-                ${scaleIndex === 0 ? "Βάση" : scale.name}
+                ${scaleVariant.name}
               </button>
             </li>
           `
         );
 
       const renderTabsContent = () =>
-        allScales.map((scale, scaleIndex) => {
+        scaleVariants.map((scaleVariant, scaleIndex) => {
           const isActiveClass = scaleIndex === 0 ? "show active" : "";
           return html`
             <div
@@ -75,7 +74,7 @@ export class ScaleModalElement extends LitElement {
               aria-labelledby="tab-${scaleIndex}"
               tabindex="0"
             >
-              ${this.renderScaleSlide(scale)}
+              ${this.renderScaleSlide(scaleVariant)}
             </div>
           `;
         });
@@ -128,7 +127,7 @@ export class ScaleModalElement extends LitElement {
     `;
   }
 
-  renderScaleSlide(scale) {
+  renderScaleSlide(scaleVariant) {
     const titleWithText = (label, content) => html`
       <div>
         <div class="fw-bold text-start">${label}</div>
@@ -137,18 +136,21 @@ export class ScaleModalElement extends LitElement {
     `;
 
     const otherNamesHtml = () => {
-      if (!scale.otherNames || scale.otherNames.length === 0) {
+      if (!scaleVariant.otherNames || scaleVariant.otherNames.length === 0) {
         return "";
       }
 
-      return titleWithText("Άλλες ονομασίες:", scale.otherNames.join(", "));
+      return titleWithText("Άλλες ονομασίες:", scaleVariant.otherNames.join(", "));
     };
 
     const intervalsHtml = () => {
-      const allIntervals = scale.intervalsAsNames;
-      const leftUnitIntervals = scale.units.length > 0 ? scale.units[0].intervalNames : [];
+      const allIntervals = scaleVariant.intervalsAsNames;
+      const leftUnitIntervals =
+        scaleVariant.units.length > 0 ? scaleVariant.units[0].intervalNames : [];
       const rightUnitIntervals =
-        scale.units.length > 1 ? scale.units[scale.units.length - 1].intervalNames : [];
+        scaleVariant.units.length > 1
+          ? scaleVariant.units[scaleVariant.units.length - 1].intervalNames
+          : [];
 
       // Count how many intervals from the left match first unit's intervals
       let leftHighlightCount = 0;
@@ -196,9 +198,11 @@ export class ScaleModalElement extends LitElement {
       });
 
       // Unit names to display under intervals
-      const leftUnitName = scale.units.length > 0 ? scale.units[0].fullName : "";
+      const leftUnitName = scaleVariant.units.length > 0 ? scaleVariant.units[0].fullName : "";
       const rightUnitName =
-        scale.units.length > 1 ? scale.units[scale.units.length - 1].fullName : "";
+        scaleVariant.units.length > 1
+          ? scaleVariant.units[scaleVariant.units.length - 1].fullName
+          : "";
 
       // Table
       // Row 1: Highlighted intervals
@@ -222,9 +226,9 @@ export class ScaleModalElement extends LitElement {
     };
 
     const notesHtml = () => {
-      const noteBadgesHtml = scale.normalizedNotes.map((noteKey) => {
+      const noteBadgesHtml = scaleVariant.normalizedNotes.map((noteKey) => {
         const note = new Note(noteKey);
-        const isTonic = note.key === scale.tonic;
+        const isTonic = note.key === scaleVariant.tonic;
         const noteBackgroundColor = isTonic ? "bg-info" : "bg-secondary";
 
         return html`<span class="badge me-1 mb-1 ${noteBackgroundColor}"
@@ -236,33 +240,43 @@ export class ScaleModalElement extends LitElement {
     };
 
     const chordsHtml = () => {
-      if (!(scale.chords && scale.chords.chords.length)) {
+      if (!(scaleVariant.chords && scaleVariant.chords.chords.length)) {
         return html``;
       }
 
-      const chords = scale.chords.chords.map((chord, index) => {
-        const transposedChord = Chord.transpose(chord, scale.chords.baseNote, scale.tonic);
+      const chords = scaleVariant.chords.chords.map((chord, index) => {
+        const transposedChord = Chord.transpose(
+          chord,
+          scaleVariant.chords.baseNote,
+          scaleVariant.tonic
+        );
+
         const transposedChordNotes = Chord.getNotes(transposedChord);
 
-        const normalizedChord = scale.normalizeChord(transposedChord);
+        const normalizedChord = scaleVariant.normalizeChord(transposedChord);
         const normalizedChordNotes = transposedChordNotes.map((noteKey) => {
-          noteKey = scale.normalizeNote(noteKey);
+          noteKey = scaleVariant.normalizeNote(noteKey);
           const transposedChordNote = new Note(noteKey);
           return transposedChordNote.toPrintableString();
         });
 
-        const note = new Note(scale.normalizedNotes[index]);
+        const note = new Note(scaleVariant.normalizedNotes[index]);
+
+        const transposedChordNotesNotInScale = transposedChordNotes.some(
+          (transposedChordNote) => !scaleVariant.notes.includes(transposedChordNote)
+        );
 
         return {
           note: note.toPrintableString(),
           chord: Note.toPrintableString(normalizedChord),
           notes: normalizedChordNotes,
+          invalid: transposedChordNotesNotInScale,
         };
       });
 
       const rows = chords.map(
-        ({ note, chord, notes }) => html`
-          <tr>
+        ({ note, chord, notes, invalid }) => html`
+          <tr class="${invalid ? "table-danger" : ""}">
             <td>${note}</td>
             <td>${chord}</td>
             <td>
