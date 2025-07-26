@@ -1,36 +1,7 @@
 export default [
   {
-    id: "AMN",
-    name: "Αρμονικό μινόρε",
-    variants: [
-      {
-        intervals: [2, 1, 2, 2, 1, 3, 1],
-        chords: {
-          baseNote: "D",
-          chords: ["Dm", "A", "Dm", "Gm", "A", "A#", "A"],
-        },
-        unitIds: ["KYR5", "HTZ4"],
-      },
-    ],
-  },
-  {
-    id: "DMN",
-    name: "Διατονικό μινόρε",
-    variants: [
-      {
-        intervals: [2, 1, 2, 2, 1, 2, 2],
-        chords: {
-          baseNote: "D",
-          chords: ["Dm", "C", "F", "Gm", "Am", "A#", "C"],
-        },
-        unitIds: ["KYR5", "USK4"],
-        otherNames: ["Φυσικό μινόρε", "Νησιώτικο μινόρε", "Αιολικός"],
-      },
-    ],
-  },
-  {
     id: "KAR",
-    name: "Καρτζιγάρ",
+    name: "Καρσιγάρ",
     variants: [
       {
         intervals: [2, 1, 2, 1, 3, 1, 2],
@@ -58,8 +29,22 @@ export default [
     ],
   },
   {
+    id: "MNA",
+    name: "Μινόρε Αρμονικό",
+    variants: [
+      {
+        intervals: [2, 1, 2, 2, 1, 3, 1],
+        chords: {
+          baseNote: "D",
+          chords: ["Dm", "A", "Dm", "Gm", "A", "A#", "A"],
+        },
+        unitIds: ["KYR5", "HTZ4"],
+      },
+    ],
+  },
+  {
     id: "MMN",
-    name: "Μελωδικό μινόρε",
+    name: "Μινόρε Μελωδικό",
     variants: [
       {
         name: "Ανιούσα",
@@ -74,6 +59,21 @@ export default [
         name: "Κατιούσα",
         intervals: [2, 1, 2, 2, 1, 2, 2],
         unitIds: ["KYR5", "USK4"],
+      },
+    ],
+  },
+  {
+    id: "MNF",
+    name: "Μινόρε Φυσικό",
+    variants: [
+      {
+        intervals: [2, 1, 2, 2, 1, 2, 2],
+        chords: {
+          baseNote: "D",
+          chords: ["Dm", "C", "F", "Gm", "Am", "A#", "C"],
+        },
+        unitIds: ["KYR5", "USK4"],
+        otherNames: ["Διατονικό μινόρε", "Νησιώτικο μινόρε"],
       },
     ],
   },
@@ -97,26 +97,12 @@ export default [
     name: "Νικρίζ",
     variants: [
       {
-        intervals: [2, 1, 3, 1, 2, 2, 1],
+        intervals: [2, 1, 3, 1, 2, 1, 2],
         chords: {
           baseNote: "D",
-          chords: ["Dm", "E", "Dm", "C#m", "A", "E", "C#m"],
+          chords: ["Dm", "E", "Fm", "E", "Am", "E", "F"],
         },
-        unitIds: ["NKR5", "RST4"],
-      },
-    ],
-  },
-  {
-    id: "UZL",
-    name: "Ουζάλ",
-    variants: [
-      {
-        intervals: [1, 3, 1, 2, 2, 1, 2],
-        chords: {
-          baseNote: "D",
-          chords: ["D", "Cm", "Bm", "G", "D", "Bm", "Cm"],
-        },
-        unitIds: ["HTZ5", "KYR4"],
+        unitIds: ["NKR5", "KYR4"],
       },
     ],
   },
@@ -131,7 +117,6 @@ export default [
           chords: ["Dm", "D#", "F", "Gm", "Dm", "A#", "Cm"],
         },
         unitIds: ["USK5", "USK4"],
-        otherNames: ["Φρυγικός"],
       },
     ],
   },
@@ -151,8 +136,8 @@ export default [
     ],
   },
   {
-    id: "PMN",
-    name: "Ποιμενικό μινόρε",
+    id: "SZN",
+    name: "Σουζινάκ",
     variants: [
       {
         intervals: [2, 1, 3, 1, 2, 1, 2],
@@ -161,7 +146,7 @@ export default [
           chords: ["Dm", "E", "Fm", "E", "Am", "E", "Fm"],
         },
         unitIds: ["NKR5", "KYR4"],
-        otherNames: ["Ρουμάνικο μινόρε", "Σουζινάκ"],
+        otherNames: ["Ποιμενικό μινόρε", "Ρουμάνικο μινόρε"],
       },
     ],
   },
@@ -177,7 +162,7 @@ export default [
           chords: ["D", "Em", "F#m", "G", "A", "Bm", "F#m"],
         },
         unitIds: ["RST5", "RST4"],
-        otherNames: ["Ματζόρε", "Ιωνικός"],
+        otherNames: ["Ματζόρε"],
       },
       {
         name: "Κατιούσα",
@@ -194,7 +179,7 @@ export default [
         intervals: [2, 1, 1, 3, 1, 2, 2],
         chords: {
           baseNote: "D",
-          chords: ["Dm", "Em", "F", "F#", "Dm", "A#", "C"],
+          chords: ["Dm", "Am", "F", "D", "Am", "A#", "F"],
         },
         unitIds: ["SBH5", "USK4"],
       },
@@ -209,12 +194,21 @@ export default [
     name: "Σεγκιάχ",
     variants: [
       {
-        intervals: [3, 1, 1, 2, 1, 3, 1],
+        intervals: [3, 1, 1, 2, 2, 2, 1],
         chords: {
           baseNote: "D",
-          chords: ["D", "A#", "F#m", "Gm", "D", "A#", "F#m"],
+          chords: ["D", "Gdim", "F#m", "G", "D", "Bm", "F#m"],
         },
-        unitIds: ["HZM4", "NKR5"],
+        unitIds: ["HZM5", "RST4"],
+      },
+      {
+        name: "Κατιούσα",
+        intervals: [3, 1, 1, 2, 2, 1, 2],
+        chords: {
+          baseNote: "D",
+          chords: ["D", "Gdim", "Bm", "G", "D", "Bm", "Ddim"],
+        },
+        unitIds: ["HZM5", "KYR4"],
       },
     ],
   },
@@ -242,7 +236,7 @@ export default [
           baseNote: "D",
           chords: ["D", "D#", "D", "Gm", "D", "D#", "Cm"],
         },
-        unitIds: ["HTZ5", "USK4"],
+        unitIds: ["HTZ4", "KYR5"],
       },
     ],
   },
@@ -265,18 +259,18 @@ export default [
     name: "Χουζάμ",
     variants: [
       {
-        intervals: [3, 1, 1, 2, 2, 2, 1],
+        intervals: [3, 1, 1, 2, 1, 3, 1],
         chords: {
           baseNote: "D",
-          chords: ["D", "Gdim", "F#m", "G", "D", "Bm", "F#m"],
+          chords: ["D", "A#", "F#m", "Gm", "D", "A#", "F#m"],
         },
-        unitIds: ["HZM5", "RST4"],
+        unitIds: ["HZM5", "HTZ4"],
       },
     ],
   },
   {
     id: "HSN",
-    name: "Χουσεΐνι",
+    name: "Χουσεϊνί",
     variants: [
       {
         name: "Ανιούσα",
@@ -285,13 +279,16 @@ export default [
           baseNote: "D",
           chords: ["D", "Em", "Bm", "G", "Am", "Bm", "C"],
         },
-        unitIds: ["RST5", "KYR4"],
-        otherNames: ["Μιξολυδικός"],
+        unitIds: ["RST4", "RST5"],
       },
       {
         name: "Κατιούσα",
         intervals: [2, 1, 2, 2, 1, 2, 2],
-        unitIds: ["KYR5", "USK4"],
+        chords: {
+          baseNote: "D",
+          chords: ["Dm", "C", "F", "Gm", "Am", "A#", "C"],
+        },
+        unitIds: ["KYR4", "KYR5"],
       },
     ],
   },

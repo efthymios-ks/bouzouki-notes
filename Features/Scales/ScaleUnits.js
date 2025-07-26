@@ -56,12 +56,14 @@ export default [
     id: "HZM5",
     name: "Χουζάμ",
     type: "Major",
+    variantNames: ["Σεγκιάχ"],
     intervals: [3, 1, 1, 2],
   },
   {
     id: "HZM4",
     name: "Χουζάμ",
     type: "Major",
+    variantNames: ["Σεγκιάχ"],
     intervals: [3, 1, 1],
   },
   {
