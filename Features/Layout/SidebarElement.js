@@ -8,10 +8,10 @@ export class SidebarElement extends LitElement {
   static #menuItems = Object.freeze([
     { id: "scales-list-container", label: "Δρόμοι" },
     { id: "scale-finder-container", label: "Βρες το δρόμο" },
-    { id: "scale-unit-list-container", label: "Μελωδικές δομές" },
     { id: "bouzouki-fretboard-container", label: "Ταστιέρα" },
     { id: "metronome-container", label: "Μετρονόμος" },
     { id: "rhythms-container", label: "Ρυθμοί" },
+    { id: "scales-theory-container", label: " Θεωρία" },
     { id: "about-container", label: "Σχετικά" },
   ]);
 
