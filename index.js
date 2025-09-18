@@ -31,11 +31,12 @@
   });
 
   // Fire the initial sectionSelected event and show first section
-  const firstLink = sidebar.querySelector('a[data-section="scales-list-container"]');
+  const sectionToSelect = "scales-list-container";
+  const firstLink = sidebar.querySelector(`a[data-section="${sectionToSelect}"]`);
   const firstTitle = firstLink ? firstLink.textContent.trim() : "Δρόμοι";
   sidebar.dispatchEvent(
     new CustomEvent("sectionSelected", {
-      detail: { section: "scales-list-container", title: firstTitle },
+      detail: { section: sectionToSelect, title: firstTitle },
       bubbles: true,
       composed: true,
     })
