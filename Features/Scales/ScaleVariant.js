@@ -37,8 +37,8 @@ export class ScaleVariant {
     this.#tonic = tonic;
 
     if (tonic) {
-      this.#notes = this.#calculateNotes(tonic);
-      this.#normalizedNotes = this.#calculateNormalizedNotes(tonic);
+      this.#notes = Note.calculateNotesFromIntervals(tonic, this.#intervals);
+      this.#normalizedNotes = Note.calculateNormalizedNotes(tonic, this.#intervals);
 
       let currentNoteIndex = 0;
       for (const unit of this.#units) {
@@ -107,67 +107,6 @@ export class ScaleVariant {
 
     console.warn(`Note "${note}" not found in scale "${this.#name} (${this.#tonic})"`);
     return note;
-  }
-
-  #calculateNotes(tonic) {
-    const semitoneToNote = Note.sharpNotes.reduce((acc, note, index) => {
-      acc[index % 12] = note;
-      return acc;
-    }, {});
-
-    const getSemitone = (note) => {
-      const baseSemitone = Note.semitoneMap[note[0]];
-      if (note.length > 1) {
-        if (note[1] === "#") return (baseSemitone + 1) % 12;
-        if (note[1] === "b") return (baseSemitone + 11) % 12;
-      }
-      return baseSemitone;
-    };
-
-    let currentSemitone = getSemitone(tonic);
-    const notes = [tonic];
-
-    for (const step of this.#intervals) {
-      currentSemitone = (currentSemitone + step) % 12;
-      notes.push(semitoneToNote[currentSemitone]);
-    }
-
-    return notes;
-  }
-
-  #calculateNormalizedNotes(tonic) {
-    const getSemitone = (note) => {
-      const baseSemitone = Note.semitoneMap[note[0]];
-      if (note.length === 1) return baseSemitone;
-      if (note[1] === "#") return (baseSemitone + 1) % 12;
-      if (note[1] === "b") return (baseSemitone + 11) % 12;
-      return baseSemitone;
-    };
-
-    const composeNote = (baseLetter, accidental) => baseLetter + (accidental || "");
-
-    const notes = [];
-    let tonicLetter = tonic[0];
-    let tonicIndex = Note.naturalNotes.indexOf(tonicLetter);
-
-    for (let i = 0; i < this.#notes.length; i++) {
-      const targetSemitone = getSemitone(this.#notes[i]);
-      const expectedLetter = Note.naturalNotes[(tonicIndex + i) % Note.naturalNotes.length];
-      const baseSemitone = Note.semitoneMap[expectedLetter];
-      let diff = (targetSemitone - baseSemitone + 12) % 12;
-
-      let accidental = "";
-      if (diff === 1) accidental = "#";
-      else if (diff === 11) accidental = "b";
-      else if (diff !== 0) {
-        notes.push(this.#notes[i]);
-        continue;
-      }
-
-      notes.push(composeNote(expectedLetter, accidental));
-    }
-
-    return notes;
   }
 
   clone() {

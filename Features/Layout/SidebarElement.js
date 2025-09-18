@@ -7,6 +7,7 @@ export class SidebarElement extends LitElement {
 
   static #menuItems = Object.freeze([
     { id: "scales-list-container", label: "Δρόμοι" },
+    { id: "makam-segment-list-container", label: "Τετράχορδα" },
     { id: "scale-finder-container", label: "Βρες το δρόμο" },
     { id: "bouzouki-fretboard-container", label: "Ταστιέρα" },
     { id: "metronome-container", label: "Μετρονόμος" },
@@ -16,7 +17,6 @@ export class SidebarElement extends LitElement {
 
   constructor() {
     super();
-    this.selected = "scales-list-container";
   }
 
   createRenderRoot() {

@@ -1,5 +1,3 @@
-import { Note } from "../Notes/Note.js";
-
 export class Interval {
   static getName(interval) {
     if (interval === 1) {
@@ -12,6 +10,22 @@ export class Interval {
 
     if (interval === 3) {
       return "3H";
+    }
+
+    throw new Error(`Invalid interval value '${interval}'`);
+  }
+
+  static getLongName(interval) {
+    if (interval === 1) {
+      return "Ημιτόνιο";
+    }
+
+    if (interval === 2) {
+      return "Τόνος";
+    }
+
+    if (interval === 3) {
+      return "Τριημιτόνιο";
     }
 
     throw new Error(`Invalid interval value '${interval}'`);

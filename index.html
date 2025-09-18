@@ -23,7 +23,11 @@
     <sidebar-element></sidebar-element>
 
     <div id="main-container" class="container my-4 d-flex flex-column align-items-center">
-      <div id="scales-list-container" class="w-100">
+      <div id="makam-segment-list-container" class="w-100">
+        <makam-segment-list-element></makam-segment-list-element>
+      </div>
+
+      <div id="scales-list-container" class="w-100 d-none">
         <scale-list-element></scale-list-element>
       </div>
 
@@ -49,8 +53,10 @@
     </div>
 
     <script src="Libraries/Bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="Libraries/vexflow/vexflow.js"></script>
     <script type="module" src="Features/Layout/SidebarElement.js"></script>
     <script type="module" src="Features/Layout/SidebarToggleButtonElement.js"></script>
+    <script type="module" src="Features/MakamSegments/MakamSegmentListElement.js"></script>
     <script type="module" src="Features/Scales/ScaleListElement.js"></script>
     <script type="module" src="Features/Scales/ScaleFinderElement.js"></script>
     <script type="module" src="Features/Fretboards/BouzoukiFretboardElement.js"></script>
