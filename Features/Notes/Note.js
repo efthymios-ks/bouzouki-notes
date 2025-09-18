@@ -87,4 +87,75 @@ export class Note {
 
     return (baseSemitone + accidental + 12) % 12;
   }
+
+  static calculateNotesFromIntervals(tonic, intervals) {
+    if (!tonic || !intervals || !Array.isArray(intervals)) {
+      throw new Error("calculateNotesFromIntervals requires a tonic note and intervals array");
+    }
+
+    const semitoneToNote = Note.sharpNotes.reduce((acc, note, index) => {
+      acc[index % 12] = note;
+      return acc;
+    }, {});
+
+    const getSemitone = (note) => {
+      const baseSemitone = Note.semitoneMap[note[0]];
+      if (note.length > 1) {
+        if (note[1] === "#") return (baseSemitone + 1) % 12;
+        if (note[1] === "b") return (baseSemitone + 11) % 12;
+      }
+      return baseSemitone;
+    };
+
+    let currentSemitone = getSemitone(tonic);
+    const notes = [tonic];
+
+    for (const step of intervals) {
+      currentSemitone = (currentSemitone + step) % 12;
+      notes.push(semitoneToNote[currentSemitone]);
+    }
+
+    return notes;
+  }
+
+  static calculateNormalizedNotes(tonic, intervals) {
+    if (!tonic || !intervals || !Array.isArray(intervals)) {
+      throw new Error("calculateNormalizedNotes requires a tonic note and intervals array");
+    }
+
+    const notes = Note.calculateNotesFromIntervals(tonic, intervals);
+
+    const getSemitone = (note) => {
+      const baseSemitone = Note.semitoneMap[note[0]];
+      if (note.length === 1) return baseSemitone;
+      if (note[1] === "#") return (baseSemitone + 1) % 12;
+      if (note[1] === "b") return (baseSemitone + 11) % 12;
+      return baseSemitone;
+    };
+
+    const composeNote = (baseLetter, accidental) => baseLetter + (accidental || "");
+
+    const normalizedNotes = [];
+    let tonicLetter = tonic[0];
+    let tonicIndex = Note.naturalNotes.indexOf(tonicLetter);
+
+    for (let i = 0; i < notes.length; i++) {
+      const targetSemitone = getSemitone(notes[i]);
+      const expectedLetter = Note.naturalNotes[(tonicIndex + i) % Note.naturalNotes.length];
+      const baseSemitone = Note.semitoneMap[expectedLetter];
+      let diff = (targetSemitone - baseSemitone + 12) % 12;
+
+      let accidental = "";
+      if (diff === 1) accidental = "#";
+      else if (diff === 11) accidental = "b";
+      else if (diff !== 0) {
+        normalizedNotes.push(notes[i]);
+        continue;
+      }
+
+      normalizedNotes.push(composeNote(expectedLetter, accidental));
+    }
+
+    return normalizedNotes;
+  }
 }
