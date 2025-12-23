@@ -74,8 +74,8 @@ export default [
       { octavePosition: 1, length: 4 },
       { octavePosition: 1, length: 5 },
       { octavePosition: 0, length: 5 },
-      { octavePosition: 4, length: 4 },
       { octavePosition: 3, length: 5 },
+      { octavePosition: 4, length: 4 },
     ],
     notes: ["Μπορεί να εμφανιστεί με προσαγωγέα ημιτόνιο όπου και ονομάζεται Ζιργκιουλελί Χιτζάζ"],
   },
@@ -85,9 +85,11 @@ export default [
     intervals: [[2, 1, 3, 1]],
     leadingInterval: 1,
     placements: [
+      { octavePosition: 0, length: 5 },
       { octavePosition: 3, length: 5 },
       { octavePosition: 4, length: 5 },
     ],
+    notes: ["Πρόκειται για Χιτζάζ με τόνο στη βάση αντί στη κορυφή"],
   },
   {
     id: "HUZAM",

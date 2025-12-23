@@ -129,12 +129,7 @@ export class MakamSegmentListElement extends LitElement {
                   ${segment.placements.length > 0
                     ? html`
                         <h5 class="mb-3 mt-4">Θέσεις</h5>
-                        <div
-                          id="carousel-${actualIndex}"
-                          class="carousel slide carousel-dark"
-                          data-bs-ride="carousel"
-                          data-bs-interval="10000"
-                        >
+                        <div id="carousel-${actualIndex}" class="carousel slide carousel-dark">
                           <div class="carousel-inner">
                             ${segment.placements.map((placement, placementIndex) => {
                               const step = Octave.TwoOctaves.steps.find(
