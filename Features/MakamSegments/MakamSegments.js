@@ -67,8 +67,8 @@ export default [
     ],
   },
   {
-    id: "NIHAVEND",
-    name: "Νιχαβέντ",
+    id: "NIAVEND",
+    name: "Νιαβέντ",
     intervals: [
       [2, 1, 2],
       [2, 1, 2, 2],

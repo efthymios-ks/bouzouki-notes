@@ -1,0 +1,60 @@
+[
+  {
+    "id": "RAST",
+    "name": "Ραστ",
+    "octavePosition": 0,
+    "mainVariant": {
+      "id": "RAST_ASC",
+      "name": "Ανιούσα",
+      "isHidden": false,
+      "direction": "ASC",
+      "segments": [
+        { "id": "RAST", "position": 0, "size": 5 },
+        { "id": "RAST", "position": 4, "size": 4 }
+      ],
+      "entries": [0, 4],
+      "endings": [0],
+      "dominants": [0, 4, 7]
+    },
+    "variants": [
+      {
+        "id": "RAST_DESC",
+        "name": "Κατιούσα",
+        "direction": "DESC",
+        "segments": [
+          { "id": "RAST", "position": 0, "size": 5 },
+          { "id": "BUSELIK", "position": 4, "size": 4 }
+        ]
+      },
+      {
+        "id": "RAST_EXTENDED_LOWER",
+        "name": "Επέκταση κάτω της οκτάβας",
+        "isHidden": true,
+        "segments": [
+          { "id": "RAST", "position": -3, "size": 4 },
+          { "id": "RAST", "position": 0, "size": 5 },
+          { "id": "RAST", "position": 4, "size": 4 }
+        ]
+      },
+      {
+        "id": "RAST_EXTENDED_UPPER",
+        "name": "Επέκταση άνω της οκτάβας",
+        "isHidden": true,
+        "segments": [
+          { "id": "RAST", "position": 0, "size": 5 },
+          { "id": "RAST", "position": 4, "size": 4 },
+          { "id": "RAST", "position": 12, "size": 5 }
+        ]
+      },
+      {
+        "id": "RAST_SAZKAR",
+        "name": "Σαζκιάρ",
+        "isHidden": true,
+        "segments": [
+          { "id": "SAZKAR", "position": 0, "size": 5 },
+          { "id": "RAST", "position": 4, "size": 4 }
+        ]
+      }
+    ]
+  }
+]
