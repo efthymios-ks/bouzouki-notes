@@ -84,11 +84,13 @@ export class Makam {
     const firstSegment = variant.segments[0];
     const makamSegment = MakamSegment.getById(firstSegment.id);
     const leadingInterval = makamSegment.leadingInterval;
+    const direction = variant.direction ?? "ASC";
 
     return {
       ...variant,
       isHidden: variant.isHidden ?? false,
-      direction: variant.direction ?? "ASC",
+      direction: direction,
+      isAscending: direction === "ASC",
       entryNotes: variant.entryNotes ?? [],
       endingNote: variant.endingNote ?? null,
       dominantNotes: variant.dominantNotes ?? [],
@@ -101,6 +103,7 @@ export class Makam {
     const firstSegment = variant.segments ?? this.#mainVariant.segments;
     const makamSegment = MakamSegment.getById(firstSegment[0].id);
     const leadingInterval = makamSegment.leadingInterval;
+    const direction = variant.direction ?? this.#mainVariant.direction;
 
     return {
       ...this.#mainVariant,
@@ -110,6 +113,8 @@ export class Makam {
       entryNotes: variant.entryNotes ?? this.#mainVariant.entryNotes,
       dominantNotes: variant.dominantNotes ?? this.#mainVariant.dominantNotes,
       leadingInterval: leadingInterval,
+      direction: direction,
+      isAscending: direction === "ASC",
     };
   }
 

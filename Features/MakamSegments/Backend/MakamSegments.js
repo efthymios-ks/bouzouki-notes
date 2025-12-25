@@ -17,7 +17,7 @@ export default [
   {
     id: "SAZKAR",
     name: "Ραστ Σαζκιάρ",
-    intervals: [[3, 1, 2, 2]],
+    intervals: [[3, 1, 1, 2]],
     leadingInterval: 1,
     placements: [{ octavePosition: 0, length: 5 }],
     notes: ["Ό,τι ισχύει και στο Ραστ με μονιμοποίηση της έλξης της 2ης βαθμίδας από την 1η"],

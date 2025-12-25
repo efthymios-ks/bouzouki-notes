@@ -17,7 +17,7 @@ export class OctaveStep {
 
     if (position < 0) {
       this.#range = OctaveRange.Low;
-    } else if (position < 8) {
+    } else if (position < 7) {
       this.#range = OctaveRange.Mid;
     } else {
       this.#range = OctaveRange.High;

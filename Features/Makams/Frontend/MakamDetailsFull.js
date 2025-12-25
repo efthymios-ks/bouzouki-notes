@@ -69,50 +69,89 @@ export class MakamDetailsFull extends LitElement {
     this.updateComplete.then(() => this.#renderSheets());
   }
 
-  #buildNotesFromVariant(variant) {
-    const allIntervals = variant.segments.flatMap((segment) => {
+  #collectIntervalsFromSegments(segments) {
+    return segments.flatMap((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
-      return makamSegment.getIntervalsBySize(segment.size);
+      return segment.intervals || makamSegment.getIntervalsBySize(segment.size);
     });
+  }
 
+  #calculateStartPosition(variant) {
     const basePosition = this.makam.octavePosition;
-    const octaveStep = Octave.TwoOctaves.steps.find((step) => step.position === basePosition);
-    const baseNoteKey = octaveStep.note.match(/^([A-G][#b]?)/)[1];
+    const firstSegment = variant.segments[0];
 
-    let startOctave;
-    if (basePosition < 0) {
-      startOctave = 3;
-    } else if (basePosition < 7) {
-      startOctave = 4;
-    } else {
-      startOctave = 5;
+    if (firstSegment?.position !== undefined) {
+      return basePosition + firstSegment.position;
     }
 
-    const segmentStartIndices = new Set([0]);
-    let currentPosition = basePosition;
+    return basePosition;
+  }
+
+  #calculatePositions(variant, makamStartPosition, totalSteps) {
+    const isDescending = !variant.isAscending;
+
+    if (isDescending) {
+      const displayStartPosition = makamStartPosition + totalSteps;
+      Octave.validatePosition(displayStartPosition, `for descending variant '${variant.name}'`);
+
+      return {
+        displayStartPosition,
+        calculationPosition: makamStartPosition,
+      };
+    }
+
+    return {
+      displayStartPosition: makamStartPosition,
+      calculationPosition: makamStartPosition,
+    };
+  }
+
+  #getStartOctave(position) {
+    if (position < 0) return 3;
+    if (position < 7) return 4;
+    return 5;
+  }
+
+  #calculateSegmentEdges(variant) {
+    const segmentEdgeIndices = new Set([0]);
+    const segmentsToProcess = variant.isAscending
+      ? variant.segments
+      : [...variant.segments].reverse();
     let noteIndex = 0;
 
-    variant.segments.forEach((segment) => {
-      if (segment.position !== undefined) {
-        currentPosition = basePosition + segment.position;
-      }
-
+    segmentsToProcess.forEach((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
-      const intervals = makamSegment.getIntervalsBySize(segment.size);
+      const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
       noteIndex += intervals.length;
-
-      if (noteIndex < allIntervals.length) {
-        segmentStartIndices.add(noteIndex);
-      }
-
-      currentPosition += intervals.length;
+      segmentEdgeIndices.add(noteIndex);
     });
 
-    const calculatedNotes = Note.calculateNormalizedNotes(baseNoteKey, allIntervals);
-    const notes = [];
+    return segmentEdgeIndices;
+  }
 
+  #createNoteLabel(note, index, currentNotePosition, segmentEdgeIndices, variant) {
+    if (!segmentEdgeIndices.has(index)) {
+      return note.name;
+    }
+
+    const noteOctaveStep = Octave.TwoOctaves.steps.find(
+      (step) => step.position === currentNotePosition
+    );
+
+    if (!noteOctaveStep) {
+      throw new Error(
+        `Invalid position ${currentNotePosition} for note at index ${index} in variant '${variant.name}'`
+      );
+    }
+
+    return `${note.name} ${noteOctaveStep.label}`;
+  }
+
+  #processNotes(calculatedNotes, startOctave, displayStartPosition, segmentEdgeIndices, variant) {
+    const isDescending = !variant.isAscending;
+    const notes = [];
     let currentOctave = startOctave;
-    let currentNotePosition = basePosition;
+    let currentNotePosition = displayStartPosition;
 
     calculatedNotes.forEach((noteKey, index) => {
       const note = new Note(noteKey);
@@ -122,36 +161,108 @@ export class MakamDetailsFull extends LitElement {
         const currentSemitone = Note.getSemitone(noteKey);
         const prevSemitone = Note.getSemitone(prevNoteKey);
 
-        if (currentSemitone < prevSemitone) {
-          currentOctave = currentOctave + 1;
+        if (isDescending) {
+          if (currentSemitone > prevSemitone) {
+            currentOctave--;
+          }
+          currentNotePosition--;
+        } else {
+          if (currentSemitone < prevSemitone) {
+            currentOctave++;
+          }
+          currentNotePosition++;
         }
-        currentNotePosition++;
       }
 
-      let label = note.name;
-      if (segmentStartIndices.has(index)) {
-        const noteOctaveStep = Octave.TwoOctaves.steps.find(
-          (step) => step.position === currentNotePosition
-        );
-        if (noteOctaveStep) {
-          label = `${note.name} ${noteOctaveStep.label}`;
-        }
-      }
+      const label = this.#createNoteLabel(
+        note,
+        index,
+        currentNotePosition,
+        segmentEdgeIndices,
+        variant
+      );
 
       notes.push({
         note: `${noteKey}${currentOctave}`,
-        label: label,
+        label,
       });
     });
 
     return notes;
   }
 
+  #buildNotesFromVariant(variant) {
+    const allIntervals = this.#collectIntervalsFromSegments(variant.segments);
+    const makamStartPosition = this.#calculateStartPosition(variant);
+    const totalSteps = allIntervals.length;
+
+    const { displayStartPosition, calculationPosition } = this.#calculatePositions(
+      variant,
+      makamStartPosition,
+      totalSteps
+    );
+
+    Octave.validatePosition(calculationPosition, `for variant '${variant.name}'`);
+
+    const calcOctaveStep = Octave.TwoOctaves.steps.find(
+      (step) => step.position === calculationPosition
+    );
+    const calcNoteKey = calcOctaveStep.note.match(/^([A-G][#b]?)/)[1];
+    const startOctave = this.#getStartOctave(displayStartPosition);
+    const segmentEdgeIndices = this.#calculateSegmentEdges(variant);
+
+    let calculatedNotes = Note.calculateNormalizedNotes(calcNoteKey, allIntervals);
+
+    if (!variant.isAscending) {
+      calculatedNotes = calculatedNotes.reverse();
+    }
+
+    return this.#processNotes(
+      calculatedNotes,
+      startOctave,
+      displayStartPosition,
+      segmentEdgeIndices,
+      variant
+    );
+  }
+
+  #buildSheetSelections(variant) {
+    const selections = [];
+    const basePosition = this.makam.octavePosition;
+    let currentPosition = basePosition;
+    let noteIndex = 0;
+
+    const segmentsToProcess = variant.isAscending
+      ? variant.segments
+      : [...variant.segments].reverse();
+
+    segmentsToProcess.forEach((segment) => {
+      const makamSegment = MakamSegment.getById(segment.id);
+      const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
+      const segmentLength = intervals.length + 1;
+
+      if (segment.position !== undefined) {
+        currentPosition = basePosition + segment.position;
+      }
+
+      const segmentSize = segment.size || intervals.length + 1;
+      selections.push({
+        start: noteIndex,
+        stop: noteIndex + segmentLength - 1,
+        title: `${segmentSize}x ${makamSegment.name}`,
+      });
+
+      noteIndex += segmentLength - 1;
+    });
+
+    return selections;
+  }
+
   #renderSheets() {
     const variants = this.#getAllVariants();
     const activeVariant = variants[this.activeVariantIndex].variant;
-
     const container = this.querySelector(`#sheet-variant-${this.activeVariantIndex}`);
+
     if (!container) {
       return;
     }
@@ -159,72 +270,89 @@ export class MakamDetailsFull extends LitElement {
     container.innerHTML = "";
 
     const notes = this.#buildNotesFromVariant(activeVariant);
+    const selections = this.#buildSheetSelections(activeVariant);
 
-    const options = {
-      selections: [],
-    };
+    renderMusicSheet(container, notes, { selections });
+  }
 
+  #renderSegmentSummary(variant) {
     const basePosition = this.makam.octavePosition;
+    const direction = variant.isAscending ? 1 : -1;
+    const segmentsToProcess = variant.isAscending
+      ? variant.segments
+      : [...variant.segments].reverse();
+
+    const segmentsByRange = new Map();
     let currentPosition = basePosition;
-    let noteIndex = 0;
 
-    activeVariant.segments.forEach((segment) => {
-      const makamSegment = MakamSegment.getById(segment.id);
-      const intervals = makamSegment.getIntervalsBySize(segment.size);
-      const segmentLength = intervals.length + 1;
-
+    segmentsToProcess.forEach((segment, processIndex) => {
       if (segment.position !== undefined) {
         currentPosition = basePosition + segment.position;
       }
 
-      options.selections.push({
-        start: noteIndex,
-        stop: noteIndex + segmentLength - 1,
-        title: `${segment.size}x ${makamSegment.name}`,
+      const makamSegment = MakamSegment.getById(segment.id);
+      const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
+      const step = Octave.TwoOctaves.steps.find((s) => s.position === currentPosition);
+
+      if (!step) {
+        throw new Error(
+          `No octave step found for position ${currentPosition} in segment '${segment.id}'`
+        );
+      }
+
+      if (!step.range) {
+        throw new Error(
+          `No range defined for position ${currentPosition} in segment '${segment.id}'`
+        );
+      }
+
+      const originalIndex = variant.isAscending
+        ? processIndex
+        : variant.segments.length - 1 - processIndex;
+
+      if (!segmentsByRange.has(step.range.key)) {
+        segmentsByRange.set(step.range.key, { range: step.range, segments: [] });
+      }
+
+      segmentsByRange.get(step.range.key).segments.push({
+        size: segment.size || intervals.length + 1,
+        name: makamSegment.name,
+        intervals: intervals.map((i) => Interval.getName(i)).join("-"),
+        originalIndex,
       });
 
-      const segmentTotalSteps = intervals.length;
-      currentPosition += segmentTotalSteps;
-      noteIndex += segmentLength - 1;
+      currentPosition += intervals.length * direction;
     });
 
-    renderMusicSheet(container, notes, options);
+    const rangeGroups = Array.from(segmentsByRange.values());
+    if (!variant.isAscending) {
+      rangeGroups.reverse();
+    }
+
+    // Sort segments within each range by original index
+    rangeGroups.forEach((group) => {
+      group.segments.sort((a, b) => a.originalIndex - b.originalIndex);
+    });
+
+    return html`
+      ${rangeGroups.map(
+        ({ range, segments }) => html`
+          <li class="fw-bold mt-3 mb-2">${range.name}</li>
+          ${segments.map(
+            (seg) => html`<li class="ms-3">${seg.size}x ${seg.name} (${seg.intervals})</li>`
+          )}
+        `
+      )}
+    `;
   }
 
   #renderVariantContent(variant, variantIndex) {
-    const basePosition = this.makam.octavePosition;
-    let currentPosition = basePosition;
-
     return html`
       <div class="container-fluid">
         <!-- Segments Summary -->
         <div class="mb-4">
           <ul class="list-unstyled mb-0">
-            ${variant.segments.map((segment, index) => {
-              const makamSegment = MakamSegment.getById(segment.id);
-              const intervals = makamSegment.getIntervalsBySize(segment.size);
-              const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
-
-              if (segment.position !== undefined) {
-                currentPosition = basePosition + segment.position;
-              }
-
-              const currentOctaveStep = Octave.TwoOctaves.steps.find(
-                (step) => step.position === currentPosition
-              );
-              const segmentStartNote = new Note(currentOctaveStep.note.match(/^([A-G][#b]?)/)[1]);
-              const segmentStartLabel = currentOctaveStep.label;
-
-              const segmentTotalSteps = intervals.length;
-              currentPosition += segmentTotalSteps;
-
-              return html`
-                <li>
-                  <strong>${segmentStartNote.name} ${segmentStartLabel}</strong> - ${segment.size}x
-                  ${makamSegment.name} (${intervalsString})
-                </li>
-              `;
-            })}
+            ${this.#renderSegmentSummary(variant)}
           </ul>
         </div>
 

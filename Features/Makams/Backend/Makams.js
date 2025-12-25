@@ -22,8 +22,8 @@ export default [
         name: "Κατιούσα",
         direction: "DESC",
         segments: [
-          { id: "BUSELIK", size: 4, position: 7 },
-          { id: "RAST", size: 5 },
+          { id: "RAST", size: 5, position: 0 },
+          { id: "BUSELIK", size: 4 },
         ],
       },
       {
@@ -80,8 +80,8 @@ export default [
         name: "Κατιούσα",
         direction: "DESC",
         segments: [
-          { id: "BUSELIK", size: 5, position: 7 },
-          { id: "USAK", intervals: [1, 2, 2] },
+          { id: "USAK", intervals: [1, 2, 2], position: 0 },
+          { id: "BUSELIK", size: 5 },
         ],
       },
       {
@@ -89,7 +89,7 @@ export default [
         name: "Επέκταση κάτω της οκτάβας",
         isHidden: true,
         segments: [
-          { id: "RAST", size: 5, position: -3 },
+          { id: "RAST", size: 5, position: -4 },
           { id: "USAK", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
         ],

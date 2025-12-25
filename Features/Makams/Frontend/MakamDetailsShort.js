@@ -191,7 +191,16 @@ export class MakamDetailsShort extends LitElement {
     const segmentComposition = this.#getSegmentComposition();
     const intervals = this.#getFullIntervalsString();
     const notesString = this.#calculateNotes();
+
     const leadingToneInfo = this.#getLeadingToneInfo();
+    const leadingToneElement = html`<strong
+      class="degree-tooltip"
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      title="${leadingToneInfo.noteName}"
+      style="cursor: help;"
+      >${leadingToneInfo.intervalType}</strong
+    >`;
 
     const entryNoteElements = this.#getEntryNoteElements();
     const endingDegree = this.#createDegreeWithTooltip(mainVariant.endingNote);
@@ -200,28 +209,19 @@ export class MakamDetailsShort extends LitElement {
 
     const parts = [];
 
+    const movementType = this.makam.mainVariant.isAscending ? "ανιούσα" : "κατιούσα";
+
     parts.push(
       html`<p>
         Το μακάμ <strong>${this.makam.name}</strong> θεμελιώνεται στο
-        <strong>${baseNoteName}</strong>.
+        <strong>${baseNoteName}</strong><br />
       </p>`
     );
+    parts.push(html`<p>και έχει <strong>${movementType}</strong> κίνηση.</p>`);
     parts.push(html`<p>Αποτελείται από ${segmentComposition}.</p>`);
-    parts.push(html`<p>Έτσι προκύπτουν τα διαστήματά <strong>${intervals}</strong>,</p>`);
+    parts.push(html`<p>Έτσι προκύπτουν τα διαστήματά <strong>${intervals}</strong></p>`);
     parts.push(html`<p>ή αλλιώς οι νότες <strong>${notesString}</strong>.</p>`);
-
-    if (leadingToneInfo) {
-      const leadingToneElement = html`<strong
-        class="degree-tooltip"
-        data-bs-toggle="tooltip"
-        data-bs-placement="top"
-        title="${leadingToneInfo.noteName}"
-        style="cursor: help;"
-        >${leadingToneInfo.intervalType}</strong
-      >`;
-      parts.push(html`<p>Διαθέτει προσαγωγέα ${leadingToneElement}.</p>`);
-    }
-
+    parts.push(html`<p>Διαθέτει προσαγωγέα ${leadingToneElement}.</p>`);
     parts.push(html`<p>Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα</p>`);
     parts.push(html`<p>και καταλήγει στη ${endingDegree}.</p>`);
     parts.push(html`<p>${dominantLabel} ${dominantElements}.</p>`);
