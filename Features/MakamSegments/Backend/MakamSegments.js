@@ -29,7 +29,7 @@ export default [
       [2, 1, 2],
       [2, 1, 2, 2],
     ],
-    leadingInterval: 1,
+    leadingInterval: 2,
     placements: [
       { octavePosition: 1, length: 4 },
       { octavePosition: 1, length: 5 },
