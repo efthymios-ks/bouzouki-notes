@@ -1,6 +1,6 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 
-export class AboutElement extends LitElement {
+export class AboutPage extends LitElement {
   createRenderRoot() {
     return this;
   }
@@ -41,4 +41,4 @@ export class AboutElement extends LitElement {
   }
 }
 
-customElements.define("about-element", AboutElement);
+customElements.define("about-page", AboutPage);

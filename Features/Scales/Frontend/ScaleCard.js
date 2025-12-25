@@ -1,7 +1,7 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
-import { Note } from "../Notes/Note.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import { Note } from "../../Notes/Backend/Note.js";
 
-export class ScaleCardElement extends LitElement {
+export class ScaleCard extends LitElement {
   static properties = {
     scale: { type: Object },
   };
@@ -69,4 +69,4 @@ export class ScaleCardElement extends LitElement {
   }
 }
 
-customElements.define("scale-card-element", ScaleCardElement);
+customElements.define("scale-card", ScaleCard);

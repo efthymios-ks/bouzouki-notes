@@ -1,4 +1,4 @@
-import { Interval } from "../Intervals/Interval.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
 import ScaleUnits from "./ScaleUnits.js";
 
 export class ScaleUnit {

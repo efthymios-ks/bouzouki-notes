@@ -1,4 +1,4 @@
-import { Note } from "../Notes/Note.js";
+import { Note } from "../../Notes/Backend/Note.js";
 import { ScaleVariant } from "./ScaleVariant.js";
 import Scales from "./Scales.js";
 

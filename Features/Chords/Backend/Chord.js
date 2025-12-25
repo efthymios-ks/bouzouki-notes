@@ -1,4 +1,4 @@
-import { Note } from "../Notes/Note.js";
+import { Note } from "../../Notes/Backend/Note.js";
 
 export class Chord {
   static #chords = Object.freeze([

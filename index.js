@@ -6,7 +6,7 @@
 
   const mainContainer = document.getElementById("main-container");
   const sections = Array.from(mainContainer.children);
-  const sidebar = document.querySelector("sidebar-element");
+  const sidebar = document.querySelector("sidebar-component");
   const navbarTitle = document.getElementById("navbar-title");
 
   function showSection(sectionId) {
@@ -30,13 +30,12 @@
     }
   });
 
-  // Fire the initial sectionSelected event and show first section
-  const sectionToSelect = "scales-list-container";
-  const firstLink = sidebar.querySelector(`a[data-section="${sectionToSelect}"]`);
-  const firstTitle = firstLink ? firstLink.textContent.trim() : "Δρόμοι";
+  // Fire the initial sectionSelected event and show default section
+  const defaultSection = mainContainer.querySelector("[data-menu-default]");
+  const defaultTitle = defaultSection.getAttribute("data-menu-label");
   sidebar.dispatchEvent(
     new CustomEvent("sectionSelected", {
-      detail: { section: sectionToSelect, title: firstTitle },
+      detail: { section: defaultSection.id, title: defaultTitle },
       bubbles: true,
       composed: true,
     })

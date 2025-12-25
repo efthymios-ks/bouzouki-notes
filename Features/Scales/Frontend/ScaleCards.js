@@ -1,6 +1,6 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
-import "./ScaleCardElement.js";
-import "./ScaleModalElement.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import "./ScaleCard.js";
+import "./ScaleModal.js";
 
 export class ScaleCards extends LitElement {
   static properties = {
@@ -19,15 +19,15 @@ export class ScaleCards extends LitElement {
 
   render() {
     const scaleCards = this.scales.map(
-      (scale) => html`<scale-card-element
+      (scale) => html`<scale-card
         .scale=${scale}
         @onMoreClicked=${() => this.#openModal(scale)}
-      ></scale-card-element>`
+      ></scale-card>`
     );
 
     return html` 
         <div id="list" class="d-flex flex-wrap justify-content-center gap-3">${scaleCards}</div> 
-        <scale-modal-element id="scale-modal"></scale-modal-element>
+        <scale-modal id="scale-modal"></scale-modal>
       </div>
     `;
   }

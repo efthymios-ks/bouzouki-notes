@@ -1,6 +1,7 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import { Rhythm } from "../Backend/Rhythm.js";
 
-export class RhythmPlayerElement extends LitElement {
+export class RhythmsPage extends LitElement {
   static properties = {
     bpm: { type: Number },
     running: { type: Boolean, state: true },
@@ -18,29 +19,7 @@ export class RhythmPlayerElement extends LitElement {
   #audioContext = new window.AudioContext();
   #loopTimeouts = [];
 
-  // Quote = Bass
-  rhythmOptions = [
-    { label: "Χασάπικο 2/4", value: "8 8' 8 8'" },
-    { label: "Βαλς 3/4", value: "4 4' 4'" },
-    { label: "Τσιφτετέλι 4/4", value: "8 4' 8' 4 4'" },
-    { label: "Μπαγιόν 4/4", value: "4 8' 8' 4 4'" },
-    { label: "Καλαματιανός 7/8", value: "8 8' 8' 8 8' 8 8'" },
-    { label: "Μαντηλάτος 7/8", value: "8 8' 8 8' 8 8' 8'" },
-
-    { label: "Πεντάρι 3+2 (5/8)", value: "8 8' 8' 8 8'" },
-    { label: "Πεντάρι 2+3 (5/8)", value: "8 8' 8 8' 8'" },
-    { label: "Εξάρι (6/8)", value: "8 8' 8' 8 8' 8'" },
-    { label: "Επτάρι 3+2+2 (7/8)", value: "8 8' 8' 8 8' 8 8'" },
-    { label: "Επτάρι 2+2+3 (7/8)", value: "8 8' 8 8' 8 8' 8'" },
-
-    { label: "Καρσιλαμάς 1 (9/8)", value: "4 8' 8' 4 8' 8' 8'" },
-    { label: "Καρσιλαμάς 2 (9/8)", value: "8 8' 8 8' 8 8' 8 8' 8'" },
-
-    { label: "Νέο Ζεϊμπέκικο 9/8", value: "8 4' 8' 4 4' 8 4' 8' 4 4' 4'" },
-    { label: "Παλιό Ζεϊμπέκικο 9/8", value: "4 8' 8' 4 4' 4 8' 8' 4 4' 4'" },
-    { label: "Νέο Απτάλικο 9/8", value: "4 4' 4' 8 4' 8' 4 4' 8 4' 8'" },
-    { label: "Παλιό Απτάλικο 9/8", value: "4 4' 4' 4 8' 8' 4 4' 4 8' 8'" },
-  ];
+  rhythmOptions = Rhythm.getAll();
 
   selectedIndex = 0;
   rhythm = [];
@@ -70,8 +49,8 @@ export class RhythmPlayerElement extends LitElement {
               <input
                 id="rhythms-bpm-input"
                 type="number"
-                min="${RhythmPlayerElement.#minBpm}"
-                max="${RhythmPlayerElement.#maxBpm}"
+                min="${RhythmsPage.#minBpm}"
+                max="${RhythmsPage.#maxBpm}"
                 class="form-control text-center"
                 .value="${this.bpm}"
                 @blur="${this.#onBpmInput}"
@@ -148,21 +127,15 @@ export class RhythmPlayerElement extends LitElement {
 
   #onBpmInput(event) {
     const value = Math.max(
-      RhythmPlayerElement.#minBpm,
-      Math.min(
-        RhythmPlayerElement.#maxBpm,
-        parseInt(event.target.value, 10) || RhythmPlayerElement.#minBpm
-      )
+      RhythmsPage.#minBpm,
+      Math.min(RhythmsPage.#maxBpm, parseInt(event.target.value, 10) || RhythmsPage.#minBpm)
     );
     this.bpm = value;
     this.requestUpdate();
   }
 
   #adjustBpm(delta) {
-    this.bpm = Math.max(
-      RhythmPlayerElement.#minBpm,
-      Math.min(RhythmPlayerElement.#maxBpm, this.bpm + delta)
-    );
+    this.bpm = Math.max(RhythmsPage.#minBpm, Math.min(RhythmsPage.#maxBpm, this.bpm + delta));
     this.#resetRhythm();
     this.requestUpdate();
   }
@@ -296,7 +269,7 @@ export class RhythmPlayerElement extends LitElement {
     const gain = this.#audioContext.createGain();
     oscillator.type = "square";
     oscillator.frequency.value = accent ? 800 : 1200;
-    gain.gain.setValueAtTime(RhythmPlayerElement.#volumegain, this.#audioContext.currentTime);
+    gain.gain.setValueAtTime(RhythmsPage.#volumegain, this.#audioContext.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, this.#audioContext.currentTime + 0.1);
     oscillator.connect(gain).connect(this.#audioContext.destination);
     oscillator.start();
@@ -304,4 +277,4 @@ export class RhythmPlayerElement extends LitElement {
   }
 }
 
-customElements.define("rhythm-player-element", RhythmPlayerElement);
+customElements.define("rhythms-page", RhythmsPage);

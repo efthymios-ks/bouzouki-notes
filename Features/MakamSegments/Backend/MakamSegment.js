@@ -1,6 +1,6 @@
 import MakamSegments from "./MakamSegments.js";
-import { Note } from "../Notes/Note.js";
-import { Octave } from "../Octaves/Octave.js";
+import { Note } from "../../Notes/Backend/Note.js";
+import { Octave } from "../../Octaves/Backend/Octave.js";
 
 export class MakamSegment {
   #id = null;

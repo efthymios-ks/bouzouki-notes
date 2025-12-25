@@ -1,6 +1,6 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 
-export class SidebarToggleButtonElement extends LitElement {
+export class SidebarToggleButton extends LitElement {
   createRenderRoot() {
     return this; // Use light DOM so Bootstrap classes apply
   }
@@ -20,4 +20,4 @@ export class SidebarToggleButtonElement extends LitElement {
   }
 }
 
-customElements.define("sidebar-toggle-button-element", SidebarToggleButtonElement);
+customElements.define("sidebar-toggle-button", SidebarToggleButton);

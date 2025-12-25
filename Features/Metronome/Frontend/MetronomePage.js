@@ -1,6 +1,6 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 
-export class MetronomeElement extends LitElement {
+export class MetronomePage extends LitElement {
   static properties = {
     bpm: { type: Number },
     running: { type: Boolean, state: true },
@@ -55,8 +55,8 @@ export class MetronomeElement extends LitElement {
               <input
                 id="metronome-bpm-input"
                 type="number"
-                min="${MetronomeElement.#minBpm}"
-                max="${MetronomeElement.#maxBpm}"
+                min="${MetronomePage.#minBpm}"
+                max="${MetronomePage.#maxBpm}"
                 class="form-control text-center"
                 .value="${this.bpm}"
                 @input="${this.#onBpmInput}"
@@ -91,11 +91,8 @@ export class MetronomeElement extends LitElement {
 
   #onBpmInput(event) {
     const value = Math.max(
-      MetronomeElement.#minBpm,
-      Math.min(
-        MetronomeElement.#maxBpm,
-        parseInt(event.target.value, 10) || MetronomeElement.#minBpm
-      )
+      MetronomePage.#minBpm,
+      Math.min(MetronomePage.#maxBpm, parseInt(event.target.value, 10) || MetronomePage.#minBpm)
     );
     this.bpm = value;
     this.#resetMetronome();
@@ -103,10 +100,7 @@ export class MetronomeElement extends LitElement {
   }
 
   #adjustBpm(delta) {
-    this.bpm = Math.max(
-      MetronomeElement.#minBpm,
-      Math.min(MetronomeElement.#maxBpm, this.bpm + delta)
-    );
+    this.bpm = Math.max(MetronomePage.#minBpm, Math.min(MetronomePage.#maxBpm, this.bpm + delta));
     this.#resetMetronome();
     this.requestUpdate();
   }
@@ -174,7 +168,7 @@ export class MetronomeElement extends LitElement {
     const oscillator = this.#audioContext.createOscillator();
     const gain = this.#audioContext.createGain();
     oscillator.frequency.value = 880;
-    gain.gain.value = MetronomeElement.#volumegain;
+    gain.gain.value = MetronomePage.#volumegain;
     oscillator.connect(gain);
     gain.connect(this.#audioContext.destination);
     oscillator.start();
@@ -182,4 +176,4 @@ export class MetronomeElement extends LitElement {
   }
 }
 
-customElements.define("metronome-element", MetronomeElement);
+customElements.define("metronome-page", MetronomePage);

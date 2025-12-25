@@ -1,8 +1,8 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
-import { Chord } from "../Chords/Chord.js";
-import { Note } from "../Notes/Note.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import { Chord } from "../../Chords/Backend/Chord.js";
+import { Note } from "../../Notes/Backend/Note.js";
 
-export class ScaleModalElement extends LitElement {
+export class ScaleModal extends LitElement {
   static properties = {
     scale: { type: Object },
   };
@@ -340,4 +340,4 @@ export class ScaleModalElement extends LitElement {
   }
 }
 
-customElements.define("scale-modal-element", ScaleModalElement);
+customElements.define("scale-modal", ScaleModal);

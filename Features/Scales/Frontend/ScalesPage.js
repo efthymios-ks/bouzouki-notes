@@ -1,9 +1,9 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
-import "./ScaleCardsElement.js";
-import { Scale } from "./Scale.js";
-import { Note } from "../Notes/Note.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import "./ScaleCards.js";
+import { Scale } from "../Backend/Scale.js";
+import { Note } from "../../Notes/Backend/Note.js";
 
-export class ScaleListElement extends LitElement {
+export class ScalesPage extends LitElement {
   static properties = {};
 
   #tonic = "D";
@@ -54,7 +54,7 @@ export class ScaleListElement extends LitElement {
         </div>
       </div>
 
-      <scale-cards id="scale-list" .scales=${this.#scales}></scale-cards>
+      <scale-cards id="scales-page" .scales=${this.#scales}></scale-cards>
     `;
   }
 
@@ -65,4 +65,4 @@ export class ScaleListElement extends LitElement {
   }
 }
 
-customElements.define("scale-list-element", ScaleListElement);
+customElements.define("scales-page", ScalesPage);

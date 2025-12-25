@@ -1,23 +1,35 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 
-export class SidebarElement extends LitElement {
+export class SidebarComponent extends LitElement {
   static properties = {
     selected: { type: String },
+    menuItems: { type: Array, state: true },
   };
 
-  static #menuItems = Object.freeze([
-    { id: "scales-list-container", label: "Δρόμοι" },
-    { id: "makam-segment-list-container", label: "Τετράχορδα" },
-    { id: "scale-finder-container", label: "Βρες το δρόμο" },
-    { id: "bouzouki-fretboard-container", label: "Ταστιέρα" },
-    { id: "metronome-container", label: "Μετρονόμος" },
-    { id: "rhythms-container", label: "Ρυθμοί" },
-    { id: "about-container", label: "Σχετικά" },
-  ]);
+  menuItems = [];
 
   constructor() {
     super();
+    this.#loadMenuItems();
+    this.addEventListener("sectionSelected", this.#handleSectionSelected);
   }
+
+  #loadMenuItems() {
+    const mainContainer = document.getElementById("main-container");
+    if (!mainContainer) return;
+
+    const sections = Array.from(mainContainer.children);
+    this.menuItems = sections
+      .filter((section) => section.hasAttribute("data-menu-label"))
+      .map((section) => ({
+        id: section.id,
+        label: section.getAttribute("data-menu-label"),
+      }));
+  }
+
+  #handleSectionSelected = (event) => {
+    this.selected = event.detail.section;
+  };
 
   createRenderRoot() {
     return this;
@@ -38,7 +50,7 @@ export class SidebarElement extends LitElement {
   }
 
   render() {
-    const menuItemsHtml = SidebarElement.#menuItems.map(
+    const menuItemsHtml = this.menuItems.map(
       (item) => html`
         <li class="nav-item">
           <a
@@ -80,4 +92,4 @@ export class SidebarElement extends LitElement {
   }
 }
 
-customElements.define("sidebar-element", SidebarElement);
+customElements.define("sidebar-component", SidebarComponent);

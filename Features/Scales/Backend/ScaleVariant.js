@@ -1,6 +1,6 @@
-import { Chord } from "../Chords/Chord.js";
-import { Interval } from "../Intervals/Interval.js";
-import { Note } from "../Notes/Note.js";
+import { Chord } from "../../Chords/Backend/Chord.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
+import { Note } from "../../Notes/Backend/Note.js";
 import { ScaleUnit } from "./ScaleUnit.js";
 
 export class ScaleVariant {

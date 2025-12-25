@@ -1,9 +1,9 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
-import { Note } from "../Notes/Note.js";
-import { Scale } from "./Scale.js";
-import "./ScaleCardsElement.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import { Note } from "../../Notes/Backend/Note.js";
+import { Scale } from "../Backend/Scale.js";
+import "./ScaleCards.js";
 
-export class ScaleFinderElement extends LitElement {
+export class ScaleFinderPage extends LitElement {
   static properties = {};
 
   #selectedNotes;
@@ -99,4 +99,4 @@ export class ScaleFinderElement extends LitElement {
   }
 }
 
-customElements.define("scale-finder-element", ScaleFinderElement);
+customElements.define("scale-finder-page", ScaleFinderPage);

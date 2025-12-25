@@ -15,54 +15,59 @@
   <body>
     <nav class="navbar bg-light sticky-top shadow-sm py-1 px-2">
       <div class="d-flex align-items-center w-100 position-relative">
-        <sidebar-toggle-button-element> </sidebar-toggle-button-element>
+        <sidebar-toggle-button> </sidebar-toggle-button>
         <span id="navbar-title" class="h4 mx-auto my-0"></span>
       </div>
     </nav>
 
-    <sidebar-element></sidebar-element>
+    <sidebar-component></sidebar-component>
 
     <div id="main-container" class="container my-4 d-flex flex-column align-items-center">
-      <div id="makam-segment-list-container" class="w-100">
-        <makam-segment-list-element></makam-segment-list-element>
+      <div id="makam-segments-container" class="w-100" data-menu-label="Τετράχορδα">
+        <makam-segments-page></makam-segments-page>
       </div>
 
-      <div id="scales-list-container" class="w-100 d-none">
-        <scale-list-element></scale-list-element>
+      <div
+        id="scales-container"
+        class="w-100 d-none"
+        data-menu-label="Δρόμοι"
+        data-menu-default="true"
+      >
+        <scales-page></scales-page>
       </div>
 
-      <div id="scale-finder-container" class="w-100 d-none">
-        <scale-finder-element></scale-finder-element>
+      <div id="scale-finder-container" class="w-100 d-none" data-menu-label="Βρες το δρόμο">
+        <scale-finder-page></scale-finder-page>
       </div>
 
-      <div id="bouzouki-fretboard-container" class="w-100 d-none">
-        <bouzouki-fretboard-element></bouzouki-fretboard-element>
+      <div id="bouzouki-fretboard-container" class="w-100 d-none" data-menu-label="Ταστιέρα">
+        <bouzouki-fretboard-page></bouzouki-fretboard-page>
       </div>
 
-      <div id="metronome-container" class="w-100 d-none">
-        <metronome-element></metronome-element>
+      <div id="metronome-container" class="w-100 d-none" data-menu-label="Μετρονόμος">
+        <metronome-page></metronome-page>
       </div>
 
-      <div id="rhythms-container" class="w-100 d-none">
-        <rhythm-player-element></rhythm-player-element>
+      <div id="rhythms-container" class="w-100 d-none" data-menu-label="Ρυθμοί">
+        <rhythms-page></rhythms-page>
       </div>
 
-      <div id="about-container" class="w-100 d-none">
-        <about-element></about-element>
+      <div id="about-container" class="w-100 d-none" data-menu-label="Σχετικά">
+        <about-page></about-page>
       </div>
     </div>
 
     <script src="Libraries/Bootstrap/bootstrap.bundle.min.js"></script>
     <script src="Libraries/vexflow/vexflow.js"></script>
-    <script type="module" src="Features/Layout/SidebarElement.js"></script>
-    <script type="module" src="Features/Layout/SidebarToggleButtonElement.js"></script>
-    <script type="module" src="Features/MakamSegments/MakamSegmentListElement.js"></script>
-    <script type="module" src="Features/Scales/ScaleListElement.js"></script>
-    <script type="module" src="Features/Scales/ScaleFinderElement.js"></script>
-    <script type="module" src="Features/Fretboards/BouzoukiFretboardElement.js"></script>
-    <script type="module" src="Features/Metronome/MetronomeElement.js"></script>
-    <script type="module" src="Features/Rhythms/RhythmPlayerElement.js"></script>
-    <script type="module" src="Features/About/AboutElement.js"></script>
+    <script type="module" src="Features/Layout/Frontend/SidebarComponent.js"></script>
+    <script type="module" src="Features/Layout/Frontend/SidebarToggleButton.js"></script>
+    <script type="module" src="Features/MakamSegments/Frontend/MakamSegmentsPage.js"></script>
+    <script type="module" src="Features/Scales/Frontend/ScalesPage.js"></script>
+    <script type="module" src="Features/Scales/Frontend/ScaleFinderPage.js"></script>
+    <script type="module" src="Features/Fretboards/Frontend/BouzoukiFretboardPage.js"></script>
+    <script type="module" src="Features/Metronome/Frontend/MetronomePage.js"></script>
+    <script type="module" src="Features/Rhythms/Frontend/RhythmsPage.js"></script>
+    <script type="module" src="Features/About/Frontend/AboutPage.js"></script>
     <script type="module" src="index.js"></script>
   </body>
 </html>

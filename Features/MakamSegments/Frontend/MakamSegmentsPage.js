@@ -1,12 +1,12 @@
-import { LitElement, html, css } from "../../Libraries/lit/lit.min.js";
-import { MakamSegment } from "./MakamSegment.js";
-import { renderMusicSheet } from "../MusicSheets/MusicSheetRenderer.js";
-import { Octave } from "../Octaves/Octave.js";
-import { Note } from "../Notes/Note.js";
-import { Interval } from "../Intervals/Interval.js";
-import { OctaveRange } from "../Octaves/OctaveRange.js";
+import { LitElement, html, css } from "../../../Libraries/lit/lit.min.js";
+import { MakamSegment } from "../Backend/MakamSegment.js";
+import { renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
+import { Octave } from "../../Octaves/Backend/Octave.js";
+import { OctaveRange } from "../../Octaves/Backend/OctaveRange.js";
+import { Note } from "../../Notes/Backend/Note.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
 
-export class MakamSegmentListElement extends LitElement {
+export class MakamSegmentsPage extends LitElement {
   static styles = css`
     .carousel-item .sheet-container {
       padding: 0 60px; /* Add padding to avoid overlap with controls */
@@ -24,8 +24,6 @@ export class MakamSegmentListElement extends LitElement {
   constructor() {
     super();
     this.#segments = MakamSegment.getAll();
-
-    this.#segments = this.#segments;
   }
 
   createRenderRoot() {
@@ -363,4 +361,4 @@ export class MakamSegmentListElement extends LitElement {
   }
 }
 
-customElements.define("makam-segment-list-element", MakamSegmentListElement);
+customElements.define("makam-segments-page", MakamSegmentsPage);

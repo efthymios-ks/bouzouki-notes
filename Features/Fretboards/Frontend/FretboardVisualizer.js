@@ -1,7 +1,7 @@
-import { LitElement, html, css } from "../../Libraries/lit/lit.min.js";
-import { Note } from "../Notes/Note.js";
+import { LitElement, html, css } from "../../../Libraries/lit/lit.min.js";
+import { Note } from "../../Notes/Backend/Note.js";
 
-export class FretboardElement extends LitElement {
+export class FretboardVisualizer extends LitElement {
   static styles = css`
     #fretboard {
       --scale-factor: 1.2;
@@ -182,4 +182,4 @@ export class FretboardElement extends LitElement {
   }
 }
 
-customElements.define("fretboard-element", FretboardElement);
+customElements.define("fretboard-visualizer", FretboardVisualizer);

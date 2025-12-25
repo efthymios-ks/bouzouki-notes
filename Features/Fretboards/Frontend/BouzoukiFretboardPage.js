@@ -1,10 +1,10 @@
-import { LitElement, html } from "../../Libraries/lit/lit.min.js";
-import { Chord } from "../Chords/Chord.js";
-import { Note } from "../Notes/Note.js";
-import { Scale } from "../Scales/Scale.js";
-import "./FretboardElement.js";
+import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
+import { Chord } from "../../Chords/Backend/Chord.js";
+import { Note } from "../../Notes/Backend/Note.js";
+import { Scale } from "../../Scales/Backend/Scale.js";
+import "./FretboardVisualizer.js";
 
-export class BouzoukiFretboardElement extends LitElement {
+export class BouzoukiFretboardPage extends LitElement {
   static properties = {
     selectedChordLayout: { type: String },
     selectedBaseNote: { type: String },
@@ -22,7 +22,7 @@ export class BouzoukiFretboardElement extends LitElement {
   static #allScales = Object.freeze(
     Scale.getAll("D").flatMap((scale) =>
       scale.variants.map((scaleVariant, scaleVariantIndex) => ({
-        key: BouzoukiFretboardElement.serializeScaleKey(scale.id, scaleVariantIndex),
+        key: BouzoukiFretboardPage.serializeScaleKey(scale.id, scaleVariantIndex),
         name:
           scale.name === scaleVariant.name ? scale.name : `${scale.name} - ${scaleVariant.name}`,
         notes: scaleVariant.notes,
@@ -44,10 +44,10 @@ export class BouzoukiFretboardElement extends LitElement {
 
   constructor() {
     super();
-    this.selectedChordLayout = BouzoukiFretboardElement.#predefinedChordLayouts[0];
+    this.selectedChordLayout = BouzoukiFretboardPage.#predefinedChordLayouts[0];
     this.selectedBaseNote = "D";
-    this.selectedItemKey = BouzoukiFretboardElement.#allScales[0].key;
-    this.selectedItemType = BouzoukiFretboardElement.#typeEnum.SCALE;
+    this.selectedItemKey = BouzoukiFretboardPage.#allScales[0].key;
+    this.selectedItemType = BouzoukiFretboardPage.#typeEnum.SCALE;
 
     this.onSelectionChanged();
   }
@@ -90,14 +90,14 @@ export class BouzoukiFretboardElement extends LitElement {
   }
 
   onSelectionChanged() {
-    if (this.selectedItemType === BouzoukiFretboardElement.#typeEnum.CHORD) {
+    if (this.selectedItemType === BouzoukiFretboardPage.#typeEnum.CHORD) {
       const chord = `${this.selectedBaseNote}${this.selectedItemKey}`;
       this.#selectednotes = Chord.getNotes(chord);
       return;
     }
 
-    if (this.selectedItemType === BouzoukiFretboardElement.#typeEnum.SCALE) {
-      const { scaleId, scaleVariantIndex } = BouzoukiFretboardElement.deserializeScaleKey(
+    if (this.selectedItemType === BouzoukiFretboardPage.#typeEnum.SCALE) {
+      const { scaleId, scaleVariantIndex } = BouzoukiFretboardPage.deserializeScaleKey(
         this.selectedItemKey
       );
 
@@ -121,14 +121,14 @@ export class BouzoukiFretboardElement extends LitElement {
   }
 
   controlsHtml() {
-    const chords = BouzoukiFretboardElement.#allChords.map((chord) => ({
-      type: BouzoukiFretboardElement.#typeEnum.CHORD,
+    const chords = BouzoukiFretboardPage.#allChords.map((chord) => ({
+      type: BouzoukiFretboardPage.#typeEnum.CHORD,
       key: chord.key,
       name: `Συγχορδία ${chord.name}`,
     }));
 
-    const scales = BouzoukiFretboardElement.#allScales.map((variant) => ({
-      type: BouzoukiFretboardElement.#typeEnum.SCALE,
+    const scales = BouzoukiFretboardPage.#allScales.map((variant) => ({
+      type: BouzoukiFretboardPage.#typeEnum.SCALE,
       key: variant.key,
       name: `Δρόμος ${variant.name}`,
     }));
@@ -165,7 +165,7 @@ export class BouzoukiFretboardElement extends LitElement {
               style="font-size: 0.85rem;"
             ></button>
             <ul class="dropdown-menu dropdown-menu-end">
-              ${BouzoukiFretboardElement.#predefinedChordLayouts.map(
+              ${BouzoukiFretboardPage.#predefinedChordLayouts.map(
                 (layout) => html`
                   <li>
                     <a
@@ -218,14 +218,14 @@ export class BouzoukiFretboardElement extends LitElement {
         ${this.controlsHtml()}
 
         <div class="overflow-x-auto">
-          <fretboard-element
+          <fretboard-visualizer
             .selectFretFunction=${this.#selectFretFunction}
             .chordLayout=${this.selectedChordLayout.split("-")}
-          ></fretboard-element>
+          ></fretboard-visualizer>
         </div>
       </div>
     `;
   }
 }
 
-customElements.define("bouzouki-fretboard-element", BouzoukiFretboardElement);
+customElements.define("bouzouki-fretboard-page", BouzoukiFretboardPage);
