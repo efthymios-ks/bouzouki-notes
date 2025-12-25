@@ -4,16 +4,19 @@ import { Octave } from "../../Octaves/Backend/Octave.js";
 import { Note } from "../../Notes/Backend/Note.js";
 import { Interval } from "../../Intervals/Backend/Interval.js";
 import { renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
+import { Song } from "../../Songs/Backend/Song.js";
 
 export class MakamDetailsFull extends LitElement {
   static properties = {
     makam: { type: Object },
+    activeTab: { type: String },
   };
 
   constructor() {
     super();
     this.makam = null;
     this.activeVariantIndex = 0;
+    this.activeTab = "variant";
   }
 
   createRenderRoot() {
@@ -67,6 +70,48 @@ export class MakamDetailsFull extends LitElement {
     this.activeVariantIndex = index;
     this.requestUpdate();
     this.updateComplete.then(() => this.#renderSheets());
+  }
+
+  #switchTab(tabIndex) {
+    const variants = this.#getAllVariants();
+    if (tabIndex < variants.length) {
+      this.activeVariantIndex = tabIndex;
+      this.activeTab = "variant";
+      this.requestUpdate();
+      this.updateComplete.then(() => this.#renderSheets());
+    } else {
+      this.activeTab = "songs";
+      this.requestUpdate();
+    }
+  }
+
+  #getSongsForMakam() {
+    const makamIds = new Set([this.makam.id]);
+    this.#getAllVariants().forEach(({ variant }) => {
+      if (variant.id) {
+        makamIds.add(variant.id);
+      }
+    });
+
+    const songsMap = new Map();
+    makamIds.forEach((makamId) => {
+      const songs = Song.getByMakamId(makamId);
+      songs.forEach((song) => {
+        songsMap.set(song.name, song);
+      });
+    });
+
+    const allSongs = Array.from(songsMap.values());
+    allSongs.sort((a, b) => {
+      const authorsA = a.authors.join(", ");
+      const authorsB = b.authors.join(", ");
+      if (authorsA !== authorsB) {
+        return authorsA.localeCompare(authorsB);
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    return allSongs;
   }
 
   #collectIntervalsFromSegments(segments) {
@@ -345,7 +390,31 @@ export class MakamDetailsFull extends LitElement {
       )}
     `;
   }
+  #renderSongsContent() {
+    const songs = this.#getSongsForMakam();
 
+    if (songs.length === 0) {
+      return html`
+        <div class="container-fluid">
+          <p class="text-muted">Δεν βρέθηκαν τραγούδια για αυτό το μακάμ.</p>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="container-fluid">
+        <ul class="list-unstyled">
+          ${songs.map(
+            (song) => html`
+              <li class="mb-2">
+                <strong>${song.name}</strong> <em>${song.authors.join(", ")}</em>
+              </li>
+            `
+          )}
+        </ul>
+      </div>
+    `;
+  }
   #renderVariantContent(variant, variantIndex) {
     return html`
       <div class="container-fluid">
@@ -413,29 +482,40 @@ export class MakamDetailsFull extends LitElement {
             </div>
 
             <div class="modal-body px-3 py-3">
-              ${this.#getAllVariants().length > 1
-                ? html`
-                    <ul class="nav nav-tabs mb-4" role="tablist">
-                      ${this.#getAllVariants().map(
-                        (item, index) => html`
-                          <li class="nav-item" role="presentation">
-                            <button
-                              class="nav-link ${index === this.activeVariantIndex ? "active" : ""}"
-                              type="button"
-                              @click="${() => this.#switchVariant(index)}"
-                            >
-                              ${item.name}
-                            </button>
-                          </li>
-                        `
-                      )}
-                    </ul>
+              <ul class="nav nav-tabs mb-4" role="tablist">
+                ${this.#getAllVariants().map(
+                  (item, index) => html`
+                    <li class="nav-item" role="presentation">
+                      <button
+                        class="nav-link ${this.activeTab === "variant" &&
+                        index === this.activeVariantIndex
+                          ? "active"
+                          : ""}"
+                        type="button"
+                        @click="${() => this.#switchTab(index)}"
+                      >
+                        ${item.name}
+                      </button>
+                    </li>
                   `
-                : ""}
-              ${this.#renderVariantContent(
-                this.#getAllVariants()[this.activeVariantIndex].variant,
-                this.activeVariantIndex
-              )}
+                )}
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link ${this.activeTab === "songs" ? "active" : ""}"
+                    type="button"
+                    @click="${() => this.#switchTab(this.#getAllVariants().length)}"
+                  >
+                    Τραγούδια
+                  </button>
+                </li>
+              </ul>
+
+              ${this.activeTab === "songs"
+                ? this.#renderSongsContent()
+                : this.#renderVariantContent(
+                    this.#getAllVariants()[this.activeVariantIndex].variant,
+                    this.activeVariantIndex
+                  )}
             </div>
           </div>
         </div>
