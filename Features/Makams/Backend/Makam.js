@@ -80,6 +80,11 @@ export class Makam {
   }
 
   #processVariant(variant) {
+    // Get leading interval from first segment
+    const firstSegment = variant.segments[0];
+    const makamSegment = MakamSegment.getById(firstSegment.id);
+    const leadingInterval = makamSegment.leadingInterval;
+
     return {
       ...variant,
       isHidden: variant.isHidden ?? false,
@@ -87,10 +92,16 @@ export class Makam {
       entryNotes: variant.entryNotes ?? [],
       endingNote: variant.endingNote ?? null,
       dominantNotes: variant.dominantNotes ?? [],
+      leadingInterval: leadingInterval,
     };
   }
 
   #mergeWithMainVariant(variant) {
+    // Get leading interval from first segment of this variant
+    const firstSegment = variant.segments ?? this.#mainVariant.segments;
+    const makamSegment = MakamSegment.getById(firstSegment[0].id);
+    const leadingInterval = makamSegment.leadingInterval;
+
     return {
       ...this.#mainVariant,
       ...variant,
@@ -98,6 +109,7 @@ export class Makam {
       segments: variant.segments ?? this.#mainVariant.segments,
       entryNotes: variant.entryNotes ?? this.#mainVariant.entryNotes,
       dominantNotes: variant.dominantNotes ?? this.#mainVariant.dominantNotes,
+      leadingInterval: leadingInterval,
     };
   }
 

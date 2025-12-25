@@ -2,6 +2,7 @@ import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 import { MakamSegment } from "../../MakamSegments/Backend/MakamSegment.js";
 import { Octave } from "../../Octaves/Backend/Octave.js";
 import { Note } from "../../Notes/Backend/Note.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
 
 export class MakamDetails extends LitElement {
   static properties = {
@@ -71,12 +72,27 @@ export class MakamDetails extends LitElement {
     const mainVariant = this.makam.mainVariant;
     const segments = mainVariant.segments;
 
-    const segmentParts = segments.map((segment) => {
+    const segmentParts = segments.map((segment, index) => {
       const makamSegment = MakamSegment.getById(segment.id);
-      return `${segment.size}x ${makamSegment.name}`;
+      const intervals = makamSegment.getIntervalsBySize(segment.size);
+      const intervalsString = intervals.join("-");
+
+      const segmentElement = html`<strong
+        class="segment-tooltip"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="${intervalsString}"
+        style="cursor: help;"
+        >${segment.size}x ${makamSegment.name}</strong
+      >`;
+
+      return segmentElement;
     });
 
-    return segmentParts.filter((segment) => segment).join(" + ");
+    return segmentParts.reduce((acc, part, index) => {
+      if (index === 0) return part;
+      return html`${acc} + ${part}`;
+    }, html``);
   }
 
   #getNoteNameForDegree(degree) {
@@ -118,6 +134,28 @@ export class MakamDetails extends LitElement {
     >`;
   }
 
+  #getLeadingToneInfo() {
+    const mainVariant = this.makam.mainVariant;
+    const leadingInterval = mainVariant.leadingInterval;
+
+    const basePosition = this.makam.octavePosition;
+    const leadingPosition = basePosition - leadingInterval;
+
+    const leadingStep = Octave.TwoOctaves.steps.find((step) => step.position === leadingPosition);
+
+    if (!leadingStep) {
+      throw new Error(`No octave step found for leading tone position ${leadingPosition}`);
+    }
+
+    // Extract note key
+    const leadingNoteKey = leadingStep.note.match(/^([A-G][#b]?)/)[1];
+    const note = new Note(leadingNoteKey);
+    const noteName = `${note.toFullName()} ${leadingStep.label}`;
+    const intervalType = Interval.getLongName(leadingInterval).toLowerCase();
+
+    return { noteName, intervalType };
+  }
+
   #getDescription() {
     const mainVariant = this.makam.mainVariant;
     const intervals = this.#getFullIntervalsString();
@@ -150,10 +188,24 @@ export class MakamDetails extends LitElement {
     const notes = Note.calculateNormalizedNotes(baseNoteKey, allIntervals);
     const notesString = notes.map((noteKey) => new Note(noteKey).toFullName()).join(", ");
 
+    const leadingToneInfo = this.#getLeadingToneInfo();
+
     const parts = [];
     parts.push(html`<p>Έχει διαστήματα <strong>${intervals}</strong> (${segmentSizes}).</p>`);
     parts.push(html`<p>Θεμελιώνεται στο <strong>${baseNoteName}</strong>.</p>`);
     parts.push(html`<p>Οπότε έχουμε τις νότες <strong>${notesString}</strong>.</p>`);
+
+    if (leadingToneInfo) {
+      const leadingToneElement = html`<strong
+        class="degree-tooltip"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="${leadingToneInfo.noteName}"
+        style="cursor: help;"
+        >${leadingToneInfo.intervalType}</strong
+      >`;
+      parts.push(html`<p>Έχει προσαγωγέα ${leadingToneElement}.</p>`);
+    }
 
     parts.push(
       html`<p>Κάνει είσοδο στην ${entryNoteElements} και καταλήγει στη ${endingDegree} βαθμίδα.</p>`
