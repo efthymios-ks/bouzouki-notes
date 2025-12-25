@@ -1,6 +1,7 @@
 import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 import "./MakamCard.js";
-import "./MakamDetails.js";
+import "./MakamDetailsShort.js";
+import "./MakamDetailsFull.js";
 
 export class MakamCards extends LitElement {
   static properties = {
@@ -26,12 +27,13 @@ export class MakamCards extends LitElement {
 
     return html`
       <div id="list" class="d-flex flex-wrap justify-content-center gap-3">${makamCards}</div>
-      <makam-details id="makam-details"></makam-details>
+      <makam-details-short id="makam-details-short"></makam-details-short>
+      <makam-details-full id="makam-details-full"></makam-details-full>
     `;
   }
 
   #openModal(makam) {
-    this.querySelector("#makam-details").show(makam);
+    this.querySelector("#makam-details-short").show(makam);
   }
 }
 

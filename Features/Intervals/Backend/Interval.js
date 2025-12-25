@@ -30,4 +30,20 @@ export class Interval {
 
     throw new Error(`Invalid interval value '${interval}'`);
   }
+
+  static getLongNameAccusative(interval) {
+    if (interval === 1) {
+      return "Ημιτόνιο";
+    }
+
+    if (interval === 2) {
+      return "Τόνο";
+    }
+
+    if (interval === 3) {
+      return "Τριημιτόνιο";
+    }
+
+    throw new Error(`Invalid interval value '${interval}'`);
+  }
 }

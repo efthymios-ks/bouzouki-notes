@@ -63,7 +63,7 @@ export default [
     octavePosition: 1,
     mainVariant: {
       id: "USAK_ASC",
-      name: "Ουσάκ",
+      name: "Ανιούσα",
       isHidden: false,
       direction: "ASC",
       segments: [

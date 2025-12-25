@@ -109,7 +109,7 @@ export class MakamSegmentsPage extends LitElement {
                   <h5 class="mb-3">Διαστήματα</h5>
                   <ul>
                     ${segment.intervals.map(
-                      (intervalArray, intervalIndex) => html`
+                      (intervalArray) => html`
                         <li>
                           ${intervalArray.length + 1}x
                           ${intervalArray.map((interval) => Interval.getName(interval)).join("-")}
@@ -204,8 +204,6 @@ export class MakamSegmentsPage extends LitElement {
   }
 
   firstUpdated() {
-    window.renderSheet = renderMusicSheet;
-
     // Render octave range sheets in accordion
     const lowContainer = this.querySelector("#accordion-octave-range-low");
     if (lowContainer) {
