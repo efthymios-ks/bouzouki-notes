@@ -59,6 +59,28 @@ export class Note {
     return Note.toPrintableString(this.key);
   }
 
+  toFullName() {
+    return Note.toFullName(this.key);
+  }
+
+  static toFullName(note) {
+    if (note instanceof Note) {
+      note = note.key;
+    }
+
+    const noteRegex = new RegExp(`^([${Note.naturalNotes.join("")}])([#b])?$`);
+    const match = note.trim().match(noteRegex);
+    if (!match) {
+      throw new Error(`Unsupported key format: ${note}`);
+    }
+    const [, baseNote, accidental] = match;
+    let name = Note.#noteNames[baseNote];
+    if (accidental) {
+      name += accidental;
+    }
+    return name;
+  }
+
   static toPrintableString(note) {
     if (note instanceof Note) {
       note = note.key;

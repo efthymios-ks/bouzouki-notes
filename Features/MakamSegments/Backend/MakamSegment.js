@@ -135,6 +135,28 @@ export class MakamSegment {
     return MakamSegments.map((segment) => new MakamSegment(segment));
   }
 
+  static getById(id) {
+    var segment = MakamSegment.getAll().find((segment) => segment.id === id);
+    if (!segment) {
+      throw new Error(`MakamSegment with id '${id}' not found`);
+    }
+
+    return segment;
+  }
+
+  getIntervalsBySize(segmentSize) {
+    // Find the interval array that matches the segment size
+    // size = number of notes, intervals.length = size - 1
+    const targetIntervalLength = segmentSize - 1;
+    const intervalArray = this.#intervals.find((arr) => arr.length === targetIntervalLength);
+
+    if (!intervalArray) {
+      throw new Error(`No interval array found for segment '${this.#id}' with size ${segmentSize}`);
+    }
+
+    return intervalArray;
+  }
+
   deconstruct() {
     return {
       id: this.#id,

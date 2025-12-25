@@ -1,4 +1,4 @@
-import Makams from "../Makams.js";
+import Makams from "./Makams.js";
 import { MakamSegment } from "../../MakamSegments/Backend/MakamSegment.js";
 
 export class Makam {
@@ -18,12 +18,12 @@ export class Makam {
       throw new Error(`octavePosition must be a number, got ${typeof octavePosition}`);
     }
 
-    // Validate mainVariant structure
-    this.#validateVariant(mainVariant, "mainVariant");
+    // Validate mainVariant structure (strict validation)
+    this.#validateVariant(mainVariant, "mainVariant", true);
 
-    // Validate all variants
+    // Validate all variants (relaxed validation - they inherit from mainVariant)
     variants.forEach((variant, index) => {
-      this.#validateVariant(variant, `variant at index ${index}`);
+      this.#validateVariant(variant, `variant at index ${index}`, false);
     });
 
     this.#id = id;
@@ -35,9 +35,37 @@ export class Makam {
     Object.freeze(this);
   }
 
-  #validateVariant(variant, label) {
+  #validateVariant(variant, label, isMainVariant = false) {
     if (!variant.id || !variant.name) {
       throw new Error(`${label} must have id and name`);
+    }
+
+    // Direction, entryNotes, endingNote, dominantNotes are only required for mainVariant
+    // Other variants can inherit these from mainVariant via merging
+    if (isMainVariant) {
+      if (!variant.direction || (variant.direction !== "ASC" && variant.direction !== "DESC")) {
+        throw new Error(`${label} must have a valid direction of 'ASC' or 'DESC'`);
+      }
+
+      if (
+        !variant.entryNotes ||
+        !Array.isArray(variant.entryNotes) ||
+        variant.entryNotes.length === 0
+      ) {
+        throw new Error(`${label} must have entryNotes array`);
+      }
+
+      if (!variant.endingNote) {
+        throw new Error(`${label} must have endingNote`);
+      }
+
+      if (
+        !variant.dominantNotes ||
+        !Array.isArray(variant.dominantNotes) ||
+        variant.dominantNotes.length === 0
+      ) {
+        throw new Error(`${label} must have dominantNotes array`);
+      }
     }
 
     if (!variant.segments || !Array.isArray(variant.segments)) {
