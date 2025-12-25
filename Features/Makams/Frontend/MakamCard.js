@@ -1,5 +1,6 @@
 import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 import { MakamSegment } from "../../MakamSegments/Backend/MakamSegment.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
 
 export class MakamCard extends LitElement {
   static properties = {
@@ -33,7 +34,7 @@ export class MakamCard extends LitElement {
       return makamSegment.getIntervalsBySize(segment.size);
     });
 
-    return allIntervals.join("-");
+    return allIntervals.map((i) => Interval.getName(i)).join("-");
   }
 
   render() {

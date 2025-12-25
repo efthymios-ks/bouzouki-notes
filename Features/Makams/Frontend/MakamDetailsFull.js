@@ -2,6 +2,7 @@ import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 import { MakamSegment } from "../../MakamSegments/Backend/MakamSegment.js";
 import { Octave } from "../../Octaves/Backend/Octave.js";
 import { Note } from "../../Notes/Backend/Note.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
 import { renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
 
 export class MakamDetailsFull extends LitElement {
@@ -87,10 +88,32 @@ export class MakamDetailsFull extends LitElement {
       startOctave = 5;
     }
 
+    const segmentStartIndices = new Set([0]);
+    let currentPosition = basePosition;
+    let noteIndex = 0;
+
+    variant.segments.forEach((segment) => {
+      if (segment.position !== undefined) {
+        currentPosition = basePosition + segment.position;
+      }
+
+      const makamSegment = MakamSegment.getById(segment.id);
+      const intervals = makamSegment.getIntervalsBySize(segment.size);
+      noteIndex += intervals.length;
+
+      if (noteIndex < allIntervals.length) {
+        segmentStartIndices.add(noteIndex);
+      }
+
+      currentPosition += intervals.length;
+    });
+
     const calculatedNotes = Note.calculateNormalizedNotes(baseNoteKey, allIntervals);
     const notes = [];
 
     let currentOctave = startOctave;
+    let currentNotePosition = basePosition;
+
     calculatedNotes.forEach((noteKey, index) => {
       const note = new Note(noteKey);
 
@@ -102,11 +125,22 @@ export class MakamDetailsFull extends LitElement {
         if (currentSemitone < prevSemitone) {
           currentOctave = currentOctave + 1;
         }
+        currentNotePosition++;
+      }
+
+      let label = note.name;
+      if (segmentStartIndices.has(index)) {
+        const noteOctaveStep = Octave.TwoOctaves.steps.find(
+          (step) => step.position === currentNotePosition
+        );
+        if (noteOctaveStep) {
+          label = `${note.name} ${noteOctaveStep.label}`;
+        }
       }
 
       notes.push({
         note: `${noteKey}${currentOctave}`,
-        label: index === 0 ? `${note.name} ${octaveStep.label}` : note.name,
+        label: label,
       });
     });
 
@@ -169,7 +203,7 @@ export class MakamDetailsFull extends LitElement {
             ${variant.segments.map((segment, index) => {
               const makamSegment = MakamSegment.getById(segment.id);
               const intervals = makamSegment.getIntervalsBySize(segment.size);
-              const intervalsString = intervals.join("-");
+              const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
 
               if (segment.position !== undefined) {
                 currentPosition = basePosition + segment.position;

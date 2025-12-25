@@ -73,7 +73,7 @@ export class MakamDetailsShort extends LitElement {
     const segmentIntervalElements = segments.map((segment, index) => {
       const makamSegment = MakamSegment.getById(segment.id);
       const intervals = makamSegment.getIntervalsBySize(segment.size);
-      const intervalsString = intervals.join("-");
+      const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
 
       // Color code first and second segments
       const color = index === 0 ? "text-primary" : index === 1 ? "text-danger" : "";
@@ -101,7 +101,10 @@ export class MakamDetailsShort extends LitElement {
   #createSegmentElement(segment, index) {
     const makamSegment = MakamSegment.getById(segment.id);
     const color = index === 0 ? "text-primary" : index === 1 ? "text-danger" : "";
-    const intervalsForTooltip = makamSegment.getIntervalsBySize(segment.size).join("-");
+    const intervalsForTooltip = makamSegment
+      .getIntervalsBySize(segment.size)
+      .map((i) => Interval.getName(i))
+      .join("-");
 
     return html`<strong
       class="${color}"
