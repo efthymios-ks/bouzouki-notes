@@ -3,20 +3,20 @@ export default [
     id: "RAST",
     name: "Ραστ",
     octavePosition: 0,
-    mainVariant: {
-      id: "RAST_ASC",
-      name: "Ανιούσα",
-      isHidden: false,
-      direction: "ASC",
-      segments: [
-        { id: "RAST", size: 5, position: 0 },
-        { id: "RAST", size: 4 },
-      ],
-      entryNotes: [1, 5],
-      endingNote: 1,
-      dominantNotes: [1, 3, 5],
-    },
     variants: [
+      {
+        id: "RAST_ASC",
+        name: "Ανιούσα",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "RAST", size: 5, position: 0 },
+          { id: "RAST", size: 4 },
+        ],
+        entryNotes: [1, 5],
+        endingNote: 1,
+        dominantNotes: [1, 3, 5],
+      },
       {
         id: "RAST_DESC",
         name: "Κατιούσα",
@@ -29,7 +29,6 @@ export default [
       {
         id: "RAST_EXTENDED_LOWER",
         name: "Επέκταση χαμηλά",
-        isHidden: true,
         segments: [
           { id: "RAST", size: 4, position: -3 },
           { id: "RAST", size: 5 },
@@ -39,7 +38,6 @@ export default [
       {
         id: "RAST_EXTENDED_UPPER",
         name: "Επέκταση ψηλά",
-        isHidden: true,
         segments: [
           { id: "RAST", size: 5, position: 0 },
           { id: "RAST", size: 4 },
@@ -49,7 +47,6 @@ export default [
       {
         id: "RAST_SAZKAR",
         name: "Σαζκιάρ",
-        isHidden: true,
         segments: [
           { id: "SAZKAR", size: 5, position: 0 },
           { id: "RAST", size: 4 },
@@ -61,20 +58,20 @@ export default [
     id: "USAK",
     name: "Ουσάκ",
     octavePosition: 1,
-    mainVariant: {
-      id: "USAK_ASC",
-      name: "Ανιούσα",
-      isHidden: false,
-      direction: "ASC",
-      segments: [
-        { id: "USAK", size: 4, position: 0 },
-        { id: "BUSELIK", size: 5 },
-      ],
-      entryNotes: [1, 4],
-      endingNote: 1,
-      dominantNotes: [1, 4],
-    },
     variants: [
+      {
+        id: "USAK_ASC",
+        name: "Ανιούσα",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "USAK", size: 4, position: 0 },
+          { id: "BUSELIK", size: 5 },
+        ],
+        entryNotes: [1, 4],
+        endingNote: 1,
+        dominantNotes: [1, 4],
+      },
       {
         id: "USAK_DESC",
         name: "Κατιούσα",
@@ -87,7 +84,6 @@ export default [
       {
         id: "USAK_EXTENDED_LOWER",
         name: "Επέκταση χαμηλά",
-        isHidden: true,
         segments: [
           { id: "RAST", size: 5, position: -4 },
           { id: "USAK", size: 4, position: 0 },
@@ -97,7 +93,6 @@ export default [
       {
         id: "USAK_EXTENDED_UPPER",
         name: "Επέκταση ψηλά",
-        isHidden: true,
         segments: [
           { id: "USAK", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
@@ -107,9 +102,37 @@ export default [
       {
         id: "USAK_RAST",
         name: "Ουσάκ με Ραστ",
-        isHidden: true,
         segments: [
           { id: "USAK", size: 4, position: 0 },
+          { id: "RAST", size: 5 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "SEGAH",
+    name: "Σεγκιάχ",
+    octavePosition: 2,
+    variants: [
+      {
+        id: "SEGAH",
+        name: "Σεγκιάχ",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "SEGAH", size: 5, position: 0 },
+          { id: "SEGAH", size: 4 },
+        ],
+        entryNotes: [1, 3],
+        endingNote: 1,
+        dominantNotes: [1, 3, 5],
+      },
+      {
+        id: "SEGAH_RAST",
+        name: "Σεγκιάχ με Ραστ",
+        direction: "ASC",
+        segments: [
+          { id: "SEGAH", size: 3, position: 0 },
           { id: "RAST", size: 5 },
         ],
       },

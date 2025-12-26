@@ -80,7 +80,7 @@ export default [
     ],
   },
   {
-    id: "SEGIAH",
+    id: "SEGAH",
     name: "Σεγκιάχ",
     intervals: [
       [1, 2],

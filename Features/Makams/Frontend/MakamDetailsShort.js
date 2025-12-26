@@ -290,22 +290,25 @@ export class MakamDetailsShort extends LitElement {
     // Calculate the target semitone (going back by leadingInterval semitones)
     const targetSemitone = (baseSemitone - leadingInterval + 12) % 12;
 
-    // Find the octave step that matches this semitone and is below the base position
+    // Try to find the octave step that matches this semitone and is below the base position
     const leadingStep = Octave.TwoOctaves.steps.find((step) => {
       const stepNoteKey = step.note.match(/^([A-G][#b]?)/)[1];
       const stepSemitone = Note.getSemitone(stepNoteKey);
       return stepSemitone === targetSemitone && step.position < basePosition;
     });
 
-    if (!leadingStep) {
-      throw new Error(`No octave step found for leading tone with semitone ${targetSemitone}`);
+    // Find the note that corresponds to this semitone
+    const leadingNoteKey = Note.sharpNotes.find((n) => Note.getSemitone(n) === targetSemitone);
+
+    if (!leadingNoteKey) {
+      throw new Error(`No note found for leading tone with semitone ${targetSemitone}`);
     }
 
-    // Build the result
-    const leadingNoteKey = leadingStep.note.match(/^([A-G][#b]?)/)[1];
     const note = new Note(leadingNoteKey);
-    const noteName = `${note.toFullName()} ${leadingStep.label}`;
     const intervalType = Interval.getLongNameAccusative(leadingInterval).toLowerCase();
+
+    // If we found a matching octave step, use the full label; otherwise just use the note name
+    const noteName = leadingStep ? `${note.toFullName()} ${leadingStep.label}` : note.toFullName();
 
     return { noteName, intervalType };
   }

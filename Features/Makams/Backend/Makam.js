@@ -8,9 +8,9 @@ export class Makam {
   #mainVariant = null;
   #variants = [];
 
-  constructor({ id, name, octavePosition, mainVariant, variants = [] }) {
-    if (!id || !name || octavePosition === undefined || !mainVariant) {
-      throw new Error("Makam requires id, name, octavePosition, and mainVariant");
+  constructor({ id, name, octavePosition, variants = [] }) {
+    if (!id || !name || octavePosition === undefined || !variants || variants.length === 0) {
+      throw new Error("Makam requires id, name, octavePosition, and at least one variant");
     }
 
     // Validate octavePosition is a number
@@ -18,19 +18,22 @@ export class Makam {
       throw new Error(`octavePosition must be a number, got ${typeof octavePosition}`);
     }
 
+    // Use first variant as mainVariant
+    const mainVariant = variants[0];
+
     // Validate mainVariant structure (strict validation)
     this.#validateVariant(mainVariant, "mainVariant", true);
 
-    // Validate all variants (relaxed validation - they inherit from mainVariant)
-    variants.forEach((variant, index) => {
-      this.#validateVariant(variant, `variant at index ${index}`, false);
+    // Validate all other variants (relaxed validation - they inherit from mainVariant)
+    variants.slice(1).forEach((variant, index) => {
+      this.#validateVariant(variant, `variant at index ${index + 1}`, false);
     });
 
     this.#id = id;
     this.#name = name;
     this.#octavePosition = octavePosition;
     this.#mainVariant = this.#processVariant(mainVariant);
-    this.#variants = variants.map((variant) => this.#mergeWithMainVariant(variant));
+    this.#variants = variants.slice(1).map((variant) => this.#mergeWithMainVariant(variant));
 
     Object.freeze(this);
   }

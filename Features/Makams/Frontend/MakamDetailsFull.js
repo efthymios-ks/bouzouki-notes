@@ -66,12 +66,6 @@ export class MakamDetailsFull extends LitElement {
     return variants;
   }
 
-  #switchVariant(index) {
-    this.activeVariantIndex = index;
-    this.requestUpdate();
-    this.updateComplete.then(() => this.#renderSheets());
-  }
-
   #switchTab(tabIndex) {
     const variants = this.#getAllVariants();
     if (tabIndex < variants.length) {
@@ -353,7 +347,7 @@ export class MakamDetailsFull extends LitElement {
 
     return html`
       <div class="container-fluid">
-        <ul class="list-unstyled">
+        <ul>
           ${songs.map(
             (song) => html`
               <li class="mb-2">
@@ -365,12 +359,13 @@ export class MakamDetailsFull extends LitElement {
       </div>
     `;
   }
+
   #renderVariantContent(variant, variantIndex) {
     return html`
       <div class="container-fluid">
         <!-- Segments Summary -->
         <div class="mb-4">
-          <ul class="list-unstyled mb-0">
+          <ul class="mb-0">
             ${this.#renderSegmentSummary(variant)}
           </ul>
         </div>

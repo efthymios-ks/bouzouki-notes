@@ -4,8 +4,9 @@ export class Song {
   #name = null;
   #authors = [];
   #makamIds = [];
+  #year = null;
 
-  constructor({ name, authors, makamIds }) {
+  constructor({ name, authors, makamIds, year }) {
     if (!name) {
       throw new Error("Name cannot be empty");
     }
@@ -21,6 +22,7 @@ export class Song {
     this.#name = name;
     this.#authors = authors;
     this.#makamIds = makamIds;
+    this.#year = year;
 
     Object.freeze(this);
   }
@@ -37,8 +39,24 @@ export class Song {
     return this.#makamIds;
   }
 
+  get year() {
+    return this.#year;
+  }
+
+  static #splitPipeDelimited(value) {
+    const items = Array.isArray(value) ? value : [value];
+    return items.flatMap((item) => item.split("|")).map((item) => item.trim());
+  }
+
   static #parseSongs() {
-    return SongsData.map((song) => new Song(song));
+    return SongsData.map((song) => {
+      return new Song({
+        name: song.name,
+        authors: Song.#splitPipeDelimited(song.authors),
+        makamIds: Song.#splitPipeDelimited(song.makamIds),
+        year: song.year,
+      });
+    });
   }
 
   static getAll() {
