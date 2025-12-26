@@ -222,8 +222,12 @@ export class MakamDetailsShort extends LitElement {
     parts.push(html`<p>Έτσι προκύπτουν τα διαστήματά <strong>${intervals}</strong></p>`);
     parts.push(html`<p>ή αλλιώς οι νότες <strong>${notesString}</strong>.</p>`);
     parts.push(html`<p>Διαθέτει προσαγωγέα ${leadingToneElement}.</p>`);
-    parts.push(html`<p>Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα</p>`);
-    parts.push(html`<p>και καταλήγει στη ${endingDegree}.</p>`);
+    parts.push(
+      html`<p>
+        Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα και καταλήγει στη
+        ${endingDegree}.
+      </p>`
+    );
     parts.push(html`<p>${dominantLabel} ${dominantElements}.</p>`);
 
     return parts;

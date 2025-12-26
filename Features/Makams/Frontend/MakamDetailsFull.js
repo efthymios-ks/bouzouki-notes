@@ -321,73 +321,23 @@ export class MakamDetailsFull extends LitElement {
   }
 
   #renderSegmentSummary(variant) {
-    const basePosition = this.makam.octavePosition;
-    const direction = variant.isAscending ? 1 : -1;
-    const segmentsToProcess = variant.isAscending
-      ? variant.segments
-      : [...variant.segments].reverse();
+    const segmentList = [];
 
-    const segmentsByRange = new Map();
-    let currentPosition = basePosition;
-
-    segmentsToProcess.forEach((segment, processIndex) => {
-      if (segment.position !== undefined) {
-        currentPosition = basePosition + segment.position;
-      }
-
+    variant.segments.forEach((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
       const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
-      const step = Octave.TwoOctaves.steps.find((s) => s.position === currentPosition);
+      const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
+      const segmentSize = segment.size || intervals.length + 1;
 
-      if (!step) {
-        throw new Error(
-          `No octave step found for position ${currentPosition} in segment '${segment.id}'`
-        );
-      }
-
-      if (!step.range) {
-        throw new Error(
-          `No range defined for position ${currentPosition} in segment '${segment.id}'`
-        );
-      }
-
-      const originalIndex = variant.isAscending
-        ? processIndex
-        : variant.segments.length - 1 - processIndex;
-
-      if (!segmentsByRange.has(step.range.key)) {
-        segmentsByRange.set(step.range.key, { range: step.range, segments: [] });
-      }
-
-      segmentsByRange.get(step.range.key).segments.push({
-        size: segment.size || intervals.length + 1,
+      segmentList.push({
+        size: segmentSize,
         name: makamSegment.name,
-        intervals: intervals.map((i) => Interval.getName(i)).join("-"),
-        originalIndex,
+        intervals: intervalsString,
       });
-
-      currentPosition += intervals.length * direction;
-    });
-
-    const rangeGroups = Array.from(segmentsByRange.values());
-    if (!variant.isAscending) {
-      rangeGroups.reverse();
-    }
-
-    // Sort segments within each range by original index
-    rangeGroups.forEach((group) => {
-      group.segments.sort((a, b) => a.originalIndex - b.originalIndex);
     });
 
     return html`
-      ${rangeGroups.map(
-        ({ range, segments }) => html`
-          <li class="fw-bold mt-3 mb-2">${range.name}</li>
-          ${segments.map(
-            (seg) => html`<li class="ms-3">${seg.size}x ${seg.name} (${seg.intervals})</li>`
-          )}
-        `
-      )}
+      ${segmentList.map((seg) => html`<li>${seg.size}x ${seg.name} (${seg.intervals})</li>`)}
     `;
   }
   #renderSongsContent() {

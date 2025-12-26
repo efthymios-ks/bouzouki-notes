@@ -28,7 +28,7 @@ export default [
       },
       {
         id: "RAST_EXTENDED_LOWER",
-        name: "Επέκταση κάτω της οκτάβας",
+        name: "Επέκταση χαμηλά",
         isHidden: true,
         segments: [
           { id: "RAST", size: 4, position: -3 },
@@ -38,7 +38,7 @@ export default [
       },
       {
         id: "RAST_EXTENDED_UPPER",
-        name: "Επέκταση άνω της οκτάβας",
+        name: "Επέκταση ψηλά",
         isHidden: true,
         segments: [
           { id: "RAST", size: 5, position: 0 },
@@ -86,7 +86,7 @@ export default [
       },
       {
         id: "USAK_EXTENDED_LOWER",
-        name: "Επέκταση κάτω της οκτάβας",
+        name: "Επέκταση χαμηλά",
         isHidden: true,
         segments: [
           { id: "RAST", size: 5, position: -4 },
@@ -96,7 +96,7 @@ export default [
       },
       {
         id: "USAK_EXTENDED_UPPER",
-        name: "Επέκταση άνω της οκτάβας",
+        name: "Επέκταση ψηλά",
         isHidden: true,
         segments: [
           { id: "USAK", size: 4, position: 0 },
