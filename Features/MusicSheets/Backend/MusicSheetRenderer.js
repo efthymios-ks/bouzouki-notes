@@ -1,258 +1,141 @@
-function injectGlobalSheetStyles() {
-  const stylesId = "music-sheet-styles";
-  if (document.getElementById(stylesId)) {
-    return;
+const sheetOptions = {
+  noteDuration: "w",
+  minWidth: 768,
+  scale: 1.0,
+};
+
+function toVexTab(options) {
+  const { notes, texts = {} } = options;
+
+  function parseNote(rwaNote) {
+    const accidentalMap = { "#": "#", b: "@" };
+    let [, note, accidental, octave] = rwaNote.match(/^([A-G])(#|b)?(\d)$/);
+    accidental = accidentalMap[accidental] || "";
+    return { note: note + (accidental || ""), octave: Number(octave) };
   }
 
-  const style = document.createElement("style");
-  style.id = stylesId;
-  style.textContent = `
-      .sheet { 
-        overflow-x: auto; 
-        overflow-y: hidden;
-      } 
+  function hasTopLabel(rawNote) {
+    const { note, octave } = parseNote(rawNote);
+    return octave < 4 || (octave === 4 && note === "C");
+  }
 
-      .sheet svg { 
-        height: auto !important;
-        min-width: 100%;
+  function getVtNotes() {
+    let noteBlocks = [];
+    let current = null;
+    notes.forEach((inputNote) => {
+      const labelPosition = hasTopLabel(inputNote.note) ? "top" : "bottom";
+      if (!current || current.labelPosition !== labelPosition) {
+        current = { labelPosition, notes: [], labels: [] };
+        noteBlocks.push(current);
       }
-    `;
 
-  document.head.appendChild(style);
-}
+      const { note, octave } = parseNote(inputNote.note);
+      current.notes.push(`${note}/${octave}`);
+      current.labels.push(inputNote.label);
+    });
 
-function remToPx(rem) {
-  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-}
-
-function parseNote(note) {
-  if (typeof note !== "string") {
-    console.warn("Invalid note skipped:", note);
-    return null;
+    return noteBlocks
+      .map(
+        (noteBlock) =>
+          `notes :${sheetOptions.noteDuration} ${noteBlock.notes.join("-")} $.${
+            noteBlock.labelPosition
+          }.${noteBlock.labels.join(",")}$`
+      )
+      .join("\n");
   }
 
-  const match = note.match(/^([A-Ga-g])([#b]?)(\d)$/);
-  if (!match) {
-    console.warn("Invalid note skipped:", note);
-    return null;
+  function getVtText() {
+    const textArray = notes.map((_, i) => texts[i] ?? " ");
+    while (textArray.length && textArray[textArray.length - 1] === " ") {
+      textArray.pop();
+    }
+
+    return textArray.length ? `text :${sheetOptions.noteDuration},${textArray.join(",")}` : "";
   }
 
-  const [, letter, accidental, octave] = match;
-  return { key: `${letter.toLowerCase()}/${octave}`, accidental };
+  function formatLines(lines) {
+    return lines
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .join("\n");
+  }
+
+  const vtNotes = getVtNotes();
+  const vtText = getVtText();
+  const code = `
+    options font-size=8
+    tabstave notation=true tablature=false
+    ${vtNotes}
+    ${vtText}
+  `;
+  return formatLines(code);
 }
 
-function drawCurves(context, vexNotes, selections) {
-  selections.forEach((selection, index) => {
-    const { start, stop, title } = selection;
+function setVexTabProperties(sheetDiv) {
+  const propertiesToAdd = {
+    width: `${sheetOptions.minWidth}`,
+    scale: `${sheetOptions.scale}`,
+    editor: "false",
+  };
 
-    if (start >= 0 && stop < vexNotes.length && start <= stop) {
-      const startNote = vexNotes[start];
-      const stopNote = vexNotes[stop];
+  const stylesToAdd = { maxWidth: `${sheetOptions.minWidth}px`, overflowX: "auto" };
 
-      if (startNote && stopNote) {
-        if (start === stop) {
-          drawSingleArrow(context, startNote, title);
-        } else {
-          drawCornerArrow(context, startNote, stopNote, title);
-        }
-      }
+  for (const [key, value] of Object.entries(propertiesToAdd)) {
+    if (!sheetDiv.hasAttribute(key)) {
+      sheetDiv.setAttribute(key, value);
+    }
+  }
+
+  for (const [key, value] of Object.entries(stylesToAdd)) {
+    if (!sheetDiv.style[key]) {
+      sheetDiv.style[key] = value;
+    }
+  }
+}
+
+export function render(sheetDiv, options) {
+  // Clean up previous rendering
+  sheetDiv.querySelectorAll("svg").forEach((svg) => svg.remove());
+
+  // Render
+  const VexTab = window.vextab;
+  const VF = VexTab.Vex.Flow;
+
+  const renderer = new VF.Renderer(sheetDiv, VF.Renderer.Backends.SVG);
+  const artist = new VexTab.Artist(10, 10, 680, { scale: sheetOptions.scale });
+  const tab = new VexTab.VexTab(artist);
+
+  setVexTabProperties(sheetDiv);
+  const vtCode = toVexTab(options);
+
+  try {
+    tab.parse(vtCode);
+    artist.render(renderer);
+  } catch (error) {
+    console.warn({
+      options,
+      vtCode,
+    });
+    throw error;
+  }
+
+  // Remove watermarks
+  sheetDiv.querySelectorAll("text").forEach((text) => {
+    if (text.textContent.includes("vex")) {
+      text.remove();
     }
   });
 }
 
-function drawSingleArrow(context, note, title) {
-  const noteX = note.getAbsoluteX() + note.getGlyphWidth() / 2;
-  const staffY = note.getStave().getYForLine(0);
-  const arrowY = staffY - remToPx(2);
-  const dropLength = remToPx(1.2);
-  const arrowTipY = arrowY + dropLength;
-
-  context.save();
-  context.strokeStyle = "#666";
-  context.lineWidth = 1.5;
-  context.setLineDash([]);
-
-  context.beginPath();
-
-  context.moveTo(noteX, arrowY);
-  context.lineTo(noteX, arrowTipY);
-
-  const arrowSize = remToPx(0.25);
-  context.moveTo(noteX - arrowSize, arrowTipY - arrowSize);
-  context.lineTo(noteX, arrowTipY);
-  context.lineTo(noteX + arrowSize, arrowTipY - arrowSize);
-
-  context.stroke();
-
-  if (title) {
-    const titleY = arrowY - remToPx(1);
-
-    context.save();
-    context.font = `${remToPx(0.7)}px Arial`;
-    context.fillStyle = "#666";
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(title, noteX, titleY);
-    context.restore();
-  }
-
-  context.restore();
-}
-
-function drawCornerArrow(context, startNote, stopNote, title) {
-  const startX = startNote.getAbsoluteX() + startNote.getGlyphWidth() / 2;
-  const stopX = stopNote.getAbsoluteX() + stopNote.getGlyphWidth() / 2;
-
-  const staffY = startNote.getStave().getYForLine(0);
-  const arrowY = staffY - remToPx(2);
-  const dropLength = remToPx(1.2);
-  const arrowTipY = arrowY + dropLength;
-
-  context.save();
-  context.strokeStyle = "#666";
-  context.lineWidth = 1.5;
-  context.setLineDash([]);
-
-  context.beginPath();
-
-  context.moveTo(startX, arrowY);
-  context.lineTo(stopX, arrowY);
-
-  context.moveTo(startX, arrowY);
-  context.lineTo(startX, arrowTipY);
-
-  context.moveTo(stopX, arrowY);
-  context.lineTo(stopX, arrowTipY);
-
-  const arrowSize = remToPx(0.25);
-
-  context.moveTo(startX - arrowSize, arrowTipY - arrowSize);
-  context.lineTo(startX, arrowTipY);
-  context.lineTo(startX + arrowSize, arrowTipY - arrowSize);
-
-  context.moveTo(stopX - arrowSize, arrowTipY - arrowSize);
-  context.lineTo(stopX, arrowTipY);
-  context.lineTo(stopX + arrowSize, arrowTipY - arrowSize);
-
-  context.stroke();
-
-  if (title) {
-    const centerX = (startX + stopX) / 2;
-    const titleY = arrowY - remToPx(1);
-
-    context.save();
-    context.font = `${remToPx(0.7)}px Arial`;
-    context.fillStyle = "#666";
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(title, centerX, titleY);
-    context.restore();
-  }
-
-  context.restore();
-}
-
-function makeNotes(notes) {
-  return notes
-    .map((item) => {
-      const parsed = parseNote(item.note);
-      if (!parsed) return null;
-
-      const note = new Vex.Flow.StaveNote({
-        clef: "treble",
-        keys: [parsed.key],
-        duration: "w",
-        auto_stem: false,
-      });
-
-      if (parsed.accidental) {
-        note.addModifier(new Vex.Flow.Accidental(parsed.accidental), 0);
-      }
-
-      if (item.label) {
-        note.addModifier(
-          new Vex.Flow.Annotation(item.label)
-            .setFont("Arial", remToPx(0.6), "normal")
-            .setVerticalJustification(Vex.Flow.Annotation.VerticalJustify.BOTTOM),
-          0
-        );
-      }
-
-      return note;
-    })
-    .filter((n) => n !== null);
-}
-
-export function renderMusicSheet(container, notes, options = {}) {
-  injectGlobalSheetStyles();
-
-  const sheet = document.createElement("div");
-  sheet.className = "sheet";
-  container.appendChild(sheet);
-
-  const renderer = new Vex.Flow.Renderer(sheet, Vex.Flow.Renderer.Backends.SVG);
-
-  function draw() {
-    const noteWidth = remToPx(6);
-    const baseWidth = remToPx(12);
-    const extraWidth = remToPx(10);
-
-    const calculatedWidth = baseWidth + notes.length * noteWidth + extraWidth;
-
-    const width = Math.max(container.clientWidth, calculatedWidth, remToPx(50));
-
-    const baseHeight = remToPx(8);
-    const labelSpace = remToPx(3);
-    const topPadding = remToPx(0.1);
-
-    let minOctave = 5,
-      maxOctave = 3;
-    notes.forEach((item) => {
-      const parsed = parseNote(item.note);
-      if (parsed) {
-        const octave = parseInt(parsed.key.split("/")[1]);
-        minOctave = Math.min(minOctave, octave);
-        maxOctave = Math.max(maxOctave, octave);
-      }
-    });
-
-    let extraHeight = 0;
-    if (minOctave <= 3) extraHeight += remToPx(2);
-    if (maxOctave >= 5) extraHeight += remToPx(1);
-
-    if (options.selections && options.selections.length > 0) {
-      extraHeight += remToPx(5);
-    }
-
-    const height = baseHeight + labelSpace + topPadding + extraHeight;
-    renderer.resize(width, height);
-
-    const context = renderer.getContext();
-    context.clear();
-
-    const stave = new Vex.Flow.Stave(0, remToPx(1), width);
-    stave.addClef("treble").setContext(context).draw();
-
-    const vexNotes = makeNotes(notes);
-    Vex.Flow.Formatter.FormatAndDraw(context, stave, vexNotes);
-
-    if (options.selections && options.selections.length > 0) {
-      drawCurves(context, vexNotes, options.selections);
-    }
-  }
-
-  window.addEventListener("resize", draw);
-  draw();
-}
-
 /**
   Example of ranges:
-  const lowRange = [
-      { note: "F3", label: "Καμπάχ Τσαργκιάχ" },
-      { note: "G3", label: "Γεγκιάχ" },
-      { note: "A3", label: "Χουσεϊνί ασιράν" },
-      { note: "B3", label: "Ιράκ" },
-    ];
+    const lowRange = [
+        { note: "F3", label: "Καμπάχ Τσαργκιάχ" },
+        { note: "G3", label: "Γεγκιάχ" },
+        { note: "A3", label: "Χουσεϊνί ασιράν" },
+        { note: "B3", label: "Ιράκ" },
+      ];
 
     const midRange = [
       { note: "C4", label: "Ραστ" },

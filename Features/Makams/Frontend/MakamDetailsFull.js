@@ -3,8 +3,8 @@ import { MakamSegment } from "../../MakamSegments/Backend/MakamSegment.js";
 import { Octave } from "../../Octaves/Backend/Octave.js";
 import { Note } from "../../Notes/Backend/Note.js";
 import { Interval } from "../../Intervals/Backend/Interval.js";
-import { renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
 import { Song } from "../../Songs/Backend/Song.js";
+import { render as renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
 
 export class MakamDetailsFull extends LitElement {
   static properties = {
@@ -230,7 +230,7 @@ export class MakamDetailsFull extends LitElement {
     return notes;
   }
 
-  #buildNotesFromVariant(variant) {
+  #buildSheetNotes(variant) {
     const allIntervals = this.#collectIntervalsFromSegments(variant.segments);
     const makamStartPosition = this.#calculateStartPosition(variant);
     const totalSteps = allIntervals.length;
@@ -265,16 +265,14 @@ export class MakamDetailsFull extends LitElement {
     );
   }
 
-  #buildSheetSelections(variant) {
-    const selections = [];
+  #buildSheetTexts(variant) {
+    const texts = {};
     const basePosition = this.makam.octavePosition;
     let currentPosition = basePosition;
     let noteIndex = 0;
+    let noteCount = 0;
 
-    const segmentsToProcess = variant.isAscending
-      ? variant.segments
-      : [...variant.segments].reverse();
-
+    const segmentsToProcess = variant.segments;
     segmentsToProcess.forEach((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
       const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
@@ -285,16 +283,23 @@ export class MakamDetailsFull extends LitElement {
       }
 
       const segmentSize = segment.size || intervals.length + 1;
-      selections.push({
-        start: noteIndex,
-        stop: noteIndex + segmentLength - 1,
-        title: `${segmentSize}x ${makamSegment.name}`,
-      });
+      texts[noteIndex] = `${segmentSize}x ${makamSegment.name}`;
 
       noteIndex += segmentLength - 1;
+      noteCount += intervals.length;
     });
 
-    return selections;
+    if (!variant.isAscending) {
+      for (const key in texts) {
+        const oldIndex = Number(key);
+        const value = texts[key];
+        delete texts[key];
+        const newIndex = noteCount - oldIndex;
+        texts[newIndex] = value;
+      }
+    }
+
+    return Object.fromEntries(Object.entries(texts).sort((a, b) => a[0] - b[0]));
   }
 
   #renderSheets() {
@@ -308,32 +313,55 @@ export class MakamDetailsFull extends LitElement {
 
     container.innerHTML = "";
 
-    const notes = this.#buildNotesFromVariant(activeVariant);
-    const selections = this.#buildSheetSelections(activeVariant);
-
-    renderMusicSheet(container, notes, { selections });
+    const notes = this.#buildSheetNotes(activeVariant);
+    const texts = this.#buildSheetTexts(activeVariant);
+    renderMusicSheet(container, {
+      notes: notes,
+      texts: texts,
+    });
   }
 
   #renderSegmentSummary(variant) {
     const segmentList = [];
 
-    variant.segments.forEach((segment) => {
+    const makamStartPosition = this.#calculateStartPosition(variant);
+    let currentPosition = makamStartPosition;
+
+    const segmentsToProcess = variant.segments;
+    segmentsToProcess.forEach((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
       const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
-      const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
       const segmentSize = segment.size || intervals.length + 1;
 
+      const octaveStep = Octave.TwoOctaves.steps.find((step) => step.position === currentPosition);
+      if (!octaveStep) {
+        throw new Error(
+          `Invalid position ${currentPosition} for segment '${makamSegment.name}' in variant '${variant.name}'`
+        );
+      }
+      const octaveStepName = octaveStep.label;
+
+      const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
       segmentList.push({
         size: segmentSize,
         name: makamSegment.name,
         intervals: intervalsString,
+        octaveStepName,
       });
+
+      currentPosition += intervals.length;
     });
 
     return html`
-      ${segmentList.map((seg) => html`<li>${seg.size}x ${seg.name} (${seg.intervals})</li>`)}
+      ${segmentList.map(
+        (segment) =>
+          html`<li>
+            ${segment.size}x ${segment.name} (${segment.intervals}) στο ${segment.octaveStepName}
+          </li>`
+      )}
     `;
   }
+
   #renderSongsContent() {
     const songs = this.#getSongsForMakam();
 
@@ -372,7 +400,7 @@ export class MakamDetailsFull extends LitElement {
 
         <!-- Sheet Music -->
         <div class="mb-5">
-          <div id="sheet-variant-${variantIndex}" class="sheet-container"></div>
+          <div id="sheet-variant-${variantIndex}"></div>
         </div>
       </div>
     `;

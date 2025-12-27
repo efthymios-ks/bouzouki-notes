@@ -1,10 +1,10 @@
 import { LitElement, html, css } from "../../../Libraries/lit/lit.min.js";
 import { MakamSegment } from "../Backend/MakamSegment.js";
-import { renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
 import { Octave } from "../../Octaves/Backend/Octave.js";
 import { OctaveRange } from "../../Octaves/Backend/OctaveRange.js";
 import { Note } from "../../Notes/Backend/Note.js";
 import { Interval } from "../../Intervals/Backend/Interval.js";
+import { render as renderMusicSheet } from "../../MusicSheets/Backend/MusicSheetRenderer.js";
 
 export class MakamSegmentsPage extends LitElement {
   static styles = css`
@@ -64,19 +64,19 @@ export class MakamSegmentsPage extends LitElement {
               <!-- Χαμηλή περιοχή -->
               <div class="mb-4">
                 <h5 class="mb-3">${OctaveRange.Low.name}</h5>
-                <div id="accordion-octave-range-low" class="sheet-container mb-3"></div>
+                <div id="accordion-octave-range-low" class="mb-3"></div>
               </div>
 
               <!-- Μέση περιοχή -->
               <div class="mb-4">
                 <h5 class="mb-3">${OctaveRange.Mid.name}</h5>
-                <div id="accordion-octave-range-mid" class="sheet-container mb-3"></div>
+                <div id="accordion-octave-range-mid" class="mb-3"></div>
               </div>
 
               <!-- Υψηλή περιοχή -->
               <div class="mb-4">
                 <h5 class="mb-3">${OctaveRange.High.name}</h5>
-                <div id="accordion-octave-range-high" class="sheet-container mb-3"></div>
+                <div id="accordion-octave-range-high" class="mb-3"></div>
               </div>
             </div>
           </div>
@@ -134,7 +134,7 @@ export class MakamSegmentsPage extends LitElement {
                                 (step) => step.position === placement.octavePosition
                               );
                               if (!step) {
-                                console.error(
+                                throw new Error(
                                   `Missing octave step for position ${placement.octavePosition} in segment ${segment.name}`
                                 );
                               }
@@ -148,7 +148,7 @@ export class MakamSegmentsPage extends LitElement {
                                     </h6>
                                     <div
                                       id="sheet-${actualIndex}-${placementIndex}"
-                                      class="sheet-container mb-3"
+                                      class="music-sheet mb-3"
                                     ></div>
                                   </div>
                                 </div>
@@ -205,63 +205,31 @@ export class MakamSegmentsPage extends LitElement {
 
   firstUpdated() {
     // Render octave range sheets in accordion
-    const lowContainer = this.querySelector("#accordion-octave-range-low");
-    if (lowContainer) {
-      const lowNotes = this.buildNotesFromOctaveRange(OctaveRange.Low);
-      renderMusicSheet(lowContainer, lowNotes);
-    }
+    const lowOctaveSheet = this.querySelector("#accordion-octave-range-low");
+    renderMusicSheet(lowOctaveSheet, this.buildSheetOptionsFromOctaveRange(OctaveRange.Low));
 
-    const midContainer = this.querySelector("#accordion-octave-range-mid");
-    if (midContainer) {
-      const midNotes = this.buildNotesFromOctaveRange(OctaveRange.Mid);
-      renderMusicSheet(midContainer, midNotes);
-    }
+    const midOctaveSheet = this.querySelector("#accordion-octave-range-mid");
+    renderMusicSheet(midOctaveSheet, this.buildSheetOptionsFromOctaveRange(OctaveRange.Mid));
 
-    const highContainer = this.querySelector("#accordion-octave-range-high");
-    if (highContainer) {
-      const highNotes = this.buildNotesFromOctaveRange(OctaveRange.High);
-      renderMusicSheet(highContainer, highNotes);
-    }
+    const highOctaveSheet = this.querySelector("#accordion-octave-range-high");
+    renderMusicSheet(highOctaveSheet, this.buildSheetOptionsFromOctaveRange(OctaveRange.High));
 
     // Render makam segment sheets
     this.#segments.forEach((segment, index) => {
       const actualIndex = index + 1; // Adjust for Δις διαπασών being index 0
       segment.placements.forEach((placement, pIndex) => {
-        const container = this.querySelector(`#sheet-${actualIndex}-${pIndex}`);
-
-        if (container) {
-          const notes = this.buildNotesFromPlacement(placement, segment);
-          const options = {
-            selections: [],
-          };
-
-          // Add single arrow for leading note (προσαγωγέας)
-          options.selections.push({
-            start: 0,
-            stop: 0,
-            title: "Προσαγωγέας",
-          });
-
-          // Add corner arrow for makam segment if there are multiple notes
-          if (notes.length > 2) {
-            const step = Octave.TwoOctaves.steps.find(
-              (step) => step.position === placement.octavePosition
-            );
-            options.selections.push({
-              start: 1, // Skip leading note
-              stop: notes.length - 1,
-              title: `${placement.length}x στο ${step.label}`,
-            });
-          }
-
-          renderMusicSheet(container, notes, options);
+        const segmentSheet = this.querySelector(`#sheet-${actualIndex}-${pIndex}`);
+        if (!segmentSheet) {
+          throw new Error(`Container not found for sheet-${actualIndex}-${pIndex}`);
         }
+
+        renderMusicSheet(segmentSheet, this.buildSheetOptionsFromPlacement(placement, segment));
       });
     });
   }
 
-  buildNotesFromOctaveRange(octaveRange) {
-    return Octave.TwoOctaves.steps
+  buildSheetOptionsFromOctaveRange(octaveRange) {
+    const notes = Octave.TwoOctaves.steps
       .filter((step) => {
         if (octaveRange.equals(OctaveRange.Low)) {
           return step.position >= -4 && step.position <= -1;
@@ -281,16 +249,19 @@ export class MakamSegmentsPage extends LitElement {
           label: `${note.name} ${step.label}`,
         };
       });
+
+    return {
+      notes: notes,
+    };
   }
 
-  buildNotesFromPlacement(placement, segment) {
+  buildSheetOptionsFromPlacement(placement, segment) {
     const startStep = Octave.TwoOctaves.steps.find(
       (step) => step.position === placement.octavePosition
     );
 
     if (!startStep) {
-      console.warn(`No octave step found for position ${placement.octavePosition}`);
-      return [];
+      throw new Error(`Missing octave step for position ${placement.octavePosition}`);
     }
 
     const intervalArray = segment.intervals.find(
@@ -298,8 +269,7 @@ export class MakamSegmentsPage extends LitElement {
     );
 
     if (!intervalArray) {
-      console.warn(`No interval array found for placement length ${placement.length}`);
-      return [];
+      throw new Error(`No interval array found for placement length ${placement.length}`);
     }
 
     const baseNote = startStep.note.match(/^([A-G])/)[1];
@@ -355,7 +325,9 @@ export class MakamSegmentsPage extends LitElement {
       });
     });
 
-    return notes;
+    return {
+      notes: notes,
+    };
   }
 }
 

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="Libraries/VexTab/vextab.min.js"></script>
+    <link rel="stylesheet" href="Libraries/VexTab/vextab.min.css" />
+    <style>
+      textarea {
+        width: 680px;
+        height: 220px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+
+  <body>
+    <textarea id="notes-input">
+    {
+      "notes": [
+          { "note": "C4", "label": "Ραστ" },
+          { "note": "D4", "label": "Ντουγκιάχ" },
+          { "note": "E4", "label": "Σεγκιάχ" },
+          { "note": "F4", "label": "Τσαργκιάχ" },
+          { "note": "G4", "label": "Νεβά" },
+          { "note": "A4", "label": "Χουσεϊνί" },
+          { "note": "B4", "label": "Εβίτς" },
+          { "note": "C5", "label": "Γκερντανιγιέ" }
+      ],
+      "texts": {
+          "0": "5x Ραστ",
+          "2": "5x Σεγκιάχ",
+          "4": "5x Νεβά"
+      }
+  }
+    </textarea>
+    <br />
+
+    <button onclick="setData()">Render</button>
+
+    <div class="music-sheet"></div>
+
+    <script>
+      function setData() {
+        const notesInput = document.getElementById("notes-input");
+        const notes = JSON.parse(notesInput.value || "[]");
+
+        const sheetDiv = document.querySelector(".music-sheet");
+        sheetDiv.dataset.notes = JSON.stringify(notes);
+      }
+
+      function toVexTab(input) {
+        const { notes, texts = {} } = input;
+
+        function parseNote(rwaNote) {
+          const accidentalMap = { "#": "#", b: "@" };
+
+          let [, note, accidental, octave] = rwaNote.match(/^([A-G])(#|b)?(\d)$/);
+          if (accidental) {
+            accidental = accidentalMap[accidental];
+          }
+
+          return { note: note + (accidental || ""), octave: Number(octave) };
+        }
+
+        function hasTopLabel(rawNote) {
+          const { note, octave } = parseNote(rawNote);
+          return octave < 4 || (octave === 4 && note === "C");
+        }
+
+        function getVtNotes() {
+          let noteBlocks = [];
+          let current = null;
+          notes.forEach((inputNote) => {
+            const labelPosition = hasTopLabel(inputNote.note) ? "top" : "bottom";
+            if (!current || current.labelPosition !== labelPosition) {
+              current = { labelPosition, notes: [], labels: [] };
+              noteBlocks.push(current);
+            }
+
+            const { note, octave } = parseNote(inputNote.note);
+            current.notes.push(`${note}/${octave}`);
+            current.labels.push(inputNote.label);
+          });
+
+          return noteBlocks
+            .map(
+              (noteBlock) =>
+                `notes :w ${noteBlock.notes.join("-")} $.${
+                  noteBlock.labelPosition
+                }.${noteBlock.labels.join(",")}$`
+            )
+            .join("\n");
+        }
+
+        function getVtText() {
+          const textArray = notes.map((_, i) => texts[i] ?? " ");
+          while (textArray.length && textArray[textArray.length - 1] === " ") {
+            textArray.pop();
+          }
+
+          return textArray.length ? `text :w,${textArray.join(",")}` : "";
+        }
+
+        function formatLines(lines) {
+          return lines
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0)
+            .join("\n");
+        }
+
+        const vtNotes = getVtNotes();
+        const vtText = getVtText();
+        const code = `
+                options font-size=8
+                tabstave notation=true tablature=false
+                ${vtNotes}
+                ${vtText}
+              `;
+        return formatLines(code);
+      }
+
+      function render(sheetDiv) {
+        // Clean up previous rendering
+        sheetDiv.querySelectorAll("svg").forEach((svg) => svg.remove());
+
+        // Render
+        const VexTab = window.vextab;
+        const VF = VexTab.Vex.Flow;
+
+        const renderer = new VF.Renderer(sheetDiv, VF.Renderer.Backends.SVG);
+        const artist = new VexTab.Artist(10, 10, 680, { scale: 1.0 });
+        const tab = new VexTab.VexTab(artist);
+
+        const notesAsJson = JSON.parse(sheetDiv.dataset.notes || "[]");
+        const vtCode = toVexTab(notesAsJson);
+        tab.parse(vtCode);
+        artist.render(renderer);
+
+        console.log(vtCode);
+
+        // Remove watermarks
+        sheetDiv.querySelectorAll("text").forEach((text) => {
+          if (text.textContent.includes("vex")) {
+            text.remove();
+          }
+        });
+      }
+
+      function setVexTabProperties(sheetDiv) {
+        const propertiesToAdd = {
+          width: "680",
+          scale: "1.0",
+          editor: "false",
+        };
+
+        for (const [key, value] of Object.entries(propertiesToAdd)) {
+          if (!sheetDiv.hasAttribute(key)) {
+            sheetDiv.setAttribute(key, value);
+          }
+        }
+      }
+
+      // Observe changes to music sheets
+      const sheetObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          // Notes changed
+          if (mutation.type === "attributes" && mutation.target.classList.contains("music-sheet")) {
+            const sheetDiv = mutation.target;
+            setVexTabProperties(sheetDiv);
+            render(sheetDiv);
+          }
+
+          // Sheet added
+          if (mutation.type === "childList") {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1 && node.classList.contains("music-sheet")) {
+                const sheetDiv = node;
+                setVexTabProperties(sheetDiv);
+                sheetObserver.observe(sheetDiv, {
+                  attributes: true,
+                  attributeFilter: ["data-notes"],
+                });
+              }
+            });
+          }
+        }
+      });
+
+      document.querySelectorAll(".music-sheet").forEach((sheetDiv) => {
+        setVexTabProperties(sheetDiv);
+        sheetObserver.observe(sheetDiv, { attributes: true, attributeFilter: ["data-notes"] });
+      });
+
+      sheetObserver.observe(document.body, { childList: true, subtree: true });
+    </script>
+  </body>
+</html>
+
+<!--
+options font-size=8
+tabstave notation=true tablature=false
+notes :w F-G-A-B/3 $.top.$ $Φα Καμπάχ Τσαργκιάχ,Σολ Γεγκιάχ,Λα Χουσεϊνί Ασιράν,Σι Ιράκ$ 
+
+options font-size=8
+tabstave notation=true tablature=false
+notes :w C/4 $.top.$ $Ντο Ραστ$
+notes :w D-E-F-G-A-B/4 C/5 $.bottom.$ $Ρε Ντουγκιάχ,Μι Σεγκιάχ,Φα Τσαργκιάχ,Σολ Νεβά,Λα Χουσεϊνί,Σι Εβίτς,Ντο Γκερντανιγιέ$
+
+options font-size=8
+tabstave notation=true tablature=false
+notes :w D-E-F-G/5 $.bottom.$ $Ρε Μουχαγιέρ,Μι Τιζ Σεγκιάχ,Φα Τιζ Τσαργκιάχ,Σολ Τιζ Νεβά$
+-->
