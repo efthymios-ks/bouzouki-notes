@@ -327,6 +327,9 @@ export class MakamSegmentsPage extends LitElement {
 
     return {
       notes: notes,
+      texts: {
+        0: "Προσαγωγέας",
+      },
     };
   }
 }

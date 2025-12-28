@@ -67,6 +67,8 @@ export class MakamDetailsFull extends LitElement {
   }
 
   #switchTab(tabIndex) {
+    this.#clearSegmentHighlight();
+    this._activeSegment = null;
     const variants = this.#getAllVariants();
     if (tabIndex < variants.length) {
       this.activeVariantIndex = tabIndex;
@@ -323,43 +325,103 @@ export class MakamDetailsFull extends LitElement {
 
   #renderSegmentSummary(variant) {
     const segmentList = [];
-
-    const makamStartPosition = this.#calculateStartPosition(variant);
-    let currentPosition = makamStartPosition;
-
+    let noteCount = 0;
     const segmentsToProcess = variant.segments;
+    const allNotes = this.#buildSheetNotes(variant).map((note) => note.note.replace(/[0-9]/g, ""));
+
     segmentsToProcess.forEach((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
       const intervals = segment.intervals || makamSegment.getIntervalsBySize(segment.size);
       const segmentSize = segment.size || intervals.length + 1;
 
-      const octaveStep = Octave.TwoOctaves.steps.find((step) => step.position === currentPosition);
-      if (!octaveStep) {
-        throw new Error(
-          `Invalid position ${currentPosition} for segment '${makamSegment.name}' in variant '${variant.name}'`
-        );
-      }
-      const octaveStepName = octaveStep.label;
-
-      const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
       segmentList.push({
         size: segmentSize,
         name: makamSegment.name,
-        intervals: intervalsString,
-        octaveStepName,
+        intervals: intervals.map((i) => Interval.getName(i)).join("-"),
+        indices: Array.from({ length: intervals.length }, (_, i) => noteCount + i),
       });
 
-      currentPosition += intervals.length;
+      noteCount += intervals.length;
     });
 
     return html`
-      ${segmentList.map(
-        (segment) =>
-          html`<li>
-            ${segment.size}x ${segment.name} (${segment.intervals}) στο ${segment.octaveStepName}
-          </li>`
-      )}
+      <div class="d-flex flex-column gap-2 mb-3">
+        <h3>Διαστήματα & Νότες</h3>
+
+        <!-- Intervals row -->
+        <div class="d-flex gap-2 flex-wrap">
+          ${segmentList.flatMap((segment) =>
+            segment.intervals
+              .split("-")
+              .map(
+                (iv, idx) =>
+                  html`<span class="px-2" data-interval="${segment.indices[idx]}"> ${iv} </span>`
+              )
+          )}
+        </div>
+
+        <!-- Notes row -->
+        <div class="d-flex gap-2 flex-wrap">
+          ${allNotes.map(
+            (note, index) => html`<span class="px-2" data-note="${index}"> ${note} </span>`
+          )}
+        </div>
+
+        <!-- Segments clickable -->
+        <div class="d-flex gap-3 flex-wrap">
+          ${segmentList.map(
+            (segment) => html`
+              <span
+                class="fw-semibold"
+                style="cursor:pointer"
+                @click=${() => this.#toggleSegment(segment.indices)}
+              >
+                ${segment.size}x ${segment.name}
+              </span>
+            `
+          )}
+        </div>
+      </div>
     `;
+  }
+
+  #toggleSegment(indices) {
+    if (this._activeSegment === indices) {
+      this.#clearSegmentHighlight();
+      this._activeSegment = null;
+      return;
+    }
+
+    this.#clearSegmentHighlight();
+
+    // Highlight intervals
+    indices.forEach((index) => {
+      this.renderRoot.querySelectorAll(`[data-interval='${index}']`).forEach((el) => {
+        el.classList.add("bg-primary", "text-white", "rounded");
+      });
+    });
+
+    // Highlight notes (N+1 for N intervals)
+    if (indices.length > 0) {
+      const first = indices[0];
+      const last = indices[indices.length - 1] + 1;
+      for (let i = first; i <= last; i++) {
+        this.renderRoot.querySelectorAll(`[data-note='${i}']`).forEach((el) => {
+          el.classList.add("bg-primary", "text-white", "rounded");
+        });
+      }
+    }
+
+    this._activeSegment = indices;
+  }
+
+  #clearSegmentHighlight() {
+    this.renderRoot.querySelectorAll("[data-interval]").forEach((el) => {
+      el.classList.remove("bg-primary", "text-white", "rounded");
+    });
+    this.renderRoot.querySelectorAll("[data-note]").forEach((el) => {
+      el.classList.remove("bg-primary", "text-white", "rounded");
+    });
   }
 
   #renderSongsContent() {

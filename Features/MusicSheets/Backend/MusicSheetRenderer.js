@@ -5,71 +5,48 @@ const sheetOptions = {
 };
 
 function toVexTab(options) {
-  const { notes, texts = {} } = options;
+  const { notes: inputNotes, texts = {} } = options;
 
   function parseNote(rwaNote) {
     const accidentalMap = { "#": "#", b: "@" };
     let [, note, accidental, octave] = rwaNote.match(/^([A-G])(#|b)?(\d)$/);
     accidental = accidentalMap[accidental] || "";
-    return { note: note + (accidental || ""), octave: Number(octave) };
-  }
-
-  function hasTopLabel(rawNote) {
-    const { note, octave } = parseNote(rawNote);
-    return octave < 4 || (octave === 4 && note === "C");
+    return { note: note + accidental, octave: Number(octave) };
   }
 
   function getVtNotes() {
-    let noteBlocks = [];
-    let current = null;
-    notes.forEach((inputNote) => {
-      const labelPosition = hasTopLabel(inputNote.note) ? "top" : "bottom";
-      if (!current || current.labelPosition !== labelPosition) {
-        current = { labelPosition, notes: [], labels: [] };
-        noteBlocks.push(current);
-      }
-
-      const { note, octave } = parseNote(inputNote.note);
-      current.notes.push(`${note}/${octave}`);
-      current.labels.push(inputNote.label);
+    const block = { notes: [], labels: [] };
+    inputNotes.forEach((inputeNote) => {
+      const { note, octave } = parseNote(inputeNote.note);
+      block.notes.push(`${note}/${octave}`);
+      block.labels.push(inputeNote.label);
     });
 
-    return noteBlocks
-      .map(
-        (noteBlock) =>
-          `notes :${sheetOptions.noteDuration} ${noteBlock.notes.join("-")} $.${
-            noteBlock.labelPosition
-          }.${noteBlock.labels.join(",")}$`
-      )
-      .join("\n");
+    return `notes :${sheetOptions.noteDuration} ${block.notes.join(
+      "-"
+    )} $.bottom.${block.labels.join(",")}$`;
   }
 
   function getVtText() {
-    const textArray = notes.map((_, i) => texts[i] ?? " ");
-    while (textArray.length && textArray[textArray.length - 1] === " ") {
-      textArray.pop();
+    const mappedNotes = inputNotes.map((_, i) => texts[i] ?? " ");
+    while (mappedNotes.at(-1) === " ") {
+      mappedNotes.pop();
     }
 
-    return textArray.length ? `text :${sheetOptions.noteDuration},${textArray.join(",")}` : "";
+    if (mappedNotes.length === 0) {
+      return "";
+    }
+
+    return `text :${sheetOptions.noteDuration},${mappedNotes.join(",")}`;
   }
 
-  function formatLines(lines) {
-    return lines
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .join("\n");
-  }
-
-  const vtNotes = getVtNotes();
-  const vtText = getVtText();
-  const code = `
-    options font-size=8
-    tabstave notation=true tablature=false
-    ${vtNotes}
-    ${vtText}
-  `;
-  return formatLines(code);
+  const lines = [
+    `options font-size=8`,
+    `tabstave notation=true tablature=false`,
+    getVtNotes(),
+    getVtText(),
+  ];
+  return lines.filter(Boolean).join("\n");
 }
 
 function setVexTabProperties(sheetDiv) {
