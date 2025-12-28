@@ -66,60 +66,50 @@ export class MakamDetailsShort extends LitElement {
     }
   }
 
-  #getFullIntervalsString() {
-    const mainVariant = this.makam.mainVariant;
-    const segments = mainVariant.segments;
-
-    const segmentIntervalElements = segments.map((segment, index) => {
-      const makamSegment = MakamSegment.getById(segment.id);
-      const intervals = makamSegment.getIntervalsBySize(segment.size);
-      const intervalsString = intervals.map((i) => Interval.getName(i)).join("-");
-
-      // Color code first and second segments
-      const color = index === 0 ? "text-primary" : index === 1 ? "text-danger" : "";
-      const segmentName = `${segment.size}x ${makamSegment.name}`;
-
-      return html`<span
-        class="${color}"
-        data-bs-toggle="tooltip"
-        data-bs-placement="top"
-        title="${segmentName}"
-        style="cursor: help;"
-        >${intervalsString}</span
-      >`;
-    });
-
-    return segmentIntervalElements.reduce((acc, segmentElement, index) => {
-      if (index === 0) {
-        return segmentElement;
-      }
-
-      return html`${acc}-${segmentElement}`;
-    }, html``);
+  #extractNoteKey(stepNote) {
+    return stepNote.match(/^([A-G][#b]?)/)[1];
   }
 
-  #createSegmentElement(segment, index) {
-    const makamSegment = MakamSegment.getById(segment.id);
-    const color = index === 0 ? "text-primary" : index === 1 ? "text-danger" : "";
-    const intervalsForTooltip = makamSegment
-      .getIntervalsBySize(segment.size)
-      .map((i) => Interval.getName(i))
-      .join("-");
+  #resolveOctave(basePosition, baseKey, targetKey) {
+    const baseSemitone = Note.countSemitones(baseKey);
+    const targetSemitone = Note.countSemitones(targetKey);
+
+    return Octave.TwoOctaves.steps.find((step) => {
+      const key = this.#extractNoteKey(step.note);
+      if (key !== targetKey) return false;
+
+      return (
+        (step.position === basePosition && targetSemitone < baseSemitone) ||
+        (step.position < basePosition && targetSemitone >= baseSemitone)
+      );
+    });
+  }
+
+  #renderSegmentName(segment, index) {
+    const variant = this.makam.mainVariant;
+    const intervals = this.makam.getSegmentIntervals(variant.id, index);
+    const intervalsAsString = intervals.map((interval) => Interval.getName(interval)).join("-");
+    const noteCount = intervals.length + 1;
+
+    const segmentOctavePosition = this.makam.getSegmentOctavePosition(variant.id, index);
+    const segmentOctaveStep = Octave.TwoOctaves.getStepByPosition(segmentOctavePosition);
+
+    let segmentName = MakamSegment.getById(segment.id).name;
+    segmentName = `${noteCount}x ${segmentName} στο ${segmentOctaveStep.label}`;
 
     return html`<strong
-      class="${color}"
       data-bs-toggle="tooltip"
       data-bs-placement="top"
-      title="${intervalsForTooltip}"
+      title="${intervalsAsString}"
       style="cursor: help;"
-      >${segment.size}x ${makamSegment.name}</strong
+      >${segmentName}</strong
     >`;
   }
 
-  #getSegmentComposition() {
+  #renderSegmentComposition() {
     const mainVariant = this.makam.mainVariant;
     const segmentParts = mainVariant.segments.map((segment, index) =>
-      this.#createSegmentElement(segment, index)
+      this.#renderSegmentName(segment, index)
     );
 
     return segmentParts.reduce((acc, part, index) => {
@@ -135,43 +125,34 @@ export class MakamDetailsShort extends LitElement {
     }, html``);
   }
 
-  #calculateNotes() {
-    const mainVariant = this.makam.mainVariant;
-
-    // Get all intervals from all segments
-    const allIntervals = mainVariant.segments.flatMap((segment) => {
-      const makamSegment = MakamSegment.getById(segment.id);
-      return makamSegment.getIntervalsBySize(segment.size);
-    });
-
-    const basePosition = this.makam.octavePosition;
-    const octaveStep = Octave.TwoOctaves.steps.find((step) => step.position === basePosition);
-    const baseNoteKey = octaveStep.note.match(/^([A-G][#b]?)/)[1];
-
-    const notes = Note.calculateNormalizedNotes(baseNoteKey, allIntervals);
-    return notes.map((noteKey) => new Note(noteKey).toFullName()).join(", ");
-  }
-
-  #getEntryNoteElements() {
+  #renderEntryNotes() {
     const mainVariant = this.makam.mainVariant;
     return mainVariant.entryNotes.map((note, index) => {
-      const degree = this.#createDegreeWithTooltip(note);
-      if (index === 0) return degree;
-      if (index === mainVariant.entryNotes.length - 1) return html` ή την ${degree}`;
+      const degree = this.#renderDegreeWithTooltip(note);
+      if (index === 0) {
+        return degree;
+      }
+
+      if (index === mainVariant.entryNotes.length - 1) {
+        return html` ή την ${degree}`;
+      }
+
       return html`, την ${degree}`;
     });
   }
 
-  #getDominantElements() {
+  #renderDominantNotes() {
     const mainVariant = this.makam.mainVariant;
     return mainVariant.dominantNotes.map((n, index) => {
-      const degree = this.#createDegreeWithTooltip(n);
+      const degree = this.#renderDegreeWithTooltip(n);
       if (index === 0) {
         return html` η ${degree}`;
       }
+
       if (index === mainVariant.dominantNotes.length - 1) {
         return html` και η ${degree}`;
       }
+
       return html`, η ${degree}`;
     });
   }
@@ -188,9 +169,15 @@ export class MakamDetailsShort extends LitElement {
 
     // Get all the pieces we need
     const baseNoteName = this.#getBaseNoteName();
-    const segmentComposition = this.#getSegmentComposition();
-    const intervals = this.#getFullIntervalsString();
-    const notesString = this.#calculateNotes();
+    const segmentComposition = this.#renderSegmentComposition();
+    const intervals = this.makam
+      .getIntervals()
+      .map((interval) => Interval.getName(interval))
+      .join("-");
+    const notesAsString = this.makam
+      .getNotes()
+      .map((note) => note.toFullName())
+      .join(", ");
 
     const leadingToneInfo = this.#getLeadingToneInfo();
     const leadingToneElement = html`<strong
@@ -202,9 +189,9 @@ export class MakamDetailsShort extends LitElement {
       >${leadingToneInfo.intervalType}</strong
     >`;
 
-    const entryNoteElements = this.#getEntryNoteElements();
-    const endingDegree = this.#createDegreeWithTooltip(mainVariant.endingNote);
-    const dominantElements = this.#getDominantElements();
+    const entryNoteElements = this.#renderEntryNotes();
+    const endingDegree = this.#renderDegreeWithTooltip(mainVariant.endingNote);
+    const dominantElements = this.#renderDominantNotes();
     const dominantLabel = this.#getDominantLabel();
 
     const parts = [];
@@ -220,7 +207,7 @@ export class MakamDetailsShort extends LitElement {
     parts.push(html`<p>και έχει <strong>${movementType}</strong> κίνηση.</p>`);
     parts.push(html`<p>Αποτελείται από ${segmentComposition}.</p>`);
     parts.push(html`<p>Έτσι προκύπτουν τα διαστήματά <strong>${intervals}</strong></p>`);
-    parts.push(html`<p>ή αλλιώς οι νότες <strong>${notesString}</strong>.</p>`);
+    parts.push(html`<p>ή αλλιώς οι νότες <strong>${notesAsString}</strong>.</p>`);
     parts.push(html`<p>Διαθέτει προσαγωγέα ${leadingToneElement}.</p>`);
     parts.push(
       html`<p>
@@ -236,31 +223,20 @@ export class MakamDetailsShort extends LitElement {
   #getNoteNameForDegree(degree) {
     const basePosition = this.makam.octavePosition;
     const notePosition = basePosition + degree - 1;
-    const octaveStep = Octave.TwoOctaves.steps.find((step) => step.position === notePosition);
+    const octaveStep = Octave.TwoOctaves.getStepByPosition(notePosition);
 
-    if (!octaveStep) {
-      throw new Error(`No octave step found for position ${notePosition}`);
-    }
-
-    const noteKey = octaveStep.note.match(/^([A-G][#b]?)/)[1];
+    const noteKey = this.#extractNoteKey(octaveStep.note);
     const note = new Note(noteKey);
     return `${note.toFullName()} ${octaveStep.label}`;
   }
 
   #getBaseNoteName() {
-    const basePosition = this.makam.octavePosition;
-    const octaveStep = Octave.TwoOctaves.steps.find((step) => step.position === basePosition);
-
-    if (!octaveStep) {
-      throw new Error(`No octave step found for base position ${basePosition}`);
-    }
-
-    const noteKey = octaveStep.note.match(/^([A-G][#b]?)/)[1];
-    const note = new Note(noteKey);
-    return `${note.toFullName()} ${octaveStep.label}`;
+    const octaveStep = Octave.TwoOctaves.getStepByPosition(this.makam.octavePosition);
+    const baseNote = this.makam.getNotes()[0].toFullName();
+    return `${baseNote} ${octaveStep.label}`;
   }
 
-  #createDegreeWithTooltip(degree) {
+  #renderDegreeWithTooltip(degree) {
     const noteName = this.#getNoteNameForDegree(degree);
     return html`<strong
       class="degree-tooltip"
@@ -273,42 +249,20 @@ export class MakamDetailsShort extends LitElement {
   }
 
   #getLeadingToneInfo() {
-    const mainVariant = this.makam.mainVariant;
-    const leadingInterval = mainVariant.leadingInterval;
+    const { leadingInterval } = this.makam.mainVariant;
 
     const basePosition = this.makam.octavePosition;
-    const baseStep = Octave.TwoOctaves.steps.find((step) => step.position === basePosition);
+    const baseStep = Octave.TwoOctaves.getStepByPosition(basePosition);
+    const baseNoteKey = this.#extractNoteKey(baseStep.note);
+    const leadingNoteKey = Note.transpose(baseNoteKey, -leadingInterval);
+    const leadingNote = new Note(leadingNoteKey);
 
-    if (!baseStep) {
-      throw new Error(`No octave step found for base position ${basePosition}`);
-    }
+    const leadingStep = this.#resolveOctave(basePosition, baseNoteKey, leadingNoteKey);
 
-    // Get the base note's semitone value
-    const baseNoteKey = baseStep.note.match(/^([A-G][#b]?)/)[1];
-    const baseSemitone = Note.getSemitone(baseNoteKey);
-
-    // Calculate the target semitone (going back by leadingInterval semitones)
-    const targetSemitone = (baseSemitone - leadingInterval + 12) % 12;
-
-    // Try to find the octave step that matches this semitone and is below the base position
-    const leadingStep = Octave.TwoOctaves.steps.find((step) => {
-      const stepNoteKey = step.note.match(/^([A-G][#b]?)/)[1];
-      const stepSemitone = Note.getSemitone(stepNoteKey);
-      return stepSemitone === targetSemitone && step.position < basePosition;
-    });
-
-    // Find the note that corresponds to this semitone
-    const leadingNoteKey = Note.sharpNotes.find((n) => Note.getSemitone(n) === targetSemitone);
-
-    if (!leadingNoteKey) {
-      throw new Error(`No note found for leading tone with semitone ${targetSemitone}`);
-    }
-
-    const note = new Note(leadingNoteKey);
     const intervalType = Interval.getLongNameAccusative(leadingInterval).toLowerCase();
-
-    // If we found a matching octave step, use the full label; otherwise just use the note name
-    const noteName = leadingStep ? `${note.toFullName()} ${leadingStep.label}` : note.toFullName();
+    const noteName = leadingStep
+      ? `${leadingNote.toFullName()} ${leadingStep.label}`
+      : leadingNote.toFullName();
 
     return { noteName, intervalType };
   }

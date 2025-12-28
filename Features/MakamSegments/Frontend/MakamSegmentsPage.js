@@ -32,173 +32,8 @@ export class MakamSegmentsPage extends LitElement {
 
   render() {
     return html`
-      <!-- Makam Segments Accordion -->
       <div class="accordion" id="makamSegmentsAccordion">
-        <!-- Δις διαπασών accordion item -->
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingDisDiapason">
-            <button
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseDisDiapason"
-              aria-expanded="false"
-              aria-controls="collapseDisDiapason"
-            >
-              Δις διαπασών
-            </button>
-          </h2>
-          <div
-            id="collapseDisDiapason"
-            class="accordion-collapse collapse"
-            aria-labelledby="headingDisDiapason"
-            data-bs-parent="#makamSegmentsAccordion"
-          >
-            <div class="accordion-body">
-              <ul class="mb-4">
-                <li>Το δις διαπασών είναι η φυσική κλίμακα (ματζόρε) σε έκταση δύο οκτάβων.</li>
-                <li>Τα ονόματα των βαθμίδων φαίνονται κάτω από κάθε νότα.</li>
-                <li>Τα μακάμ κυρίως αναπτύσσονται στη μεσαία περιοχή.</li>
-              </ul>
-
-              <!-- Χαμηλή περιοχή -->
-              <div class="mb-4">
-                <h5 class="mb-3">${OctaveRange.Low.name}</h5>
-                <div id="accordion-octave-range-low" class="mb-3"></div>
-              </div>
-
-              <!-- Μέση περιοχή -->
-              <div class="mb-4">
-                <h5 class="mb-3">${OctaveRange.Mid.name}</h5>
-                <div id="accordion-octave-range-mid" class="mb-3"></div>
-              </div>
-
-              <!-- Υψηλή περιοχή -->
-              <div class="mb-4">
-                <h5 class="mb-3">${OctaveRange.High.name}</h5>
-                <div id="accordion-octave-range-high" class="mb-3"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        ${this.#segments.map((segment, index) => {
-          const actualIndex = index + 1; // Adjust index since Δις διαπασών is now index 0
-          return html`
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="heading${actualIndex}">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapse${actualIndex}"
-                  aria-expanded="false"
-                  aria-controls="collapse${actualIndex}"
-                >
-                  ${segment.name}
-                </button>
-              </h2>
-              <div
-                id="collapse${actualIndex}"
-                class="accordion-collapse collapse"
-                aria-labelledby="heading${actualIndex}"
-                data-bs-parent="#makamSegmentsAccordion"
-              >
-                <div class="accordion-body">
-                  <!-- Διαστήματα -->
-                  <h5 class="mb-3">Διαστήματα</h5>
-                  <ul>
-                    ${segment.intervals.map(
-                      (intervalArray) => html`
-                        <li>
-                          ${intervalArray.length + 1}x
-                          ${intervalArray.map((interval) => Interval.getName(interval)).join("-")}
-                        </li>
-                      `
-                    )}
-                  </ul>
-
-                  <!-- Προσαγωγέας -->
-                  <h5 class="mb-3 mt-4">
-                    Προσαγωγέας: ${Interval.getLongName(segment.leadingInterval)}
-                  </h5>
-
-                  <!-- Θέσεις -->
-                  ${segment.placements.length > 0
-                    ? html`
-                        <h5 class="mb-3 mt-4">Θέσεις</h5>
-                        <div id="carousel-${actualIndex}" class="carousel slide carousel-dark">
-                          <div class="carousel-inner">
-                            ${segment.placements.map((placement, placementIndex) => {
-                              const step = Octave.TwoOctaves.steps.find(
-                                (step) => step.position === placement.octavePosition
-                              );
-                              if (!step) {
-                                throw new Error(
-                                  `Missing octave step for position ${placement.octavePosition} in segment ${segment.name}`
-                                );
-                              }
-                              return html`
-                                <div class="carousel-item ${placementIndex === 0 ? "active" : ""}">
-                                  <div class="text-center">
-                                    <h6 class="mb-3">
-                                      ${placement.octavePosition === segment.baseStep
-                                        ? html`<span class="badge bg-primary">Βασική θέση</span>`
-                                        : ""}
-                                    </h6>
-                                    <div
-                                      id="sheet-${actualIndex}-${placementIndex}"
-                                      class="music-sheet mb-3"
-                                    ></div>
-                                  </div>
-                                </div>
-                              `;
-                            })}
-                          </div>
-                          ${segment.placements.length > 1
-                            ? html`
-                                <button
-                                  class="carousel-control-prev"
-                                  type="button"
-                                  data-bs-target="#carousel-${actualIndex}"
-                                  data-bs-slide="prev"
-                                >
-                                  <span
-                                    class="carousel-control-prev-icon"
-                                    aria-hidden="true"
-                                  ></span>
-                                  <span class="visually-hidden">Προηγούμενο</span>
-                                </button>
-                                <button
-                                  class="carousel-control-next"
-                                  type="button"
-                                  data-bs-target="#carousel-${actualIndex}"
-                                  data-bs-slide="next"
-                                >
-                                  <span
-                                    class="carousel-control-next-icon"
-                                    aria-hidden="true"
-                                  ></span>
-                                  <span class="visually-hidden">Επόμενο</span>
-                                </button>
-                              `
-                            : ""}
-                        </div>
-                      `
-                    : ""}
-                  ${segment.remarks.length
-                    ? html`
-                        <h5 class="mb-3 mt-4">Σημειώσεις</h5>
-                        <ul class="mt-2">
-                          ${segment.remarks.map((note) => html`<li>${note}</li>`)}
-                        </ul>
-                      `
-                    : ""}
-                </div>
-              </div>
-            </div>
-          `;
-        })}
+        ${this.#renderDisDiapason()} ${this.#renderSegments()}
       </div>
     `;
   }
@@ -206,29 +41,192 @@ export class MakamSegmentsPage extends LitElement {
   firstUpdated() {
     // Render octave range sheets in accordion
     const lowOctaveSheet = this.querySelector("#accordion-octave-range-low");
-    renderMusicSheet(lowOctaveSheet, this.buildSheetOptionsFromOctaveRange(OctaveRange.Low));
+    renderMusicSheet(lowOctaveSheet, this.#buildSheetOptionsFromOctaveRange(OctaveRange.Low));
 
     const midOctaveSheet = this.querySelector("#accordion-octave-range-mid");
-    renderMusicSheet(midOctaveSheet, this.buildSheetOptionsFromOctaveRange(OctaveRange.Mid));
+    renderMusicSheet(midOctaveSheet, this.#buildSheetOptionsFromOctaveRange(OctaveRange.Mid));
 
     const highOctaveSheet = this.querySelector("#accordion-octave-range-high");
-    renderMusicSheet(highOctaveSheet, this.buildSheetOptionsFromOctaveRange(OctaveRange.High));
+    renderMusicSheet(highOctaveSheet, this.#buildSheetOptionsFromOctaveRange(OctaveRange.High));
 
     // Render makam segment sheets
-    this.#segments.forEach((segment, index) => {
-      const actualIndex = index + 1; // Adjust for Δις διαπασών being index 0
-      segment.placements.forEach((placement, pIndex) => {
-        const segmentSheet = this.querySelector(`#sheet-${actualIndex}-${pIndex}`);
+    this.#segments.forEach((segment, segmentIndex) => {
+      const segmentHeaderIndex = this.#getSegmentHeaderIndex(segmentIndex);
+      segment.placements.forEach((placement, placementIndex) => {
+        const segmentSheet = this.querySelector(`#sheet-${segmentHeaderIndex}-${placementIndex}`);
         if (!segmentSheet) {
-          throw new Error(`Container not found for sheet-${actualIndex}-${pIndex}`);
+          throw new Error(`Container not found for sheet-${segmentHeaderIndex}-${placementIndex}`);
         }
 
-        renderMusicSheet(segmentSheet, this.buildSheetOptionsFromPlacement(placement, segment));
+        renderMusicSheet(segmentSheet, this.#buildSheetOptionsFromPlacement(placement, segment));
       });
     });
   }
 
-  buildSheetOptionsFromOctaveRange(octaveRange) {
+  #getSegmentHeaderIndex(index) {
+    return index + 1; // Adjust index since Δις διαπασών is now index 0
+  }
+
+  #renderDisDiapason() {
+    const remarks = html`
+      <ul class="mb-4">
+        <li>Το δις διαπασών είναι η φυσική κλίμακα (ματζόρε) σε έκταση δύο οκτάβων.</li>
+        <li>Τα ονόματα των βαθμίδων φαίνονται κάτω από κάθε νότα.</li>
+        <li>Τα μακάμ κυρίως αναπτύσσονται στη μεσαία περιοχή.</li>
+      </ul>
+    `;
+
+    const ranges = {
+      low: OctaveRange.Low,
+      mid: OctaveRange.Mid,
+      high: OctaveRange.High,
+    };
+
+    const rangesHtml = Object.keys(ranges).map(
+      (key) => html`<div class="mb-4">
+        <h5 class="mb-3">${ranges[key].name}</h5>
+        <div id="accordion-octave-range-${key}" class="mb-3"></div>
+      </div>`
+    );
+
+    return html` <div class="accordion-item">
+      <h2 class="accordion-header" id="headingDisDiapason">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseDisDiapason"
+          aria-expanded="false"
+          aria-controls="collapseDisDiapason"
+        >
+          Δις διαπασών
+        </button>
+      </h2>
+      <div
+        id="collapseDisDiapason"
+        class="accordion-collapse collapse"
+        aria-labelledby="headingDisDiapason"
+        data-bs-parent="#makamSegmentsAccordion"
+      >
+        <div class="accordion-body">${remarks} ${rangesHtml}</div>
+      </div>
+    </div>`;
+  }
+
+  #renderSegments() {
+    function renderSegmentBody(segment, headerIndex) {
+      const intervals = html` <h5 class="mb-3">Διαστήματα</h5>
+        <ul>
+          ${segment.intervals.map(
+            (intervalArray) => html`
+              <li>
+                ${intervalArray.length + 1}x
+                ${intervalArray.map((interval) => Interval.getName(interval)).join("-")}
+              </li>
+            `
+          )}
+        </ul>`;
+
+      const leadingInterval = html` <h5 class="mb-3 mt-4">
+        Προσαγωγέας: ${Interval.getLongName(segment.leadingInterval)}
+      </h5>`;
+
+      const placements =
+        segment.placements.length > 0
+          ? html`
+              <h5 class="mb-3 mt-4">Θέσεις</h5>
+
+              <div id="carousel-${headerIndex}" class="carousel slide carousel-dark">
+                <div class="carousel-inner">
+                  ${segment.placements.map((placement, placementIndex) => {
+                    Octave.validatePosition(placement.octavePosition);
+                    return html`
+                      <div class="carousel-item ${placementIndex === 0 ? "active" : ""}">
+                        <div class="text-center">
+                          <h6 class="mb-3">
+                            ${placement.octavePosition === segment.baseStep
+                              ? html`<span class="badge bg-primary">Βασική θέση</span>`
+                              : ""}
+                          </h6>
+                          <div
+                            id="sheet-${headerIndex}-${placementIndex}"
+                            class="music-sheet mb-3"
+                          ></div>
+                        </div>
+                      </div>
+                    `;
+                  })}
+                </div>
+
+                ${segment.placements.length > 1
+                  ? html`
+                      <button
+                        class="carousel-control-prev"
+                        type="button"
+                        data-bs-target="#carousel-${headerIndex}"
+                        data-bs-slide="prev"
+                      >
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Προηγούμενο</span>
+                      </button>
+                      <button
+                        class="carousel-control-next"
+                        type="button"
+                        data-bs-target="#carousel-${headerIndex}"
+                        data-bs-slide="next"
+                      >
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Επόμενο</span>
+                      </button>
+                    `
+                  : ""}
+              </div>
+            `
+          : "";
+
+      const remarks = segment.remarks.length
+        ? html`
+            <h5 class="mb-3 mt-4">Σημειώσεις</h5>
+            <ul class="mt-2">
+              ${segment.remarks.map((note) => html`<li>${note}</li>`)}
+            </ul>
+          `
+        : "";
+
+      return html`${intervals} ${leadingInterval} ${placements} ${remarks}`;
+    }
+
+    return html`${this.#segments.map((segment, index) => {
+      const headerIndex = this.#getSegmentHeaderIndex(index);
+      return html`
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="heading${headerIndex}">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse${headerIndex}"
+              aria-expanded="false"
+              aria-controls="collapse${headerIndex}"
+            >
+              ${segment.name}
+            </button>
+          </h2>
+
+          <div
+            id="collapse${headerIndex}"
+            class="accordion-collapse collapse"
+            aria-labelledby="heading${headerIndex}"
+            data-bs-parent="#makamSegmentsAccordion"
+          >
+            <div class="accordion-body">${renderSegmentBody(segment, headerIndex)}</div>
+          </div>
+        </div>
+      `;
+    })}`;
+  }
+
+  #buildSheetOptionsFromOctaveRange(octaveRange) {
     const notes = Octave.TwoOctaves.steps
       .filter((step) => {
         if (octaveRange.equals(OctaveRange.Low)) {
@@ -255,75 +253,48 @@ export class MakamSegmentsPage extends LitElement {
     };
   }
 
-  buildSheetOptionsFromPlacement(placement, segment) {
-    const startStep = Octave.TwoOctaves.steps.find(
-      (step) => step.position === placement.octavePosition
-    );
-
-    if (!startStep) {
-      throw new Error(`Missing octave step for position ${placement.octavePosition}`);
-    }
-
-    const intervalArray = segment.intervals.find(
-      (intervals) => intervals.length + 1 === placement.length
-    );
-
-    if (!intervalArray) {
-      throw new Error(`No interval array found for placement length ${placement.length}`);
-    }
+  #buildSheetOptionsFromPlacement(placement, segment) {
+    const startStep = Octave.TwoOctaves.getStepByPosition(placement.octavePosition);
+    const intervalValues = segment.getIntervalsBySize(placement.length);
 
     const baseNote = startStep.note.match(/^([A-G])/)[1];
-    const calculatedNotes = Note.calculateNormalizedNotes(baseNote, intervalArray);
-
-    // Calculate the leading note (προσαγωγέας)
-    const leadingNoteSemitone = (Note.getSemitone(baseNote) - segment.leadingInterval + 12) % 12;
-    const leadingNoteKey = Note.sharpNotes[leadingNoteSemitone];
-    const leadingNote = new Note(leadingNoteKey);
-
-    let startOctave;
-    if (placement.octavePosition < 0) {
-      startOctave = 3;
-    } else if (placement.octavePosition < 7) {
-      startOctave = 4;
-    } else {
-      startOctave = 5;
-    }
-
-    // Determine leading note octave (could be lower than start octave)
-    let leadingOctave = startOctave;
-    if (Note.getSemitone(leadingNoteKey) > Note.getSemitone(baseNote)) {
-      leadingOctave = startOctave - 1;
-    }
+    const calculatedNotes = Note.intervalsToNormalizedNotes(baseNote, intervalValues);
+    const startingOctave = Octave.getOctave(placement.octavePosition).notationNumber;
 
     const notes = [];
 
-    // Add leading note first
+    // Leading note
+    const leadingNote = new Note(Note.transpose(baseNote, -segment.leadingInterval));
+    let leadingNoteOctave = startingOctave;
+    if (Note.countSemitones(leadingNote.key) > Note.countSemitones(baseNote)) {
+      leadingNoteOctave = startingOctave - 1;
+    }
+
+    // Add segment notes
+    let currentOctave = startingOctave;
+    let previousSemitone = null;
+    const segmentNotes = calculatedNotes.map((noteKey, index) => {
+      const semitone = Note.countSemitones(noteKey);
+      if (previousSemitone !== null && semitone < previousSemitone) {
+        currentOctave++;
+      }
+
+      previousSemitone = semitone;
+
+      return {
+        note: `${noteKey}${currentOctave}`,
+        label:
+          index === 0 ? `${new Note(noteKey).name} ${startStep.label}` : new Note(noteKey).name,
+      };
+    });
+
+    // Add notes
     notes.push({
-      note: `${leadingNoteKey}${leadingOctave}`,
+      note: `${leadingNote.key}${leadingNoteOctave}`,
       label: `(${leadingNote.name})`,
     });
 
-    // Add segment notes
-    calculatedNotes.forEach((noteKey, index) => {
-      const note = new Note(noteKey);
-
-      let octave = startOctave;
-      if (index > 0) {
-        const prevNoteKey = calculatedNotes[index - 1];
-        const currentSemitone = Note.getSemitone(noteKey);
-        const prevSemitone = Note.getSemitone(prevNoteKey);
-
-        if (currentSemitone < prevSemitone) {
-          octave = startOctave + 1;
-          startOctave = octave;
-        }
-      }
-
-      notes.push({
-        note: `${noteKey}${octave}`,
-        label: index === 0 ? `${note.name} ${startStep.label}` : note.name,
-      });
-    });
+    notes.push(...segmentNotes);
 
     return {
       notes: notes,

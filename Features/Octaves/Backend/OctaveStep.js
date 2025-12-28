@@ -7,21 +7,24 @@ export class OctaveStep {
   #range = null;
 
   constructor({ note, label, position }) {
-    if (!note || !label) {
-      throw new Error("Step must have 'note' and 'label'");
+    if (!note) {
+      throw new Error("Note cannot be empty");
+    }
+
+    if (!label) {
+      throw new Error("Label cannot be empty");
+    }
+
+    if (typeof position !== "number") {
+      throw new Error("Position must be a number");
     }
 
     this.#note = note;
     this.#label = label;
     this.#position = position;
+    this.#range = OctaveRange.getByOctavePosition(position);
 
-    if (position < 0) {
-      this.#range = OctaveRange.Low;
-    } else if (position < 7) {
-      this.#range = OctaveRange.Mid;
-    } else {
-      this.#range = OctaveRange.High;
-    }
+    Object.freeze(this);
   }
 
   get note() {
@@ -40,12 +43,12 @@ export class OctaveStep {
     return this.#position;
   }
 
-  toJSON() {
+  deconstruct() {
     return {
       note: this.#note,
       label: this.#label,
-      range: this.#range,
       position: this.#position,
+      range: this.#range,
     };
   }
 }

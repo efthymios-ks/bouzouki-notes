@@ -48,7 +48,7 @@ export default [
         id: "RAST_SAZKAR",
         name: "Σαζκιάρ",
         segments: [
-          { id: "SAZKAR", size: 5, position: 0 },
+          { id: "RAST", intervals: [3, 1, 1, 2], position: 0 },
           { id: "RAST", size: 4 },
         ],
       },
@@ -134,6 +134,36 @@ export default [
         segments: [
           { id: "SEGAH", size: 3, position: 0 },
           { id: "RAST", size: 5 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "HUSEYINI",
+    name: "Χουσεϊνί",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "HUSEYINI",
+        name: "Χουσεϊνί",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "USAK", size: 5, position: 0 },
+          { id: "RAST", size: 5, position: 3 },
+          { id: "USAK", size: 4, position: 4 },
+        ],
+        entryNotes: [5],
+        endingNote: 1,
+        dominantNotes: [1, 4, 5],
+      },
+      {
+        id: "HUSEYNI_DESC",
+        name: "Κατιούσα",
+        direction: "DESC",
+        segments: [
+          { id: "USAK", size: 5, position: 0 },
+          { id: "BUSELIK", size: 5, position: 3 },
         ],
       },
     ],

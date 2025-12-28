@@ -1,5 +1,7 @@
 import Makams from "./Makams.js";
+import { Octave } from "../../Octaves/Backend/Octave.js";
 import { MakamSegment } from "../../MakamSegments/Backend/MakamSegment.js";
+import { Note } from "../../Notes/Backend/Note.js";
 
 export class Makam {
   #id = null;
@@ -9,22 +11,24 @@ export class Makam {
   #variants = [];
 
   constructor({ id, name, octavePosition, variants = [] }) {
-    if (!id || !name || octavePosition === undefined || !variants || variants.length === 0) {
-      throw new Error("Makam requires id, name, octavePosition, and at least one variant");
+    if (!id) {
+      throw new Error("Id is required");
     }
 
-    // Validate octavePosition is a number
+    if (!name) {
+      throw new Error("Name is required");
+    }
+
     if (typeof octavePosition !== "number") {
-      throw new Error(`octavePosition must be a number, got ${typeof octavePosition}`);
+      throw new Error("Octave position is required");
     }
 
-    // Use first variant as mainVariant
+    if (!Array.isArray(variants) || variants.length === 0) {
+      throw new Error("At least one variant is required");
+    }
+
     const mainVariant = variants[0];
-
-    // Validate mainVariant structure (strict validation)
     this.#validateVariant(mainVariant, "mainVariant", true);
-
-    // Validate all other variants (relaxed validation - they inherit from mainVariant)
     variants.slice(1).forEach((variant, index) => {
       this.#validateVariant(variant, `variant at index ${index + 1}`, false);
     });
@@ -39,8 +43,12 @@ export class Makam {
   }
 
   #validateVariant(variant, label, isMainVariant = false) {
-    if (!variant.id || !variant.name) {
-      throw new Error(`${label} must have id and name`);
+    if (!variant.id) {
+      throw new Error(`${label} must have id`);
+    }
+
+    if (!variant.name) {
+      throw new Error(`${label} must have name`);
     }
 
     // Direction, entryNotes, endingNote, dominantNotes are only required for mainVariant
@@ -50,11 +58,7 @@ export class Makam {
         throw new Error(`${label} must have a valid direction of 'ASC' or 'DESC'`);
       }
 
-      if (
-        !variant.entryNotes ||
-        !Array.isArray(variant.entryNotes) ||
-        variant.entryNotes.length === 0
-      ) {
+      if (!Array.isArray(variant.entryNotes) || variant.entryNotes.length === 0) {
         throw new Error(`${label} must have entryNotes array`);
       }
 
@@ -62,11 +66,7 @@ export class Makam {
         throw new Error(`${label} must have endingNote`);
       }
 
-      if (
-        !variant.dominantNotes ||
-        !Array.isArray(variant.dominantNotes) ||
-        variant.dominantNotes.length === 0
-      ) {
+      if (!Array.isArray(variant.dominantNotes) || variant.dominantNotes.length === 0) {
         throw new Error(`${label} must have dominantNotes array`);
       }
     }
@@ -145,8 +145,83 @@ export class Makam {
     return [this.#mainVariant, ...this.#variants];
   }
 
+  getIntervals(variantId = null) {
+    variantId = variantId || this.#mainVariant.id;
+    const variant = this.getVariantById(variantId);
+    const intervals = [];
+
+    for (let segmentIndex = 0; segmentIndex < variant.segments.length; segmentIndex++) {
+      const segment = variant.segments[segmentIndex];
+      const segmentIntervals = this.getSegmentIntervals(variantId, segmentIndex);
+      const start = typeof segment.position === "number" ? segment.position : intervals.length;
+      segmentIntervals.forEach((interval, intervalIndex) => {
+        const index = start + intervalIndex;
+
+        if (intervals[index] === undefined) {
+          intervals[index] = interval;
+        } else if (intervals[index] !== interval) {
+          throw new Error(
+            `Interval conflict at position ${index}: ${intervals[index]} vs ${interval}`
+          );
+        }
+      });
+    }
+
+    return intervals;
+  }
+
+  getNotes(variantId = null) {
+    variantId = variantId || this.#mainVariant.id;
+
+    const intervals = this.getIntervals(variantId);
+    const baseOctaveStep = Octave.TwoOctaves.getStepByPosition(this.#octavePosition);
+    const baseNoteKey = baseOctaveStep.note.match(/^([A-G][#b]?)/)[1];
+    return Note.intervalsToNormalizedNotes(baseNoteKey, intervals).map(
+      (noteKey) => new Note(noteKey)
+    );
+  }
+
+  getSegmentIntervals(variantId, segmentIndex) {
+    const variant = this.getVariantById(variantId);
+    const segment = variant.segments[segmentIndex];
+    if (!segment) {
+      throw new Error(
+        `Segment at index ${segmentIndex} not found in variant ${variantId} of makam ${this.#id}`
+      );
+    }
+
+    return segment.intervals && segment.intervals.length > 0
+      ? segment.intervals
+      : MakamSegment.getById(segment.id).getIntervalsBySize(segment.size);
+  }
+
+  getSegmentOctavePosition(variantId, segmentIndex) {
+    const variant = this.getVariantById(variantId);
+    const segment = variant.segments[segmentIndex];
+
+    if (!segment) {
+      throw new Error(
+        `Segment at index ${segmentIndex} not found in variant ${variantId} of makam ${this.#id}`
+      );
+    }
+
+    const startIntervalIndex =
+      typeof segment.position === "number"
+        ? segment.position
+        : variant.segments
+            .slice(0, segmentIndex)
+            .reduce((sum, _, i) => sum + this.getSegmentIntervals(variantId, i).length, 0);
+
+    return this.#octavePosition + startIntervalIndex;
+  }
+
   getVariantById(id) {
-    return this.allVariants.find((variant) => variant.id === id);
+    const variant = this.allVariants.find((variant) => variant.id === id);
+    if (!variant) {
+      throw new Error(`Variant with id ${id} not found in makam ${this.#id}`);
+    }
+
+    return variant;
   }
 
   static getAll() {

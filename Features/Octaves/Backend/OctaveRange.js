@@ -3,8 +3,12 @@ export class OctaveRange {
   #name = null;
 
   constructor({ key, name }) {
-    if (!key || !name) {
-      throw new Error("StepRange requires key and name");
+    if (!key) {
+      throw new Error("Key cannot be empty");
+    }
+
+    if (!name) {
+      throw new Error("Name cannot be empty");
     }
 
     this.#key = key;
@@ -38,4 +42,14 @@ export class OctaveRange {
     key: "high",
     name: "Υψηλή Περιοχή",
   });
+
+  static getByOctavePosition(position) {
+    if (position < 0) {
+      return OctaveRange.Low;
+    } else if (position < 7) {
+      return OctaveRange.Mid;
+    } else {
+      return OctaveRange.High;
+    }
+  }
 }
