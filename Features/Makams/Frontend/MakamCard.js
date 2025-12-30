@@ -26,7 +26,7 @@ export class MakamCard extends LitElement {
   }
 
   #getFullIntervalsString() {
-    const intervals = this.makam.getIntervals();
+    const intervals = this.makam.mainVariant.intervals;
     return intervals.map((interval) => Interval.getName(interval)).join("-");
   }
 

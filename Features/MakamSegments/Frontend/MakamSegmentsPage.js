@@ -61,6 +61,11 @@ export class MakamSegmentsPage extends LitElement {
         renderMusicSheet(segmentSheet, this.#buildSheetOptionsFromPlacement(placement, segment));
       });
     });
+
+    this.updateComplete.then(() => {
+      const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipTriggerList.forEach((element) => new bootstrap.Tooltip(element));
+    });
   }
 
   #getSegmentHeaderIndex(index) {
@@ -139,15 +144,31 @@ export class MakamSegmentsPage extends LitElement {
               <div id="carousel-${headerIndex}" class="carousel slide carousel-dark">
                 <div class="carousel-inner">
                   ${segment.placements.map((placement, placementIndex) => {
-                    Octave.validatePosition(placement.octavePosition);
+                    const isMainPlacement = placement.octavePosition === segment.baseStep;
+                    const step = Octave.getOctave(placement.octavePosition).getStepByPosition(
+                      placement.octavePosition
+                    );
+
+                    const noteCount = segment.getIntervalsBySize(placement.length).length + 1;
+                    const noteKey = step.note.match(/^([A-G][#b]?)/)[1];
+                    const note = Note.toFullName(noteKey);
+                    const title = `${noteCount}x ${note} στο ${step.label}`;
+                    const titleHtml = isMainPlacement
+                      ? html`
+                          <span
+                            class="badge bg-primary font-bold"
+                            data-bs-toggle="tooltip"
+                            title="Βαθμίδα θεμελίωσης"
+                          >
+                            ${title}
+                          </span>
+                        `
+                      : html` <span class="badge bg-secondary"> ${title} </span> `;
+
                     return html`
                       <div class="carousel-item ${placementIndex === 0 ? "active" : ""}">
                         <div class="text-center">
-                          <h6 class="mb-3">
-                            ${placement.octavePosition === segment.baseStep
-                              ? html`<span class="badge bg-primary">Βασική θέση</span>`
-                              : ""}
-                          </h6>
+                          <h6 class="mb-3">${titleHtml}</h6>
                           <div
                             id="sheet-${headerIndex}-${placementIndex}"
                             class="music-sheet mb-3"

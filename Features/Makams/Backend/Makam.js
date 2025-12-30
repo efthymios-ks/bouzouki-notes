@@ -27,98 +27,19 @@ export class Makam {
       throw new Error("At least one variant is required");
     }
 
-    const mainVariant = variants[0];
-    this.#validateVariant(mainVariant, "mainVariant", true);
-    variants.slice(1).forEach((variant, index) => {
-      this.#validateVariant(variant, `variant at index ${index + 1}`, false);
-    });
-
     this.#id = id;
     this.#name = name;
     this.#octavePosition = octavePosition;
-    this.#mainVariant = this.#processVariant(mainVariant);
-    this.#variants = variants.slice(1).map((variant) => this.#mergeWithMainVariant(variant));
 
+    this.#mainVariant = this.#populateVariant(variants[0]);
+    this.#variants = variants
+      .slice(1)
+      .map((variant) => this.#populateVariant(variant, this.#mainVariant));
+
+    // Freeze
+    Object.freeze(this.#mainVariant);
+    Object.freeze(this.#variants);
     Object.freeze(this);
-  }
-
-  #validateVariant(variant, label, isMainVariant = false) {
-    if (!variant.id) {
-      throw new Error(`${label} must have id`);
-    }
-
-    if (!variant.name) {
-      throw new Error(`${label} must have name`);
-    }
-
-    // Direction, entryNotes, endingNote, dominantNotes are only required for mainVariant
-    // Other variants can inherit these from mainVariant via merging
-    if (isMainVariant) {
-      if (!variant.direction || (variant.direction !== "ASC" && variant.direction !== "DESC")) {
-        throw new Error(`${label} must have a valid direction of 'ASC' or 'DESC'`);
-      }
-
-      if (!Array.isArray(variant.entryNotes) || variant.entryNotes.length === 0) {
-        throw new Error(`${label} must have entryNotes array`);
-      }
-
-      if (!variant.endingNote) {
-        throw new Error(`${label} must have endingNote`);
-      }
-
-      if (!Array.isArray(variant.dominantNotes) || variant.dominantNotes.length === 0) {
-        throw new Error(`${label} must have dominantNotes array`);
-      }
-    }
-
-    if (!variant.segments || !Array.isArray(variant.segments)) {
-      throw new Error(`${label} must have segments array`);
-    }
-
-    variant.segments.forEach((segment, index) => {
-      if (!segment.id) {
-        throw new Error(`Segment at index ${index} in ${label} must have id`);
-      }
-    });
-  }
-
-  #processVariant(variant) {
-    // Get leading interval from first segment
-    const firstSegment = variant.segments[0];
-    const makamSegment = MakamSegment.getById(firstSegment.id);
-    const leadingInterval = makamSegment.leadingInterval;
-    const direction = variant.direction ?? "ASC";
-
-    return {
-      ...variant,
-      isHidden: variant.isHidden ?? false,
-      direction: direction,
-      isAscending: direction === "ASC",
-      entryNotes: variant.entryNotes ?? [],
-      endingNote: variant.endingNote ?? null,
-      dominantNotes: variant.dominantNotes ?? [],
-      leadingInterval: leadingInterval,
-    };
-  }
-
-  #mergeWithMainVariant(variant) {
-    // Get leading interval from first segment of this variant
-    const firstSegment = variant.segments ?? this.#mainVariant.segments;
-    const makamSegment = MakamSegment.getById(firstSegment[0].id);
-    const leadingInterval = makamSegment.leadingInterval;
-    const direction = variant.direction ?? this.#mainVariant.direction;
-
-    return {
-      ...this.#mainVariant,
-      ...variant,
-      // Ensure arrays are not merged but replaced
-      segments: variant.segments ?? this.#mainVariant.segments,
-      entryNotes: variant.entryNotes ?? this.#mainVariant.entryNotes,
-      dominantNotes: variant.dominantNotes ?? this.#mainVariant.dominantNotes,
-      leadingInterval: leadingInterval,
-      direction: direction,
-      isAscending: direction === "ASC",
-    };
   }
 
   get id() {
@@ -141,78 +62,17 @@ export class Makam {
     return this.#variants;
   }
 
+  static getAll() {
+    return Makams.map((makam) => new Makam(makam));
+  }
+
+  static getById(id) {
+    const makamData = Makams.find((makam) => makam.id === id);
+    return makamData ? new Makam(makamData) : null;
+  }
+
   get allVariants() {
     return [this.#mainVariant, ...this.#variants];
-  }
-
-  getIntervals(variantId = null) {
-    variantId = variantId || this.#mainVariant.id;
-    const variant = this.getVariantById(variantId);
-    const intervals = [];
-
-    for (let segmentIndex = 0; segmentIndex < variant.segments.length; segmentIndex++) {
-      const segment = variant.segments[segmentIndex];
-      const segmentIntervals = this.getSegmentIntervals(variantId, segmentIndex);
-      const start = typeof segment.position === "number" ? segment.position : intervals.length;
-      segmentIntervals.forEach((interval, intervalIndex) => {
-        const index = start + intervalIndex;
-
-        if (intervals[index] === undefined) {
-          intervals[index] = interval;
-        } else if (intervals[index] !== interval) {
-          throw new Error(
-            `Interval conflict at position ${index}: ${intervals[index]} vs ${interval}`
-          );
-        }
-      });
-    }
-
-    return intervals;
-  }
-
-  getNotes(variantId = null) {
-    variantId = variantId || this.#mainVariant.id;
-
-    const intervals = this.getIntervals(variantId);
-    const baseOctaveStep = Octave.TwoOctaves.getStepByPosition(this.#octavePosition);
-    const baseNoteKey = baseOctaveStep.note.match(/^([A-G][#b]?)/)[1];
-    return Note.intervalsToNormalizedNotes(baseNoteKey, intervals).map(
-      (noteKey) => new Note(noteKey)
-    );
-  }
-
-  getSegmentIntervals(variantId, segmentIndex) {
-    const variant = this.getVariantById(variantId);
-    const segment = variant.segments[segmentIndex];
-    if (!segment) {
-      throw new Error(
-        `Segment at index ${segmentIndex} not found in variant ${variantId} of makam ${this.#id}`
-      );
-    }
-
-    return segment.intervals && segment.intervals.length > 0
-      ? segment.intervals
-      : MakamSegment.getById(segment.id).getIntervalsBySize(segment.size);
-  }
-
-  getSegmentOctavePosition(variantId, segmentIndex) {
-    const variant = this.getVariantById(variantId);
-    const segment = variant.segments[segmentIndex];
-
-    if (!segment) {
-      throw new Error(
-        `Segment at index ${segmentIndex} not found in variant ${variantId} of makam ${this.#id}`
-      );
-    }
-
-    const startIntervalIndex =
-      typeof segment.position === "number"
-        ? segment.position
-        : variant.segments
-            .slice(0, segmentIndex)
-            .reduce((sum, _, i) => sum + this.getSegmentIntervals(variantId, i).length, 0);
-
-    return this.#octavePosition + startIntervalIndex;
   }
 
   getVariantById(id) {
@@ -224,13 +84,124 @@ export class Makam {
     return variant;
   }
 
-  static getAll() {
-    return Makams.map((makam) => new Makam(makam));
+  #populateVariant(variant, mainVariant = null) {
+    // Validation
+    if (!variant.id) {
+      throw new Error("Variant must have id");
+    }
+
+    if (!variant.name) {
+      throw new Error("Variant must have name");
+    }
+
+    if (!Array.isArray(variant.segments) || !variant.segments.length) {
+      throw new Error("Variant must have segments");
+    }
+
+    // If is main variant
+    const isMain = !mainVariant;
+    if (isMain) {
+      if (!["ASC", "DESC"].includes(variant.direction)) {
+        throw new Error("Main variant must have valid direction");
+      }
+
+      if (!Array.isArray(variant.entryNotes) || !variant.entryNotes.length) {
+        throw new Error("Main variant entryNotes required");
+      }
+
+      if (!variant.endingNote) {
+        throw new Error("Main variant endingNote required");
+      }
+
+      if (!Array.isArray(variant.dominantNotes) || !variant.dominantNotes.length) {
+        throw new Error("Main variant dominantNotes required");
+      }
+    }
+
+    // Merge defaults from main variant if provided
+    const firstSegment = variant.segments[0];
+    const leadingInterval = MakamSegment.getById(firstSegment.id).leadingInterval;
+    const direction = variant.direction ?? mainVariant?.direction;
+
+    variant = {
+      ...mainVariant,
+      ...variant,
+      isHidden: variant.isHidden ?? false,
+      direction,
+      isAscending: direction === "ASC",
+      entryNotes: variant.entryNotes ?? mainVariant?.entryNotes,
+      endingNote: variant.endingNote ?? mainVariant?.endingNote,
+      dominantNotes: variant.dominantNotes ?? mainVariant?.dominantNotes,
+      leadingInterval,
+      segments: variant.segments ?? mainVariant?.segments,
+    };
+
+    this.#populateSegments(variant);
+    variant.intervals = this.#getVariantIntervals(variant);
+    variant.notes = this.#getVariantNotes(variant);
+
+    Object.freeze(variant.segments);
+    Object.freeze(variant.intervals);
+    Object.freeze(variant.notes);
+    return Object.freeze(variant);
   }
 
-  static getById(id) {
-    const makamData = Makams.find((makam) => makam.id === id);
-    return makamData ? new Makam(makamData) : null;
+  #populateSegments(variant) {
+    let cursor = 0;
+    variant.segments = variant.segments.map((segment) => {
+      const segmentDef = MakamSegment.getById(segment.id);
+      const segmentName = segment.name ?? segmentDef.name;
+      const intervals = segment.intervals?.length
+        ? segment.intervals
+        : segmentDef.getIntervalsBySize(segment.size);
+
+      if (segment.size && intervals.length !== segment.size - 1) {
+        throw new Error(`Invalid size for segment ${segment.id}`);
+      }
+
+      const hasExplicitPosition = typeof segment.position === "number";
+      const position = hasExplicitPosition ? segment.position : cursor;
+      const octavePosition = this.#octavePosition + position;
+      cursor += intervals.length;
+
+      return Object.freeze({
+        id: segmentDef.id,
+        name: segmentName,
+        intervals,
+        size: intervals.length + 1,
+        position,
+        octavePosition,
+      });
+    });
+  }
+
+  #getVariantIntervals(variant) {
+    const intervals = [];
+    let cursor = 0;
+
+    variant.segments.forEach((segment) => {
+      segment.intervals.forEach((intervalValue, intervalIndex) => {
+        const index = cursor + intervalIndex;
+        if (intervals[index] !== undefined && intervals[index] !== intervalValue) {
+          throw new Error(`Interval conflict at position ${index}`);
+        }
+
+        intervals[index] = intervalValue;
+      });
+
+      cursor += segment.intervals.length;
+    });
+
+    return Object.freeze(intervals);
+  }
+
+  #getVariantNotes(variant) {
+    const baseStep = Octave.TwoOctaves.getStepByPosition(this.#octavePosition);
+    const baseNote = baseStep.note.match(/^([A-G][#b]?)/)[1];
+    const intervals = this.#getVariantIntervals(variant);
+    return Object.freeze(
+      Note.intervalsToNormalizedNotes(baseNote, intervals).map((noteKey) => new Note(noteKey))
+    );
   }
 
   deconstruct() {

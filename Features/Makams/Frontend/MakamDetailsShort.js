@@ -85,44 +85,52 @@ export class MakamDetailsShort extends LitElement {
     });
   }
 
-  #renderSegmentName(segment, index) {
-    const variant = this.makam.mainVariant;
-    const intervals = this.makam.getSegmentIntervals(variant.id, index);
+  #renderSegmentName(segment, omitDegree = false) {
+    const intervals = segment.intervals;
     const intervalsAsString = intervals.map((interval) => Interval.getName(interval)).join("-");
     const noteCount = intervals.length + 1;
 
-    const segmentOctavePosition = this.makam.getSegmentOctavePosition(variant.id, index);
-    const segmentOctaveStep = Octave.TwoOctaves.getStepByPosition(segmentOctavePosition);
+    const degree = segment.position + 1;
+    const degreeLabel = omitDegree ? `${degree}η` : `${degree}η βαθμίδα`;
 
-    let segmentName = MakamSegment.getById(segment.id).name;
-    segmentName = `${noteCount}x ${segmentName} στο ${segmentOctaveStep.label}`;
+    const segmentOctaveStep = Octave.TwoOctaves.getStepByPosition(segment.octavePosition);
+    const noteKey = segmentOctaveStep.note.match(/^([A-G][#b]?)/)[1];
+    const note = new Note(noteKey);
+    const degreeNote = `${note.name} ${segmentOctaveStep.label}`;
 
-    return html`<strong
-      data-bs-toggle="tooltip"
-      data-bs-placement="top"
-      title="${intervalsAsString}"
-      style="cursor: help;"
-      >${segmentName}</strong
-    >`;
+    return html`
+      <strong>
+        <span data-bs-toggle="tooltip" title="${intervalsAsString}" style="cursor: help;">
+          ${noteCount}x ${segment.name}
+        </span>
+      </strong>
+      ${" στη "}
+      <strong>
+        <span data-bs-toggle="tooltip" title="${degreeNote}" style="cursor: help;">
+          ${degreeLabel}
+        </span>
+      </strong>
+    `;
   }
 
   #renderSegmentComposition() {
     const mainVariant = this.makam.mainVariant;
-    const segmentParts = mainVariant.segments.map((segment, index) =>
-      this.#renderSegmentName(segment, index)
-    );
+    const segments = mainVariant.segments;
 
-    return segmentParts.reduce((acc, part, index) => {
-      if (index === 0) {
-        return html`ένα ${part}`;
-      }
+    return html`<ul>
+      ${segments.map((segment, index) => {
+        const isFirst = index === 0;
+        const isLast = index === segments.length - 1;
+        const prefix = isFirst ? "ένα" : isLast ? "και ένα" : "ένα";
 
-      if (index === segmentParts.length - 1) {
-        return html`${acc} κι ένα ${part}`;
-      }
+        const part = this.#renderSegmentName(segment, !isFirst);
+        const suffix = isLast ? "." : "";
 
-      return html`${acc}, ένα ${part}`;
-    }, html``);
+        const extra = isFirst ? " του δρόμου" : "";
+
+        return html`<li>${prefix} ${part}${extra}${suffix}</li>`;
+      })}
+    </ul>`;
   }
 
   #renderEntryNotes() {
@@ -170,14 +178,10 @@ export class MakamDetailsShort extends LitElement {
     // Get all the pieces we need
     const baseNoteName = this.#getBaseNoteName();
     const segmentComposition = this.#renderSegmentComposition();
-    const intervals = this.makam
-      .getIntervals()
+    const intervals = this.makam.mainVariant.intervals
       .map((interval) => Interval.getName(interval))
       .join("-");
-    const notesAsString = this.makam
-      .getNotes()
-      .map((note) => note.toFullName())
-      .join(", ");
+    const notesAsString = this.makam.mainVariant.notes.map((note) => note.toFullName()).join(", ");
 
     const leadingToneInfo = this.#getLeadingToneInfo();
     const leadingToneElement = html`<strong
@@ -189,33 +193,37 @@ export class MakamDetailsShort extends LitElement {
       >${leadingToneInfo.intervalType}</strong
     >`;
 
+    const movementType = this.makam.mainVariant.isAscending ? "ανιούσα" : "κατιούσα";
     const entryNoteElements = this.#renderEntryNotes();
     const endingDegree = this.#renderDegreeWithTooltip(mainVariant.endingNote);
     const dominantElements = this.#renderDominantNotes();
     const dominantLabel = this.#getDominantLabel();
 
     const parts = [];
-
-    const movementType = this.makam.mainVariant.isAscending ? "ανιούσα" : "κατιούσα";
-
     parts.push(
       html`<p>
         Το μακάμ <strong>${this.makam.name}</strong> θεμελιώνεται στο
-        <strong>${baseNoteName}</strong><br />
+        <strong>${baseNoteName}</strong> και έχει <strong>${movementType}</strong> κίνηση.
       </p>`
     );
-    parts.push(html`<p>και έχει <strong>${movementType}</strong> κίνηση.</p>`);
-    parts.push(html`<p>Αποτελείται από ${segmentComposition}.</p>`);
-    parts.push(html`<p>Έτσι προκύπτουν τα διαστήματά <strong>${intervals}</strong></p>`);
-    parts.push(html`<p>ή αλλιώς οι νότες <strong>${notesAsString}</strong>.</p>`);
-    parts.push(html`<p>Διαθέτει προσαγωγέα ${leadingToneElement}.</p>`);
+    parts.push(html`<p>Αποτελείται από ${segmentComposition}</p>`);
+    parts.push(
+      html`<p>
+        Έτσι προκύπτουν τα διαστήματά <strong>${intervals}</strong> ή αλλιώς οι νότες
+        <strong>${notesAsString}</strong>.
+      </p>`
+    );
     parts.push(
       html`<p>
         Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα και καταλήγει στη
         ${endingDegree}.
       </p>`
     );
-    parts.push(html`<p>${dominantLabel} ${dominantElements}.</p>`);
+    parts.push(
+      html`<p>
+        Διαθέτει προσαγωγέα ${leadingToneElement} και ${dominantLabel} ${dominantElements}.
+      </p>`
+    );
 
     return parts;
   }
@@ -232,7 +240,7 @@ export class MakamDetailsShort extends LitElement {
 
   #getBaseNoteName() {
     const octaveStep = Octave.TwoOctaves.getStepByPosition(this.makam.octavePosition);
-    const baseNote = this.makam.getNotes()[0].toFullName();
+    const baseNote = this.makam.mainVariant.notes[0].toFullName();
     return `${baseNote} ${octaveStep.label}`;
   }
 

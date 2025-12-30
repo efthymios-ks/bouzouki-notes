@@ -48,7 +48,7 @@ export default [
         id: "RAST_SAZKAR",
         name: "Σαζκιάρ",
         segments: [
-          { id: "RAST", intervals: [3, 1, 1, 2], position: 0 },
+          { id: "RAST", name: "Ραστ Σαζκιάρ", intervals: [3, 1, 1, 2], position: 0 },
           { id: "RAST", size: 4 },
         ],
       },
