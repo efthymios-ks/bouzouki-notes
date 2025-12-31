@@ -25,18 +25,15 @@ export class MakamCard extends LitElement {
     );
   }
 
-  #getFullIntervalsString() {
-    const intervals = this.makam.mainVariant.intervals;
-    return intervals.map((interval) => Interval.getName(interval)).join("-");
-  }
-
   render() {
     if (!this.makam) {
       throw new Error("makam property is required");
     }
 
     const makamName = this.makam.name;
-    const intervals = this.#getFullIntervalsString();
+    const intervals = this.makam.mainVariant.intervals
+      .map((interval) => Interval.getName(interval))
+      .join("-");
 
     return html`
       <div

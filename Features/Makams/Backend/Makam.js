@@ -176,23 +176,23 @@ export class Makam {
   }
 
   #getVariantIntervals(variant) {
-    const intervals = [];
-    let cursor = 0;
+    const intervals = new Map();
 
     variant.segments.forEach((segment) => {
+      const position = segment.position ?? 0;
       segment.intervals.forEach((intervalValue, intervalIndex) => {
-        const index = cursor + intervalIndex;
-        if (intervals[index] !== undefined && intervals[index] !== intervalValue) {
+        const index = position + intervalIndex;
+        if (intervals.has(index) && intervals.get(index) !== intervalValue) {
           throw new Error(`Interval conflict at position ${index}`);
         }
 
-        intervals[index] = intervalValue;
+        intervals.set(index, intervalValue);
       });
-
-      cursor += segment.intervals.length;
     });
 
-    return Object.freeze(intervals);
+    const sortedKeys = Array.from(intervals.keys()).sort((a, b) => a - b);
+    const result = sortedKeys.map((key) => intervals.get(key));
+    return Object.freeze(result);
   }
 
   #getVariantNotes(variant) {

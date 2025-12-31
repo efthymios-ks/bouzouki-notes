@@ -76,7 +76,9 @@ export class MakamDetailsShort extends LitElement {
 
     return Octave.TwoOctaves.steps.find((step) => {
       const key = this.#extractNoteKey(step.note);
-      if (key !== targetKey) return false;
+      if (key !== targetKey) {
+        return false;
+      }
 
       return (
         (step.position === basePosition && targetSemitone < baseSemitone) ||
@@ -121,12 +123,21 @@ export class MakamDetailsShort extends LitElement {
       ${segments.map((segment, index) => {
         const isFirst = index === 0;
         const isLast = index === segments.length - 1;
-        const prefix = isFirst ? "ένα" : isLast ? "και ένα" : "ένα";
+        const isSecondLast = index === segments.length - 2;
 
+        const prefix = isFirst ? "ένα" : isLast ? "και ένα" : "ένα";
         const part = this.#renderSegmentName(segment, !isFirst);
-        const suffix = isLast ? "." : "";
 
         const extra = isFirst ? " του δρόμου" : "";
+
+        let suffix = "";
+        if (!isLast && !isSecondLast) {
+          suffix = ",";
+        }
+
+        if (isLast) {
+          suffix = ".";
+        }
 
         return html`<li>${prefix} ${part}${extra}${suffix}</li>`;
       })}
@@ -168,8 +179,8 @@ export class MakamDetailsShort extends LitElement {
   #getDominantLabel() {
     const mainVariant = this.makam.mainVariant;
     return mainVariant.dominantNotes.length === 1
-      ? "Δεσπόζουσα βαθμίδα είναι"
-      : "Δεσπόζουσες βαθμίδες είναι";
+      ? "δεσπόζουσα βαθμίδα είναι"
+      : "δεσπόζουσες βαθμίδες είναι";
   }
 
   #getDescription() {
@@ -203,7 +214,7 @@ export class MakamDetailsShort extends LitElement {
     parts.push(
       html`<p>
         Το μακάμ <strong>${this.makam.name}</strong> θεμελιώνεται στο
-        <strong>${baseNoteName}</strong> και έχει <strong>${movementType}</strong> κίνηση.
+        <strong>${baseNoteName}</strong>.
       </p>`
     );
     parts.push(html`<p>Αποτελείται από ${segmentComposition}</p>`);
@@ -215,8 +226,8 @@ export class MakamDetailsShort extends LitElement {
     );
     parts.push(
       html`<p>
-        Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα και καταλήγει στη
-        ${endingDegree}.
+        Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα, έχει
+        <strong>${movementType}</strong> κίνηση και καταλήγει στη ${endingDegree}.
       </p>`
     );
     parts.push(

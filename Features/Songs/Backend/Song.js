@@ -43,6 +43,12 @@ export class Song {
     return this.#year;
   }
 
+  get youtubeSearchUrl() {
+    const author = this.#authors[0];
+    const query = encodeURIComponent(`${author} ${this.#name}`);
+    return `https://www.youtube.com/results?search_query=${query}`;
+  }
+
   static #splitPipeDelimited(value) {
     const items = Array.isArray(value) ? value : [value];
     return items.flatMap((item) => item.split("|")).map((item) => item.trim());

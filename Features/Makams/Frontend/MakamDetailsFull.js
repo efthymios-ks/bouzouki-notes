@@ -76,12 +76,8 @@ export class MakamDetailsFull extends LitElement {
   }
 
   #getSongsForMakam() {
-    const makamIds = new Set([this.makam.id]);
-    this.#getAllVariants().forEach(({ variant }) => {
-      if (variant.id) {
-        makamIds.add(variant.id);
-      }
-    });
+    const variantIds = this.makam.variants.map((variant) => variant.id);
+    const makamIds = new Set([this.makam.id, ...variantIds]);
 
     const songsMap = new Map();
     makamIds.forEach((makamId) => {
@@ -98,25 +94,11 @@ export class MakamDetailsFull extends LitElement {
       if (authorsA !== authorsB) {
         return authorsA.localeCompare(authorsB);
       }
+
       return a.name.localeCompare(b.name);
     });
 
     return allSongs;
-  }
-
-  #getIntervalsForVariant(variant) {
-    return this.makam.getIntervals(variant.id);
-  }
-
-  #calculateStartPosition(variant) {
-    const basePosition = this.makam.octavePosition;
-    const firstSegment = variant.segments[0];
-
-    if (firstSegment?.position !== undefined) {
-      return basePosition + firstSegment.position;
-    }
-
-    return basePosition;
   }
 
   #calculatePositions(variant, makamStartPosition, totalSteps) {
@@ -222,8 +204,8 @@ export class MakamDetailsFull extends LitElement {
   }
 
   #buildSheetNotes(variant) {
-    const allIntervals = this.#getIntervalsForVariant(variant);
-    const makamStartPosition = this.#calculateStartPosition(variant);
+    const allIntervals = variant.intervals;
+    const makamStartPosition = variant.octavePosition;
     const totalSteps = allIntervals.length;
 
     const { displayStartPosition, calculationPosition } = this.#calculatePositions(
@@ -270,10 +252,7 @@ export class MakamDetailsFull extends LitElement {
       const segmentSize = segment.size || makamSegment.intervals[0].length + 1;
       // For N notes, there are N-1 intervals
       const intervalCount = segmentSize - 1;
-      const intervals = this.#getIntervalsForVariant(variant).slice(
-        noteCount,
-        noteCount + intervalCount
-      );
+      const intervals = variant.intervals.slice(noteCount, noteCount + intervalCount);
       if (segment.position !== undefined) {
         currentPosition = basePosition + segment.position;
       }
@@ -320,7 +299,7 @@ export class MakamDetailsFull extends LitElement {
     const segmentsToProcess = variant.segments;
     const allNotes = this.#buildSheetNotes(variant).map((note) => note.note.replace(/[0-9]/g, ""));
 
-    const allIntervals = this.#getIntervalsForVariant(variant);
+    const allIntervals = variant.intervals;
 
     segmentsToProcess.forEach((segment) => {
       const makamSegment = MakamSegment.getById(segment.id);
@@ -433,8 +412,11 @@ export class MakamDetailsFull extends LitElement {
         <ul>
           ${songs.map(
             (song) => html`
-              <li class="mb-2">
-                <strong>${song.name}</strong> <em>${song.authors.join(", ")}</em>
+              <li class="mb-2 d-flex align-items-center justify-content-between">
+                <div><strong>${song.name}</strong> <em>${song.authors.join(", ")}</em></div>
+                <a href="${song.youtubeSearchUrl}" target="_blank" rel="noopener" title="YouTube">
+                  <i class="bi bi-youtube text-danger"></i>
+                </a>
               </li>
             `
           )}
