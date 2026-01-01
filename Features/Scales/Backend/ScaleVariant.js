@@ -37,8 +37,8 @@ export class ScaleVariant {
     this.#tonic = tonic;
 
     if (tonic) {
-      this.#notes = Note.calculateNotesFromIntervals(tonic, this.#intervals);
-      this.#normalizedNotes = Note.calculateNormalizedNotes(tonic, this.#intervals);
+      this.#notes = Note.intervalsToNotes(tonic, this.#intervals);
+      this.#normalizedNotes = Note.intervalsToNormalizedNotes(tonic, this.#intervals);
 
       let currentNoteIndex = 0;
       for (const unit of this.#units) {

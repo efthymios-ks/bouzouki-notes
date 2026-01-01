@@ -14,8 +14,20 @@ export class MakamSegment {
   #normalizedNotes = [];
 
   constructor({ id, name, intervals, leadingInterval, placements, notes = [] }) {
-    if (!id || !name || !intervals || !placements) {
-      throw new Error("MakamSegment requires id, name, intervals, and placements");
+    if (!id) {
+      throw new Error("Id cannot be empty");
+    }
+
+    if (!name) {
+      throw new Error("Name cannot be empty");
+    }
+
+    if (!intervals) {
+      throw new Error("Intervals cannot be empty");
+    }
+
+    if (!placements) {
+      throw new Error("Placements cannot be empty");
     }
 
     // Validate intervals
@@ -102,32 +114,19 @@ export class MakamSegment {
   }
 
   #calculateNotes() {
-    const baseOctaveStep = Octave.TwoOctaves.steps.find((step) => step.position === this.#baseStep);
-
-    if (!baseOctaveStep) {
-      console.warn(`No octave step found for position ${this.#baseStep}`);
-      return [];
-    }
-
+    const baseOctaveStep = Octave.TwoOctaves.getStepByPosition(this.#baseStep);
     const baseNote = baseOctaveStep.note.match(/^([A-G])/)[1];
 
     return this.#intervals.map((intervalArray) => {
-      return Note.calculateNotesFromIntervals(baseNote, intervalArray);
+      return Note.intervalsToNotes(baseNote, intervalArray);
     });
   }
 
   #calculateNormalizedNotes() {
-    const baseOctaveStep = Octave.TwoOctaves.steps.find((step) => step.position === this.#baseStep);
-
-    if (!baseOctaveStep) {
-      console.warn(`No octave step found for position ${this.#baseStep}`);
-      return [];
-    }
-
+    const baseOctaveStep = Octave.TwoOctaves.getStepByPosition(this.#baseStep);
     const baseNote = baseOctaveStep.note.match(/^([A-G])/)[1];
-
     return this.#intervals.map((intervalArray) => {
-      return Note.calculateNormalizedNotes(baseNote, intervalArray);
+      return Note.intervalsToNormalizedNotes(baseNote, intervalArray);
     });
   }
 
@@ -148,13 +147,17 @@ export class MakamSegment {
     // Find the interval array that matches the segment size
     // size = number of notes, intervals.length = size - 1
     const targetIntervalLength = segmentSize - 1;
-    const intervalArray = this.#intervals.find((arr) => arr.length === targetIntervalLength);
+    const intervalValues = this.#intervals.find(
+      (intervalValues) => intervalValues.length === targetIntervalLength
+    );
 
-    if (!intervalArray) {
-      throw new Error(`No interval array found for segment '${this.#id}' with size ${segmentSize}`);
+    if (!intervalValues) {
+      throw new Error(
+        `No interval values found for segment '${this.#id}' with size ${segmentSize}`
+      );
     }
 
-    return intervalArray;
+    return intervalValues;
   }
 
   deconstruct() {

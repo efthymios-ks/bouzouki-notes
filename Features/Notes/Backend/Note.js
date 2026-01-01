@@ -91,28 +91,25 @@ export class Note {
 
   static transpose(note, interval) {
     const key = note instanceof Note ? note.key : note;
-    const semitone = Note.getSemitone(key);
-    const newSemitone = (semitone + interval + 12) % 12;
-    return Note.sharpNotes[newSemitone];
+    const semitones = Note.countSemitones(key);
+    const newSemitones = (semitones + interval + 12) % 12;
+    return Note.sharpNotes[newSemitones];
   }
 
-  static getSemitone(note) {
+  static countSemitones(note, baseNote = "C") {
     const key = note instanceof Note ? note.key : note;
-
     const base = key[0];
-    const accidental = key[1] === "#" ? 1 : key[1] === "b" ? -1 : 0;
+    const accidentalChar = key[1];
+    const accidental = accidentalChar === "#" ? 1 : accidentalChar === "b" ? -1 : 0;
 
-    const baseSemitone = Note.semitoneMap[base];
-    if (baseSemitone === undefined) {
-      throw new Error(`Invalid note: ${note}`);
-    }
-
-    return (baseSemitone + accidental + 12) % 12;
+    const semitonesFromC = (Note.semitoneMap[base] + accidental + 12) % 12;
+    const baseSemitone = Note.semitoneMap[baseNote];
+    return (semitonesFromC - baseSemitone + 12) % 12;
   }
 
-  static calculateNotesFromIntervals(tonic, intervals) {
+  static intervalsToNotes(tonic, intervals) {
     if (!tonic || !intervals || !Array.isArray(intervals)) {
-      throw new Error("calculateNotesFromIntervals requires a tonic note and intervals array");
+      throw new Error("tonic and intervals are required");
     }
 
     const semitoneToNote = Note.sharpNotes.reduce((acc, note, index) => {
@@ -120,16 +117,7 @@ export class Note {
       return acc;
     }, {});
 
-    const getSemitone = (note) => {
-      const baseSemitone = Note.semitoneMap[note[0]];
-      if (note.length > 1) {
-        if (note[1] === "#") return (baseSemitone + 1) % 12;
-        if (note[1] === "b") return (baseSemitone + 11) % 12;
-      }
-      return baseSemitone;
-    };
-
-    let currentSemitone = getSemitone(tonic);
+    let currentSemitone = Note.countSemitones(tonic);
     const notes = [tonic];
 
     for (const step of intervals) {
@@ -140,21 +128,12 @@ export class Note {
     return notes;
   }
 
-  static calculateNormalizedNotes(tonic, intervals) {
+  static intervalsToNormalizedNotes(tonic, intervals) {
     if (!tonic || !intervals || !Array.isArray(intervals)) {
-      throw new Error("calculateNormalizedNotes requires a tonic note and intervals array");
+      throw new Error("tonic and intervals are required");
     }
 
-    const notes = Note.calculateNotesFromIntervals(tonic, intervals);
-
-    const getSemitone = (note) => {
-      const baseSemitone = Note.semitoneMap[note[0]];
-      if (note.length === 1) return baseSemitone;
-      if (note[1] === "#") return (baseSemitone + 1) % 12;
-      if (note[1] === "b") return (baseSemitone + 11) % 12;
-      return baseSemitone;
-    };
-
+    const notes = Note.intervalsToNotes(tonic, intervals);
     const composeNote = (baseLetter, accidental) => baseLetter + (accidental || "");
 
     const normalizedNotes = [];
@@ -162,15 +141,17 @@ export class Note {
     let tonicIndex = Note.naturalNotes.indexOf(tonicLetter);
 
     for (let i = 0; i < notes.length; i++) {
-      const targetSemitone = getSemitone(notes[i]);
+      const targetSemitone = Note.countSemitones(notes[i]);
       const expectedLetter = Note.naturalNotes[(tonicIndex + i) % Note.naturalNotes.length];
       const baseSemitone = Note.semitoneMap[expectedLetter];
       let diff = (targetSemitone - baseSemitone + 12) % 12;
 
       let accidental = "";
-      if (diff === 1) accidental = "#";
-      else if (diff === 11) accidental = "b";
-      else if (diff !== 0) {
+      if (diff === 1) {
+        accidental = "#";
+      } else if (diff === 11) {
+        accidental = "b";
+      } else if (diff !== 0) {
         normalizedNotes.push(notes[i]);
         continue;
       }
