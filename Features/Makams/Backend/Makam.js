@@ -101,7 +101,7 @@ export class Makam {
     // If is main variant
     const isMain = !mainVariant;
     if (isMain) {
-      if (!["ASC", "DESC"].includes(variant.direction)) {
+      if (!["ASC", "DESC", "ASC|DESC"].includes(variant.direction)) {
         throw new Error("Main variant must have valid direction");
       }
 
@@ -128,12 +128,14 @@ export class Makam {
       ...variant,
       isHidden: variant.isHidden ?? false,
       direction,
-      isAscending: direction === "ASC",
+      isAscending: direction.startsWith("ASC"),
+      isBidirectional: direction === "ASC|DESC",
       entryNotes: variant.entryNotes ?? mainVariant?.entryNotes,
       endingNote: variant.endingNote ?? mainVariant?.endingNote,
       dominantNotes: variant.dominantNotes ?? mainVariant?.dominantNotes,
       leadingInterval,
       segments: variant.segments ?? mainVariant?.segments,
+      octavePosition: this.#octavePosition + firstSegment.position,
     };
 
     this.#populateSegments(variant);
@@ -162,7 +164,12 @@ export class Makam {
       const hasExplicitPosition = typeof segment.position === "number";
       const position = hasExplicitPosition ? segment.position : cursor;
       const octavePosition = this.#octavePosition + position;
-      cursor += intervals.length;
+
+      if (hasExplicitPosition) {
+        cursor = position + intervals.length;
+      } else {
+        cursor += intervals.length;
+      }
 
       return Object.freeze({
         id: segmentDef.id,
@@ -196,7 +203,7 @@ export class Makam {
   }
 
   #getVariantNotes(variant) {
-    const baseStep = Octave.TwoOctaves.getStepByPosition(this.#octavePosition);
+    const baseStep = Octave.TwoOctaves.getStepByPosition(variant.octavePosition);
     const baseNote = baseStep.note.match(/^([A-G][#b]?)/)[1];
     const intervals = this.#getVariantIntervals(variant);
     return Object.freeze(

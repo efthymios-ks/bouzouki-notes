@@ -28,5 +28,20 @@
   { name: "Οι λαχανάδες", makamIds: ["SEGAH"], authors: ["Βαγγέλης Παπάζογλου"], year: 1934 },
   { name: "Σαν εγύριζα απ' την Πύλο", makamIds: ["SEGAH"], authors: ["Βαγγέλης Παπάζογλου"], year: 1935 },
   { name: "Ο φασούλας", makamIds: ["SEGAH"], authors: ["Γιώργος Μπάτης"], year: 1936 },
-  { name: "Γεντί Κουλέ", makamIds: ["SEGAH"], authors: ["Αιμίλιος Σαββίδης|Σώσος Ιωαννίδης"], year: 1934 }
+  { name: "Γεντί Κουλέ", makamIds: ["SEGAH"], authors: ["Αιμίλιος Σαββίδης|Σώσος Ιωαννίδης"], year: 1934 },
+  { name: "Βάλε με στην αγκαλιά σου", makamIds: ["HUSEYINI"], authors: ["Στελλάκης Περπινιάδης"], year: 1934 },
+  { name: "Μα τι να κάνω σ' αγαπώ", makamIds: ["HUSEYINI"], authors: ["Γιώργος Κάβουρας"], year: 1939 },
+  { name: "Ο τζογαδόρος", makamIds: ["HUSEYINI"], authors: ["Αντώνης Διαμαντίδης"], year: 1933 },
+  { name: "Πάμε για το πράσο", makamIds: ["HUSEYINI"], authors: ["Ρίτα Αμπατζή"], year: 1934 },
+  { name: "Πατρινιά", makamIds: ["HUSEYINI"], authors: ["Ρόζα Εσκενάζυ"], year: 1935 },
+  { name: "Τα δυο σου χέρια πήρανε", makamIds: ["HUSEYINI"], authors: ["Μάρκος Βαμβακάρης"], year: 1939 },
+  { name: "Το παιχνίδι του Αμερικάνου", makamIds: ["HUSEYINI"], authors: ["Ρίτα Αμπατζή"], year: 1936 },
+  { name: "Το φλυτζάνι του Γιάννη", makamIds: ["HUSEYINI"], authors: ["Ρίτα Αμπατζή"], year: 1934 },
+  { name: "Τούτ' οι μπάτσοι που 'ρθαν τώρα", makamIds: ["HUSEYINI"], authors: ["Γιάννης Ιωαννίδης"], year: 1929 },
+  { name: "Γεια σου Λόλα μερακλού", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Κώστας Ρούκουνας"], year: 1934 },
+  { name: "Οι γυρολόγοι", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Κώστας Ρούκουνας"], year: 1935 },
+  { name: "Τουρκολιμανιώτισσα", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Γρηγόρης Ασίκης"], year: 1932 },
+  { name: "Τσερκές", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Ρίτα Αμπατζή"], year: 1933 },
+  { name: "Βλάμισσα", makamIds: ["HUSEYINI|HUZAM"], authors: ["Στελλάκης Περπινιάδης"], year: 1936 },
+  { name: "Βρε μάγκες δυο στη φυλακή", makamIds: ["HUSEYINI|HUZAM"], authors: ["Ρίτα Αμπατζή"], year: 1934 }
 ];
