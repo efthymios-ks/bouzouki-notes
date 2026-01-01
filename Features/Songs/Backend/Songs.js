@@ -43,5 +43,16 @@
   { name: "Τουρκολιμανιώτισσα", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Γρηγόρης Ασίκης"], year: 1932 },
   { name: "Τσερκές", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Ρίτα Αμπατζή"], year: 1933 },
   { name: "Βλάμισσα", makamIds: ["HUSEYINI|HUZAM"], authors: ["Στελλάκης Περπινιάδης"], year: 1936 },
-  { name: "Βρε μάγκες δυο στη φυλακή", makamIds: ["HUSEYINI|HUZAM"], authors: ["Ρίτα Αμπατζή"], year: 1934 }
+  { name: "Βρε μάγκες δυο στη φυλακή", makamIds: ["HUSEYINI|HUZAM"], authors: ["Ρίτα Αμπατζή"], year: 1934 },
+  { name: "Αληθινή αγαπή", makamIds: ["SABAH"], authors: ["Ρόζα Εσκενάζυ"], year: 1936 },
+  { name: "Γιαλό - γιαλό", makamIds: ["SABAH"], authors: ["Κώστας Τσανάκος"], year: 1937 },
+  { name: "Ήσουνα ξυπόλητη", makamIds: ["SABAH"], authors: ["Α. Κωστής"], year: 1930 },
+  { name: "Ο ξενιτεμένος", makamIds: ["SABAH"], authors: ["Ρόζα Εσκενάζυ"], year: 1935 },
+  { name: "Ο παπατζής", makamIds: ["SABAH"], authors: ["Στελλάκης Περπινιάδης"], year: 1934 },
+  { name: "Ο συνάχης", makamIds: ["SABAH"], authors: ["Μάρκος Βαμβακάρης"], year: 1934 },
+  { name: "Οι φυλακές του Ωρωπού", makamIds: ["SABAH"], authors: ["Γιώργος Μπάτης"], year: 1934 },
+  { name: "Σορόπης", makamIds: ["SABAH"], authors: ["Κώστας Ρούκουνας"], year: 1935 },
+  { name: "Στην υπόγα", makamIds: ["SABAH"], authors: ["Α. Κωστής"], year: 1930 },
+  { name: "Τσερκέζα", makamIds: ["SABAH"], authors: ["Ρόζα Εσκενάζυ"], year: 1394 },
+  { name: "Ψεύτα", makamIds: ["SABAH|NIKRIZ"], authors: ["Ευάγγελος Σωφρονίου"], year: 1930 }
 ];

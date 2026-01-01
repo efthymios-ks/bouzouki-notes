@@ -168,4 +168,42 @@ export default [
       },
     ],
   },
+  {
+    id: "SABAH",
+    name: "Σαμπάχ",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "SABAH",
+        name: "Σαμπάχ",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "SABAH", size: 4, position: 0 },
+          { id: "HIJAZ", size: 5, position: 2 },
+        ],
+        entryNotes: [1, 3],
+        endingNote: 1,
+        dominantNotes: [1, 3],
+      },
+      {
+        id: "SABAH_EXTENDED_UPPER_HIJAZ",
+        name: "Επέκταση ψηλά με Χιτζάζ",
+        segments: [
+          { id: "SABAH", size: 4, position: 0 },
+          { id: "HIJAZ", size: 5, position: 2 },
+          { id: "HIJAZ", size: 4, position: 6 },
+        ],
+      },
+      {
+        id: "SABAH_EXTENDED_UPPER_NIKRIZ",
+        name: "Επέκταση ψηλά με Νικρίζ",
+        segments: [
+          { id: "SABAH", size: 4, position: 0 },
+          { id: "HIJAZ", size: 5, position: 2 },
+          { id: "NIKRIZ", size: 5, position: 5 },
+        ],
+      },
+    ],
+  },
 ];

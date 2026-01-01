@@ -80,10 +80,20 @@ export class MakamDetailsShort extends LitElement {
         return false;
       }
 
-      return (
-        (step.position === basePosition && targetSemitone < baseSemitone) ||
-        (step.position < basePosition && targetSemitone >= baseSemitone)
-      );
+      // Same position: target must have fewer semitones (e.g., Cb vs C)
+      if (step.position === basePosition) {
+        return targetSemitone < baseSemitone;
+      }
+
+      // Different position: take the one closest below the base
+      // For notes below in the scale (targetSemitone < baseSemitone), use position < basePosition
+      // For notes that wrap around (targetSemitone > baseSemitone), they're at higher positions but lower pitch
+      if (targetSemitone < baseSemitone) {
+        return step.position < basePosition;
+      } else {
+        // Wraparound case: target is higher position but should be below in pitch (like B before C)
+        return step.position > basePosition;
+      }
     });
   }
 
@@ -281,7 +291,6 @@ export class MakamDetailsShort extends LitElement {
     const leadingNote = new Note(leadingNoteKey);
 
     const leadingStep = this.#resolveOctave(basePosition, baseNoteKey, leadingNoteKey);
-
     const intervalType = Interval.getLongNameAccusative(leadingInterval).toLowerCase();
     const noteName = leadingStep
       ? `${leadingNote.toFullName()} ${leadingStep.label}`
