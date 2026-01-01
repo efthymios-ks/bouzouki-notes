@@ -5,14 +5,19 @@ export class Song {
   #authors = [];
   #makamIds = [];
   #year = null;
+  #hasUnknownAuthor = false;
 
   constructor({ name, authors, makamIds, year }) {
     if (!name) {
       throw new Error("Name cannot be empty");
     }
 
-    if (!authors || authors.length === 0) {
-      throw new Error("Authors cannot be empty");
+    // Filter authors non empty
+    authors = authors || [];
+    authors = authors.filter((author) => author && author.trim().length > 0);
+    if (authors.length === 0) {
+      authors = ["Ανώνυμος"];
+      this.#hasUnknownAuthor = true;
     }
 
     if (!makamIds || makamIds.length === 0) {
@@ -44,7 +49,7 @@ export class Song {
   }
 
   get youtubeSearchUrl() {
-    const author = this.#authors[0];
+    const author = this.#hasUnknownAuthor ? "τραγούδι" : this.#authors[0];
     const query = encodeURIComponent(`${author} ${this.#name}`);
     return `https://www.youtube.com/results?search_query=${query}`;
   }

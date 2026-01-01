@@ -8,8 +8,7 @@ $index = 1
 $lines = $rows | ForEach-Object {
   # Use exact CSV header names
   if (-not $_."Name")         { throw "Row ${index}: Name is required" }
-  if (-not $_."MakamScaleId") { throw "Row ${index}: MakamScaleId is required" }
-  if (-not $_."Author")       { throw "Row ${index}: Author is required" }
+  if (-not $_."MakamScaleId") { throw "Row ${index}: MakamScaleId is required" } 
 
   $name   = $_."Name"         -replace '"','\"'
   $makam  = $_."MakamScaleId" -replace '"','\"'
