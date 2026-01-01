@@ -147,7 +147,7 @@ export default [
         id: "HUSEYINI",
         name: "Χουσεϊνί",
         isMain: true,
-        direction: "ASC",
+        direction: "ASC|DESC",
         segments: [
           { id: "USAK", size: 5, position: 0 },
           { id: "RAST", size: 5, position: 3 },

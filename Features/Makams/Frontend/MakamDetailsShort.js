@@ -204,7 +204,11 @@ export class MakamDetailsShort extends LitElement {
       >${leadingToneInfo.intervalType}</strong
     >`;
 
-    const movementType = this.makam.mainVariant.isAscending ? "ανιούσα" : "κατιούσα";
+    const movementType = this.makam.mainVariant.isBidirectional
+      ? "μεταβαλλόμενη"
+      : this.makam.mainVariant.isAscending
+      ? "ανιούσα"
+      : "κατιούσα";
     const entryNoteElements = this.#renderEntryNotes();
     const endingDegree = this.#renderDegreeWithTooltip(mainVariant.endingNote);
     const dominantElements = this.#renderDominantNotes();
