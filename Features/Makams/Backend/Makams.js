@@ -206,4 +206,24 @@ export default [
       },
     ],
   },
+  {
+    id: "HUZAM",
+    name: "Χουζάμ",
+    octavePosition: 2,
+    variants: [
+      {
+        id: "HUZAM",
+        name: "Χουζάμ",
+        isMain: true,
+        direction: "ASC|DESC",
+        segments: [
+          { id: "HUZAM", size: 5, position: 0 },
+          { id: "HIJAZ", size: 5, position: 2 },
+        ],
+        entryNotes: [3],
+        endingNote: 1,
+        dominantNotes: [1, 3],
+      },
+    ],
+  },
 ];
