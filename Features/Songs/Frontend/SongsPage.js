@@ -222,7 +222,7 @@ export class SongsPage extends LitElement {
             <div class="row g-3">
               <!-- Name Filter -->
               <div class="col-md-4">
-                <label class="form-label fw-bold" for="name-filter">Όνομα Τραγουδιού</label>
+                <label class="form-label fw-bold" for="name-filter">Όνομα</label>
                 <input
                   id="name-filter"
                   type="text"
