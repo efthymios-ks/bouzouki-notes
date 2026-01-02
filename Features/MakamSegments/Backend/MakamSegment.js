@@ -13,7 +13,7 @@ export class MakamSegment {
   #notes = [];
   #normalizedNotes = [];
 
-  constructor({ id, name, intervals, leadingInterval, placements, notes = [] }) {
+  constructor({ id, name, intervals, leadingInterval, placements, notes: remarks = [] }) {
     if (!id) {
       throw new Error("Id cannot be empty");
     }
@@ -69,7 +69,7 @@ export class MakamSegment {
     this.#intervals = intervals;
     this.#leadingInterval = leadingInterval;
     this.#placements = placements;
-    this.#remarks = notes;
+    this.#remarks = remarks;
 
     this.#notes = this.#calculateNotes();
     this.#normalizedNotes = this.#calculateNormalizedNotes();
@@ -131,7 +131,9 @@ export class MakamSegment {
   }
 
   static getAll() {
-    return MakamSegments.map((segment) => new MakamSegment(segment));
+    return MakamSegments.map((segment) => new MakamSegment(segment)).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }
 
   static getById(id) {

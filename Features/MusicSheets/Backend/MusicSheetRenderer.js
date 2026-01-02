@@ -80,7 +80,12 @@ export function render(sheetDiv, options) {
   const VF = VexTab.Vex.Flow;
 
   const renderer = new VF.Renderer(sheetDiv, VF.Renderer.Backends.SVG);
-  const artist = new VexTab.Artist(10, 10, sheetOptions.minWidth * 1.5, {
+  let scales = options.notes.length / 8;
+  if (scales < 1) {
+    scales = 1;
+  }
+  const width = sheetOptions.minWidth * scales;
+  const artist = new VexTab.Artist(10, 10, width, {
     scale: sheetOptions.scale,
   });
   const tab = new VexTab.VexTab(artist);

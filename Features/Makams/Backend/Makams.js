@@ -226,4 +226,37 @@ export default [
       },
     ],
   },
+  {
+    id: "HIJAZ",
+    name: "Χιτζάζ",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "HIJAZ_ASC",
+        name: "Ανιούσα",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "HIJAZ", size: 4, position: 0 },
+          { id: "RAST", size: 5 },
+        ],
+        entryNotes: [1, 4],
+        endingNote: 1,
+        dominantNotes: [1, 4],
+      },
+      {
+        id: "HIJAZ_DESC",
+        name: "Κατιούσα",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "HIJAZ", size: 4, position: 0 },
+          { id: "USAK", size: 5 },
+        ],
+        entryNotes: [1, 4],
+        endingNote: 1,
+        dominantNotes: [1, 4],
+      },
+    ],
+  },
 ];

@@ -28,7 +28,7 @@ export default [
       { octavePosition: 5, length: 4 },
       { octavePosition: 8, length: 4 },
     ],
-    notes: [
+    remarks: [
       "Η 2η βαθμίδα έλκεται από την 1η στις καταληκτικές φράσεις (κατιούσα κίνηση) και γίνεται Η-Τ-Τ",
       "Στην πενταχορδική του μορφή λέγεται Χουσεϊνί",
     ],
@@ -113,7 +113,7 @@ export default [
     intervals: [[1, 3, 1]],
     leadingInterval: 1,
     placements: [{ octavePosition: 1, length: 4 }],
-    notes: ["Ισχύει ό,τι και στο Χιτζάζ, αλλά με προσαγωγέα ημιτόνιο αντί για τόνο"],
+    remarks: ["Ισχύει ό,τι και στο Χιτζάζ, αλλά με προσαγωγέα ημιτόνιο αντί για τόνο"],
   },
   {
     id: "PIRAIOTIKO",
@@ -121,7 +121,7 @@ export default [
     intervals: [[1, 3, 2, 1]],
     leadingInterval: 1,
     placements: [{ octavePosition: 0, length: 5 }],
-    notes: ["Παραλλαγή Χιτζάζ με μονιμοποίηση της έλξης της 5ης βαθμίδας από την 4η"],
+    remarks: ["Παραλλαγή Χιτζάζ με μονιμοποίηση της έλξης της 5ης βαθμίδας από την 4η"],
   },
   {
     id: "NIKRIZ",
@@ -133,7 +133,7 @@ export default [
       { octavePosition: 3, length: 5 },
       { octavePosition: 4, length: 5 },
     ],
-    notes: ["Πρόκειται για Χιτζάζ με τόνο στη βάση αντί στη κορυφή"],
+    remarks: ["Πρόκειται για Χιτζάζ με τόνο στη βάση αντί στη κορυφή"],
   },
   {
     id: "HUZAM",
