@@ -259,4 +259,25 @@ export default [
       },
     ],
   },
+  {
+    id: "UZZAL",
+    name: "Ουζάλ",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "Ουζάλ",
+        name: "Χουσεϊνί",
+        isMain: true,
+        direction: "ASC|DESC",
+        segments: [
+          { id: "HIJAZ", size: 5, position: 0 },
+          { id: "RAST", size: 5, position: 3 },
+          { id: "USSAK", size: 4, position: 4 },
+        ],
+        entryNotes: [5],
+        endingNote: 1,
+        dominantNotes: [1, 4, 5],
+      },
+    ],
+  },
 ];
