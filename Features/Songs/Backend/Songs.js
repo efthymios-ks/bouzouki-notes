@@ -92,5 +92,12 @@
   { name: "Μάτια μου σαν πας στα ξένα", makamIds: ["HIJAZ|MUHAYER"], authors: ["Κώστας Καρίπης"], year: 1928 },
   { name: "Θα φύγω να ξεχάσω", makamIds: ["ZIRGULELI_HIJAZ"], authors: ["Κώστας Ρούκουνας"], year: 1936 },
   { name: "Του Πειραιά το αλάνι", makamIds: ["ZIRGULELI_HIJAZ"], authors: ["Ρόζα Εσκενάζυ"], year: 1934 },
-  { name: "Φάνταζες σαν πριγκιπέσσα", makamIds: ["ZIRGULELI_HIJAZ"], authors: ["Μάρκος Βαμβακάρης|Απόστολος Χατζηχρήστος|Βασίλης Τσιτσάνης"], year: 1940 }
+  { name: "Φάνταζες σαν πριγκιπέσσα", makamIds: ["ZIRGULELI_HIJAZ"], authors: ["Μάρκος Βαμβακάρης|Απόστολος Χατζηχρήστος|Βασίλης Τσιτσάνης"], year: 1940 },
+  { name: "Δερβίσης και Ριτά", makamIds: ["NIKRIZ"], authors: ["Δημήτρης Ατραΐδης|Ρίτα Αμπατζή"], year: 1934 },
+  { name: "Η μικρή απ' το Πασαλιμάνι", makamIds: ["NIKRIZ"], authors: ["Στελλάκης Περπινιάδης"], year: 1938 },
+  { name: "Νέοι χασικλήδες (Έμαθα πως είσαι μάγκας)", makamIds: ["NIKRIZ"], authors: ["Αντώνης Διαμαντίδης"], year: 1928 },
+  { name: "Νέος Κόνιαλης", makamIds: ["NIKRIZ"], authors: ["Ρίτα Αμπατζή"], year: 1934 },
+  { name: "Ο θερμαστής", makamIds: ["NIKRIZ"], authors: ["Γιώργος Μπάτης"], year: 1934 },
+  { name: "Ο Μάρκος πολυτεχνίτης", makamIds: ["NIKRIZ"], authors: ["Μάρκος Βαμβακάρης|Σοφία Καρίβαλη"], year: 1936 },
+  { name: "Το μπαρμπεράκι", makamIds: ["NIKRIZ"], authors: ["Γιώργος Μπάτης"], year: 1935 }
 ];

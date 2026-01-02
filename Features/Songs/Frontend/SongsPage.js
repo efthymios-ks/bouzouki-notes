@@ -18,7 +18,7 @@ export class SongsPage extends LitElement {
 
   constructor() {
     super();
-    this.songs = [];
+    this.allSongs = [];
     this.filteredSongs = [];
     this.nameFilter = "";
     this.authorFilter = "";
@@ -38,18 +38,17 @@ export class SongsPage extends LitElement {
   }
 
   #loadData() {
-    this.songs = Song.getAll();
-    this.filteredSongs = [...this.songs];
+    this.allSongs = Song.getAll();
+    this.filteredSongs = [...this.allSongs];
 
     // Get all unique makam IDs from songs
     const makamIds = new Set();
-    this.songs.forEach((song) => {
+    this.allSongs.forEach((song) => {
       song.makamIds.forEach((id) => makamIds.add(id));
     });
 
     // Get makam objects
-    const allMakams = Makam.getAll();
-    this.allMakams = allMakams
+    this.allMakams = Makam.getAll()
       .filter((makam) => makamIds.has(makam.id))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -58,7 +57,7 @@ export class SongsPage extends LitElement {
 
   #findMakamByIdOrVariant(makamId) {
     // First, try to find by top-level makam ID
-    const allMakams = Makam.getAll();
+    const allMakams = this.allMakams;
     let makam = allMakams.find((makam) => makam.id === makamId);
     if (makam) {
       return makam;
@@ -70,7 +69,7 @@ export class SongsPage extends LitElement {
   }
 
   #applyFilters() {
-    let filtered = [...this.songs];
+    let filtered = [...this.allSongs];
 
     // Name filter
     if (this.nameFilter.trim()) {
@@ -347,6 +346,7 @@ export class SongsPage extends LitElement {
                                   console.warn(`Makam ID not found: ${makamId}`);
                                   return null;
                                 }
+
                                 return makam.name;
                               })
                               .filter((name) => name !== null)

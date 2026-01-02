@@ -307,4 +307,34 @@ export default [
       },
     ],
   },
+  {
+    id: "NIKRIZ",
+    name: "Νικρίζ",
+    octavePosition: 0,
+    variants: [
+      {
+        id: "NIKRIZ_ASC",
+        name: "Ανιούσα",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "NIKRIZ", size: 5, position: 0 },
+          { id: "RAST", size: 4 },
+        ],
+        entryNotes: [1, 5],
+        endingNote: 1,
+        dominantNotes: [1, 5],
+      },
+      {
+        id: "NIKRIZ_DESC",
+        name: "Κατιούσα",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "NIKRIZ", size: 5, position: 0 },
+          { id: "BUSELIK", size: 4 },
+        ],
+      },
+    ],
+  },
 ];
