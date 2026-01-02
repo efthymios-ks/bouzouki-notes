@@ -358,4 +358,25 @@ export default [
       },
     ],
   },
+  {
+    id: "MUHAYER",
+    name: "Μουχαγιέρ",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "MUHAYER",
+        name: "Μουχαγιέρ",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "USSAK", size: 5, position: 0 },
+          { id: "USSAK", size: 4 },
+          { id: "USSAK", size: 4 },
+        ],
+        entryNotes: [8],
+        endingNote: 1,
+        dominantNotes: [1, 5, 8],
+      },
+    ],
+  },
 ];

@@ -1,29 +1,19 @@
 ﻿export default [
-  { name: "Χαρικλάκι", makamIds: ["RAST"], authors: ["Παναγιώτης Τούντας"], year: 1933 },
-  { name: "Ζεμπεκάνο Σπανιόλο", makamIds: ["RAST"], authors: ["Γιώργος Μπάτης"], year: 1934 },
-  { name: "Μαρίκα χασικλού", makamIds: ["RAST"], authors: ["Βαγγέλης Παπάζογλου"], year: 1934 },
+  { name: "Αλεξανδριανή φελάχα", makamIds: ["RAST"], authors: ["Ρόζα Εσκενάζυ"], year: 1934 },
   { name: "Γκαμηλιέρικο", makamIds: ["RAST"], authors: ["Γιώργος Μπάτης"], year: 1934 },
-  {
-    name: "Αλεξανδριανή φελάχα",
-    makamIds: ["RAST"],
-    authors: ["Ρόζα Εσκενάζυ|Δημήτρης Σέμσης"],
-    year: 1934,
-  },
-  { name: "Η Μαρίκα η δασκάλα", makamIds: ["RAST"], authors: ["Παναγιώτης Τούντας"], year: 1936 },
-  { name: "Οι τρεις ορφανές", makamIds: ["RAST"], authors: ["Γρηγόρης Ασίκης"], year: 1937 },
+  { name: "Ζεμπεκάνο Σπανιόλο", makamIds: ["RAST"], authors: ["Στράτος Παγιουμτζής"], year: 1934 },
+  { name: "Η Μαρίκα η δασκάλα", makamIds: ["RAST"], authors: ["Κώστας Ρούκουνας"], year: 1936 },
+  { name: "Μαρίκα χασικλού", makamIds: ["RAST"], authors: ["Κώστας Ρούκουνας"], year: 1934 },
   {
     name: "Μες του Βαβούλα τη γούβα",
     makamIds: ["RAST"],
-    authors: ["Στράτος Παγιουμτζής|Στέλιος Κερομύτης"],
+    authors: ["Στέλιος Κερομύτης"],
     year: 1937,
   },
-  {
-    name: "Στη Δραπετσώνα",
-    makamIds: ["RAST|NEVESER"],
-    authors: ["Παναγιώτης Τούντας"],
-    year: 1934,
-  },
-  { name: "Γιαννάκης", makamIds: ["RAST|NEVESER"], authors: ["Κώστας Σκαρβέλης"], year: 1936 },
+  { name: "Οι τρεις ορφανές", makamIds: ["RAST"], authors: ["Ρίτα Αμπατζή"], year: 1937 },
+  { name: "Χαρικλάκι", makamIds: ["RAST"], authors: ["Ρίτα Αμπατζή"], year: 1933 },
+  { name: "Στη Δραπετσώνα", makamIds: ["RAST|NEVESER"], authors: ["Ρόζα Εσκενάζυ"], year: 1934 },
+  { name: "Γιαννάκης", makamIds: ["RAST|NEVESER"], authors: ["Ρόζα Εσκενάζυ"], year: 1936 },
   {
     name: "Ώρες με θρέφει ο λουλάς",
     makamIds: ["RAST_SAZKAR"],
@@ -33,13 +23,13 @@
   {
     name: "Στο Φάληρο που πλένεσαι",
     makamIds: ["RAST_SAZKAR"],
-    authors: ["Μάρκος Βαμβακάρης"],
+    authors: ["Μάρκος Βαμβακάρης|Έλλη Πετρίδου"],
     year: 1937,
   },
   {
     name: "Καραβοτσακίσματα",
     makamIds: ["RAST_SAZKAR|HUZAM"],
-    authors: ["Μάρκος Βαμβακάρης"],
+    authors: ["Μάρκος Βαμβακάρης|Στράτος Παγιουμτζής"],
     year: 1936,
   },
   { name: "Κατιφές", makamIds: ["USSAK"], authors: [""], year: 1931 },
@@ -117,7 +107,7 @@
   {
     name: "Τα δυο σου χέρια πήρανε",
     makamIds: ["HUSEYINI"],
-    authors: ["Μάρκος Βαμβακάρης"],
+    authors: ["Μάρκος Βαμβακάρης|Απόστολος Χατζηχρήστος"],
     year: 1939,
   },
   {
@@ -154,13 +144,13 @@
   { name: "Τσερκές", makamIds: ["HUSEYINI|KARCIGAR"], authors: ["Ρίτα Αμπατζή"], year: 1933 },
   {
     name: "Βλάμισσα",
-    makamIds: ["HUSEYINI|HUZAM"],
+    makamIds: ["HUSEYINI|SABAH"],
     authors: ["Στελλάκης Περπινιάδης"],
     year: 1936,
   },
   {
     name: "Βρε μάγκες δυο στη φυλακή",
-    makamIds: ["HUSEYINI|HUZAM"],
+    makamIds: ["HUSEYINI|SABAH"],
     authors: ["Ρίτα Αμπατζή"],
     year: 1934,
   },
@@ -330,4 +320,12 @@
     authors: ["Αντώνης Διαμαντίδης"],
     year: 1932,
   },
+  { name: "Αδυνάτισα ο καημένος", makamIds: ["MUHAYER"], authors: ["Α. Κωστής"], year: 1931 },
+  {
+    name: "Μάνα με μαχαιρώσανε",
+    makamIds: ["MUHAYER"],
+    authors: ["Μάρκος Βαμβακάρης"],
+    year: 1936,
+  },
+  { name: "Το γλυκό φιλί", makamIds: ["MUHAYER"], authors: ["Ρόζα Εσκενάζυ"], year: 1936 },
 ];
