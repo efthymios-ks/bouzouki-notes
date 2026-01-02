@@ -15,7 +15,7 @@ export default [
     ],
   },
   {
-    id: "USAK",
+    id: "USSAK",
     name: "Ουσάκ",
     intervals: [
       [2, 1, 2],

@@ -55,17 +55,17 @@ export default [
     ],
   },
   {
-    id: "USAK",
+    id: "USSAK",
     name: "Ουσάκ",
     octavePosition: 1,
     variants: [
       {
-        id: "USAK_ASC",
+        id: "USSAK_ASC",
         name: "Ανιούσα",
         isMain: true,
         direction: "ASC",
         segments: [
-          { id: "USAK", size: 4, position: 0 },
+          { id: "USSAK", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
         ],
         entryNotes: [1, 4],
@@ -73,37 +73,37 @@ export default [
         dominantNotes: [1, 4],
       },
       {
-        id: "USAK_DESC",
+        id: "USSAK_DESC",
         name: "Κατιούσα",
         direction: "DESC",
         segments: [
-          { id: "USAK", intervals: [1, 2, 2], position: 0 },
+          { id: "USSAK", intervals: [1, 2, 2], position: 0 },
           { id: "BUSELIK", size: 5 },
         ],
       },
       {
-        id: "USAK_EXTENDED_LOWER",
+        id: "USSAK_EXTENDED_LOWER",
         name: "Επέκταση χαμηλά",
         segments: [
           { id: "RAST", size: 5, position: -4 },
-          { id: "USAK", size: 4, position: 0 },
+          { id: "USSAK", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
         ],
       },
       {
-        id: "USAK_EXTENDED_UPPER",
+        id: "USSAK_EXTENDED_UPPER",
         name: "Επέκταση ψηλά",
         segments: [
-          { id: "USAK", size: 4, position: 0 },
+          { id: "USSAK", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
-          { id: "USAK", size: 4 },
+          { id: "USSAK", size: 4 },
         ],
       },
       {
-        id: "USAK_RAST",
+        id: "USSAK_RAST",
         name: "Ουσάκ με Ραστ",
         segments: [
-          { id: "USAK", size: 4, position: 0 },
+          { id: "USSAK", size: 4, position: 0 },
           { id: "RAST", size: 5 },
         ],
       },
@@ -149,9 +149,9 @@ export default [
         isMain: true,
         direction: "ASC|DESC",
         segments: [
-          { id: "USAK", size: 5, position: 0 },
+          { id: "USSAK", size: 5, position: 0 },
           { id: "RAST", size: 5, position: 3 },
-          { id: "USAK", size: 4, position: 4 },
+          { id: "USSAK", size: 4, position: 4 },
         ],
         entryNotes: [5],
         endingNote: 1,
@@ -162,7 +162,7 @@ export default [
         name: "Κατιούσα",
         direction: "DESC",
         segments: [
-          { id: "USAK", size: 5, position: 0 },
+          { id: "USSAK", size: 5, position: 0 },
           { id: "BUSELIK", size: 5, position: 3 },
         ],
       },
@@ -251,7 +251,7 @@ export default [
         direction: "DESC",
         segments: [
           { id: "HIJAZ", size: 4, position: 0 },
-          { id: "USAK", size: 5 },
+          { id: "USSAK", size: 5 },
         ],
         entryNotes: [1, 4],
         endingNote: 1,
