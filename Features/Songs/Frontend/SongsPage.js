@@ -87,7 +87,18 @@ export class SongsPage extends LitElement {
 
     // Makam filter
     if (this.selectedMakams.size > 0) {
-      filtered = filtered.filter((song) => song.makamIds.some((id) => this.selectedMakams.has(id)));
+      filtered = filtered.filter((song) =>
+        song.makamIds.some((songMakamId) => {
+          // Check if the song's makam ID is directly selected
+          if (this.selectedMakams.has(songMakamId)) {
+            return true;
+          }
+
+          // Check if the song's makam ID is a variant of a selected makam
+          const makam = this.#findMakamByIdOrVariant(songMakamId);
+          return makam && this.selectedMakams.has(makam.id);
+        })
+      );
     }
 
     // Apply sorting
