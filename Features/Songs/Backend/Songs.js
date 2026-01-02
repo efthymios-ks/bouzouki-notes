@@ -99,5 +99,10 @@
   { name: "Νέος Κόνιαλης", makamIds: ["NIKRIZ"], authors: ["Ρίτα Αμπατζή"], year: 1934 },
   { name: "Ο θερμαστής", makamIds: ["NIKRIZ"], authors: ["Γιώργος Μπάτης"], year: 1934 },
   { name: "Ο Μάρκος πολυτεχνίτης", makamIds: ["NIKRIZ"], authors: ["Μάρκος Βαμβακάρης|Σοφία Καρίβαλη"], year: 1936 },
-  { name: "Το μπαρμπεράκι", makamIds: ["NIKRIZ"], authors: ["Γιώργος Μπάτης"], year: 1935 }
+  { name: "Το μπαρμπεράκι", makamIds: ["NIKRIZ"], authors: ["Γιώργος Μπάτης"], year: 1935 },
+  { name: "Απόψε αν θέλεις", makamIds: ["KARCIGAR"], authors: ["Ρόζα Εσκενάζυ"], year: 1936 },
+  { name: "Οι κοντραμπατζήδες", makamIds: ["KARCIGAR"], authors: ["Κώστας Ρούκουνας"], year: 1935 },
+  { name: "Πεισματάρα", makamIds: ["KARCIGAR"], authors: ["Δημήτρης Καλλίνικος"], year: 1928 },
+  { name: "Στο Βοτανικό", makamIds: ["KARCIGAR"], authors: ["Κώστας Ρούκουνας"], year: 1934 },
+  { name: "Το μπαγλαμαδάκι σπάψε", makamIds: ["KARCIGAR"], authors: ["Αντώνης Διαμαντίδης"], year: 1932 }
 ];

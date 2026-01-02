@@ -337,4 +337,25 @@ export default [
       },
     ],
   },
+  {
+    id: "KARCIGAR",
+    name: "Καρτσιγιάρ",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "KARCIGAR",
+        name: "Καρτσιγιάρ",
+        isMain: true,
+        direction: "ASC|DESC",
+        segments: [
+          { id: "USSAK", size: 4, position: 0 },
+          { id: "NIKRIZ", size: 5, position: 2 },
+          { id: "HIJAZ", size: 5, position: 3 },
+        ],
+        entryNotes: [4],
+        endingNote: 1,
+        dominantNotes: [1, 3, 4],
+      },
+    ],
+  },
 ];
