@@ -110,9 +110,15 @@ export default [
   {
     id: "ZIRGULELI_HIJAZ",
     name: "Ζιργκιουλελί Χιτζάζ",
-    intervals: [[1, 3, 1]],
+    intervals: [
+      [1, 3, 1],
+      [1, 3, 1, 2],
+    ],
     leadingInterval: 1,
-    placements: [{ octavePosition: 1, length: 4 }],
+    placements: [
+      { octavePosition: 1, length: 4 },
+      { octavePosition: 1, length: 5 },
+    ],
     remarks: ["Ισχύει ό,τι και στο Χιτζάζ, αλλά με προσαγωγέα ημιτόνιο αντί για τόνο"],
   },
   {
