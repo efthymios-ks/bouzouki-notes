@@ -494,4 +494,24 @@ export default [
       },
     ],
   },
+  {
+    id: "SUZINAK_ZIRGULELI_PIREOTIKO",
+    name: "Πειραιώτικος",
+    octavePosition: 0,
+    variants: [
+      {
+        id: "SUZINAK_ZIRGULELI_PIREOTIKO",
+        name: "Πειραιώτικος",
+        isMain: true,
+        direction: "ASC|DESC",
+        segments: [
+          { id: "PIREOTIKO", size: 5, position: 0 },
+          { id: "HIJAZ", size: 4 },
+        ],
+        entryNotes: [5],
+        endingNote: 1,
+        dominantNotes: [1, 3, 5],
+      },
+    ],
+  },
 ];

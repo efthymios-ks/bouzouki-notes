@@ -428,4 +428,28 @@
     authors: ["Ρίτα Αμπατζή"],
     year: 1934,
   },
+  {
+    name: "Η Βολιώτισσα",
+    makamIds: ["SUZINAK_ZIRGULELI_PIREOTIKO"],
+    authors: ["Ρίτα Αμπατζή"],
+    year: 1934,
+  },
+  {
+    name: "Μες στου Μάνθου τον τεκέ",
+    makamIds: ["SUZINAK_ZIRGULELI_PIREOTIKO"],
+    authors: ["Αντώνης Διαμαντίδης"],
+    year: 1933,
+  },
+  {
+    name: "Μές στου Συγγρού τη φυλακή",
+    makamIds: ["SUZINAK_ZIRGULELI_PIREOTIKO"],
+    authors: ["Αντώνης Διαμαντίδης"],
+    year: 1931,
+  },
+  {
+    name: "Ο ξεμάγκας",
+    makamIds: ["SUZINAK_ZIRGULELI_PIREOTIKO"],
+    authors: ["Ρίτα Αμπατζή"],
+    year: 1935,
+  },
 ];

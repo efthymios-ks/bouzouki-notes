@@ -122,7 +122,7 @@ export default [
     remarks: ["Ισχύει ό,τι και στο Χιτζάζ, αλλά με προσαγωγέα ημιτόνιο αντί για τόνο"],
   },
   {
-    id: "PIRAIOTIKO",
+    id: "PIREOTIKO",
     name: "Πειραιώτικο",
     intervals: [[1, 3, 2, 1]],
     leadingInterval: 1,
