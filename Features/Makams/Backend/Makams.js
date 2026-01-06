@@ -474,4 +474,24 @@ export default [
       },
     ],
   },
+  {
+    id: "SUZINAK_ZIRGULELI",
+    name: "Ζιργκιουλελί Σουζινάκ",
+    octavePosition: 0,
+    variants: [
+      {
+        id: "SUZINAK_ZIRGULELI",
+        name: "Ζιργκιουλελί Χιτζάζ",
+        isMain: true,
+        direction: "ASC|DESC",
+        segments: [
+          { id: "HIJAZ_ZIRGULELI", size: 5, position: 0 },
+          { id: "HIJAZ", size: 4 },
+        ],
+        entryNotes: [5],
+        endingNote: 1,
+        dominantNotes: [1, 3, 5],
+      },
+    ],
+  },
 ];
