@@ -48,10 +48,7 @@ export class SongsPage extends LitElement {
     });
 
     // Get makam objects
-    this.allMakams = Makam.getAll()
-      .filter((makam) => makamIds.has(makam.id))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
+    this.allMakams = Makam.getAll().filter((makam) => makamIds.has(makam.id));
     this.requestUpdate();
   }
 

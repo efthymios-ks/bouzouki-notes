@@ -62,8 +62,18 @@ export class Makam {
     return this.#variants;
   }
 
+  get dominantNotes() {
+    const allDominantNotes = new Set();
+    this.allVariants
+      .filter((variant) => variant.isMain === true)
+      .forEach((variant) => {
+        variant.dominantNotes?.forEach((note) => allDominantNotes.add(note));
+      });
+    return Array.from(allDominantNotes).sort((a, b) => a - b);
+  }
+
   static getAll() {
-    return Makams.map((makam) => new Makam(makam)).sort((a, b) => a.name.localeCompare(b.name));
+    return Makams.map((makam) => new Makam(makam)).sort((a, b) => a.id.localeCompare(b.id));
   }
 
   static getById(id) {
@@ -120,13 +130,14 @@ export class Makam {
 
     // Merge defaults from main variant if provided
     const firstSegment = variant.segments[0];
-    const leadingInterval = MakamSegment.getById(firstSegment.id).leadingInterval;
+    const leadingInterval =
+      firstSegment.leadingInterval ?? MakamSegment.getById(firstSegment.id).leadingInterval;
     const direction = variant.direction ?? mainVariant?.direction;
 
     variant = {
       ...mainVariant,
       ...variant,
-      isHidden: variant.isHidden ?? false,
+      isMain: variant.isMain ?? false,
       direction,
       isAscending: direction.startsWith("ASC"),
       isBidirectional: direction === "ASC|DESC",

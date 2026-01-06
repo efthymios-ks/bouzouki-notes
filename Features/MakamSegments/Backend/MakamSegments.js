@@ -108,7 +108,7 @@ export default [
     ],
   },
   {
-    id: "ZIRGULELI_HIJAZ",
+    id: "HIJAZ_ZIRGULELI",
     name: "Ζιργκιουλελί Χιτζάζ",
     intervals: [
       [1, 3, 1],

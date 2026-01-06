@@ -43,9 +43,7 @@ export class MakamCard extends LitElement {
         <div class="card-header bg-light fw-bold py-1">${makamName}</div>
 
         <div class="card-body d-flex flex-column align-items-center justify-content-between gap-2">
-          <p class="card-text text-body-secondary mb-0">
-            <strong>Διαστήματα:</strong> ${intervals}
-          </p>
+          <p class="card-text text-body-secondary mb-0">${intervals}</p>
         </div>
 
         <div class="card-footer text-center bg-light py-2">

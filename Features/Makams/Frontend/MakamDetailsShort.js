@@ -74,27 +74,21 @@ export class MakamDetailsShort extends LitElement {
     const baseSemitone = Note.countSemitones(baseKey);
     const targetSemitone = Note.countSemitones(targetKey);
 
-    return Octave.TwoOctaves.steps.find((step) => {
+    // Find all steps matching the target key
+    const matchingSteps = Octave.TwoOctaves.steps.filter((step) => {
       const key = this.#extractNoteKey(step.note);
-      if (key !== targetKey) {
-        return false;
-      }
-
-      // Same position: target must have fewer semitones (e.g., Cb vs C)
-      if (step.position === basePosition) {
-        return targetSemitone < baseSemitone;
-      }
-
-      // Different position: take the one closest below the base
-      // For notes below in the scale (targetSemitone < baseSemitone), use position < basePosition
-      // For notes that wrap around (targetSemitone > baseSemitone), they're at higher positions but lower pitch
-      if (targetSemitone < baseSemitone) {
-        return step.position < basePosition;
-      } else {
-        // Wraparound case: target is higher position but should be below in pitch (like B before C)
-        return step.position > basePosition;
-      }
+      return key === targetKey;
     });
+
+    // For leading notes (notes below the base), we want the step immediately below the base position
+    // Since leading notes are always below, find the step with the largest position < basePosition
+    const stepsBelow = matchingSteps.filter((step) => step.position < basePosition);
+    if (stepsBelow.length > 0) {
+      return stepsBelow.reduce((prev, curr) => (curr.position > prev.position ? curr : prev));
+    }
+
+    // If no steps below, return any matching step (fallback)
+    return matchingSteps[0];
   }
 
   #renderSegmentName(segment, omitDegree = false) {
@@ -171,14 +165,14 @@ export class MakamDetailsShort extends LitElement {
   }
 
   #renderDominantNotes() {
-    const mainVariant = this.makam.mainVariant;
-    return mainVariant.dominantNotes.map((n, index) => {
-      const degree = this.#renderDegreeWithTooltip(n);
+    const dominantNotes = this.makam.dominantNotes;
+    return dominantNotes.map((note, index) => {
+      const degree = this.#renderDegreeWithTooltip(note);
       if (index === 0) {
         return html` η ${degree}`;
       }
 
-      if (index === mainVariant.dominantNotes.length - 1) {
+      if (index === dominantNotes.length - 1) {
         return html` και η ${degree}`;
       }
 
@@ -187,10 +181,8 @@ export class MakamDetailsShort extends LitElement {
   }
 
   #getDominantLabel() {
-    const mainVariant = this.makam.mainVariant;
-    return mainVariant.dominantNotes.length === 1
-      ? "δεσπόζουσα βαθμίδα είναι"
-      : "δεσπόζουσες βαθμίδες είναι";
+    const dominantNotes = this.makam.dominantNotes;
+    return dominantNotes.length === 1 ? "δεσπόζουσα βαθμίδα είναι" : "δεσπόζουσες βαθμίδες είναι";
   }
 
   #getDescription() {
@@ -240,8 +232,8 @@ export class MakamDetailsShort extends LitElement {
     );
     parts.push(
       html`<p>
-        Η είσοδος της μελωδίας γίνεται στην ${entryNoteElements} βαθμίδα, έχει
-        <strong>${movementType}</strong> κίνηση και καταλήγει στη ${endingDegree}.
+        Η μελωδία έχει <strong>${movementType}</strong> κίνηση. Κάνει είσοδο στην
+        ${entryNoteElements} βαθμίδα και καταλήγει στη ${endingDegree}.
       </p>`
     );
     parts.push(
