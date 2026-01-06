@@ -20,6 +20,7 @@ export default [
       {
         id: "RAST_DESC",
         name: "Κατιούσα",
+        isMain: true,
         direction: "DESC",
         segments: [
           { id: "RAST", size: 5, position: 0 },
@@ -75,6 +76,7 @@ export default [
       {
         id: "USSAK_DESC",
         name: "Κατιούσα",
+        isMain: true,
         direction: "DESC",
         segments: [
           { id: "USSAK", intervals: [1, 2, 2], position: 0 },
@@ -170,6 +172,7 @@ export default [
       {
         id: "HUSEYNI_DESC",
         name: "Κατιούσα",
+        isMain: true,
         direction: "DESC",
         segments: [
           { id: "USSAK", size: 5, position: 0 },
@@ -322,7 +325,6 @@ export default [
         id: "HIJAZ_ZIRGULELI_WITH_HIJAZ",
         name: "Ζιργκιουλελί Χιτζάζ με απλό Χιτζάζ",
         isMain: true,
-        direction: "ASC",
         segments: [
           { id: "HIJAZ", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
@@ -399,24 +401,31 @@ export default [
     octavePosition: 1,
     variants: [
       {
-        id: "MUHAYER_ASC",
-        name: "Ανιούσα",
+        id: "MUHAYER_DESC",
+        name: "Κατιούσα",
         isMain: true,
         direction: "DESC",
         segments: [
           { id: "USSAK", size: 5, position: 0 },
-          { id: "USSAK", size: 4 },
-          { id: "USSAK", size: 4 },
+          { id: "USSAK", intervals: [1, 2, 2] },
         ],
         entryNotes: [8],
         endingNote: 1,
         dominantNotes: [1, 5, 8],
       },
       {
-        id: "MUHAYER_DESC",
-        name: "Κατιούσα",
+        id: "MUHAYER_ASC",
+        name: "Ανιούσα",
         isMain: true,
-        direction: "DESC",
+        direction: "ASC",
+        segments: [
+          { id: "USSAK", size: 5, position: 0 },
+          { id: "USSAK", size: 4 },
+        ],
+      },
+      {
+        id: "MUHAYER_EXTENDED_HIGHER",
+        name: "Επεκταση ψηλά",
         segments: [
           { id: "USSAK", size: 5, position: 0 },
           { id: "USSAK", intervals: [1, 2, 2] },
@@ -439,17 +448,23 @@ export default [
           { id: "HIJAZ", size: 5, position: 0, leadingInterval: 1 },
           { id: "NIKRIZ", size: 5, position: 3 },
           { id: "HIJAZ", size: 4, position: 4 },
-          { id: "HIJAZ", size: 5, position: 7 },
         ],
         entryNotes: [8],
         endingNote: 1,
         dominantNotes: [1, 4, 5, 8],
       },
       {
-        id: "HIJAZKAR_BUSELIK",
-        name: "Χιτζασκιάρ με Μπουσελίκ",
-        isMain: true,
-        direction: "DESC",
+        id: "HIJAZKAR_EXTENDED_HIGHER_HIJAZ",
+        name: "Επέκταση ψηλά με Χιτζάζ",
+        segments: [
+          { id: "HIJAZ", size: 5, position: 0, leadingInterval: 1 },
+          { id: "HIJAZ", size: 4, position: 4 },
+          { id: "HIJAZ", size: 5, position: 7 },
+        ],
+      },
+      {
+        id: "HIJAZKAR_EXTENDED_HIGHER_BUSELIK",
+        name: "Επέκταση ψηλά με Μπουσελίκ",
         segments: [
           { id: "HIJAZ", size: 5, position: 0, leadingInterval: 1 },
           { id: "HIJAZ", size: 4, position: 4 },

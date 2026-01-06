@@ -381,13 +381,21 @@ export class MakamDetailsFull extends LitElement {
           ${songs.map(
             (song) => html`
               <li class="mb-3" style="display: flex; align-items: center;">
-                <div class="d-flex align-items-center justify-content-between flex-grow-1">
+                <div
+                  class="d-flex align-items-start justify-content-between justify-content-md-start flex-grow-1 gap-3"
+                >
                   <div>
                     <div><strong>${song.name}</strong></div>
                     <div class="text-muted"><em>${song.authors.join(", ")}</em></div>
                   </div>
-                  <a href="${song.youtubeSearchUrl}" target="_blank" rel="noopener" title="YouTube">
-                    <i class="bi bi-youtube text-danger"></i>
+                  <a
+                    href="${song.youtubeSearchUrl}"
+                    target="_blank"
+                    rel="noopener"
+                    title="YouTube"
+                    class="ms-lg-3"
+                  >
+                    <i class="bi bi-youtube text-danger" style="font-size: 1rem;"></i>
                   </a>
                 </div>
               </li>
