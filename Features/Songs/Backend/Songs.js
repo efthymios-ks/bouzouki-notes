@@ -267,19 +267,19 @@
   },
   {
     name: "Θα φύγω να ξεχάσω",
-    makamIds: ["ZIRGULELI_HIJAZ"],
+    makamIds: ["HIJAZ_ZIRGULELI"],
     authors: ["Κώστας Ρούκουνας"],
     year: 1936,
   },
   {
     name: "Του Πειραιά το αλάνι",
-    makamIds: ["ZIRGULELI_HIJAZ"],
+    makamIds: ["HIJAZ_ZIRGULELI"],
     authors: ["Ρόζα Εσκενάζυ"],
     year: 1934,
   },
   {
     name: "Φάνταζες σαν πριγκιπέσσα",
-    makamIds: ["ZIRGULELI_HIJAZ"],
+    makamIds: ["HIJAZ_ZIRGULELI"],
     authors: ["Μάρκος Βαμβακάρης|Απόστολος Χατζηχρήστος|Βασίλης Τσιτσάνης"],
     year: 1940,
   },
@@ -328,4 +328,35 @@
     year: 1936,
   },
   { name: "Το γλυκό φιλί", makamIds: ["MUHAYER"], authors: ["Ρόζα Εσκενάζυ"], year: 1936 },
+  {
+    name: "Καμωματού (Αμάν γιάλα)",
+    makamIds: ["HIJAZKAR"],
+    authors: ["Ρόζα Εσκενάζυ"],
+    year: 1933,
+  },
+  { name: "Κατάδικος", makamIds: ["HIJAZKAR"], authors: ["Αντώνης Καλυβόπουλος"], year: 1936 },
+  {
+    name: "Κουβέντα με το Χάρο",
+    makamIds: ["HIJAZKAR"],
+    authors: ["Κώστας Ρούκουνας"],
+    year: 1935,
+  },
+  {
+    name: "Με ζουρνάδες και νταούλια",
+    makamIds: ["HIJAZKAR"],
+    authors: ["Ρίτα Αμπατζή"],
+    year: 1934,
+  },
+  {
+    name: "Τα μάτια της Σμυρνιάς",
+    makamIds: ["HIJAZKAR"],
+    authors: ["Δημήτρης Καλλίνικος"],
+    year: 1929,
+  },
+  {
+    name: "Ταταυλιανή τσαχπίνα",
+    makamIds: ["HIJAZKAR"],
+    authors: ["Αντώνης Διαμαντίδης"],
+    year: 1929,
+  },
 ];

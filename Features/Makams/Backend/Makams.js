@@ -123,17 +123,27 @@ export default [
           { id: "SEGAH", size: 5, position: 0 },
           { id: "SEGAH", size: 4 },
         ],
-        entryNotes: [1, 3],
+        entryNotes: [1, 5],
         endingNote: 1,
-        dominantNotes: [1, 3, 5],
+        dominantNotes: [1, 5],
       },
       {
-        id: "SEGAH_RAST",
-        name: "Σεγκιάχ με Ραστ",
+        id: "SEGAH_RAST_ASC",
+        name: "Σεγκιάχ με Ραστ (Ανιούσα)",
         direction: "ASC",
         segments: [
           { id: "SEGAH", size: 3, position: 0 },
           { id: "RAST", size: 5 },
+        ],
+        dominantNotes: [1, 3],
+      },
+      {
+        id: "SEGAH_RAST_DESC",
+        name: "Σεγκιάχ με Ραστ (Κατιούσα)",
+        direction: "DESC",
+        segments: [
+          { id: "SEGAH", size: 3, position: 0 },
+          { id: "BUSELIK", size: 5 },
         ],
       },
     ],
@@ -194,6 +204,7 @@ export default [
           { id: "HIJAZ", size: 5, position: 2 },
           { id: "HIJAZ", size: 4, position: 6 },
         ],
+        dominantNotes: [1, 3, 7],
       },
       {
         id: "SABAH_EXTENDED_UPPER_NIKRIZ",
@@ -203,6 +214,7 @@ export default [
           { id: "HIJAZ", size: 5, position: 2 },
           { id: "NIKRIZ", size: 5, position: 5 },
         ],
+        dominantNotes: [1, 3, 6],
       },
     ],
   },
@@ -262,8 +274,8 @@ export default [
     octavePosition: 1,
     variants: [
       {
-        id: "Ουζάλ",
-        name: "Χουσεϊνί",
+        id: "UZZAL_ASC",
+        name: "Ανιούσα",
         isMain: true,
         direction: "ASC|DESC",
         segments: [
@@ -275,28 +287,39 @@ export default [
         endingNote: 1,
         dominantNotes: [1, 4, 5],
       },
+      {
+        id: "UZZAL_DESC",
+        name: "Κατιούσα",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "HIJAZ", size: 5, position: 0 },
+          { id: "BUSELIK", size: 5, position: 3 },
+          { id: "USSAK", intervals: [1, 2, 2], position: 4 },
+        ],
+      },
     ],
   },
   {
-    id: "ZIRGULELI_HIJAZ",
+    id: "HIJAZ_ZIRGULELI",
     name: "Ζιργκιουλελί Χιτζάζ",
     octavePosition: 1,
     variants: [
       {
-        id: "ZIRGULELI_HIJAZ",
+        id: "HIJAZ_ZIRGULELI",
         name: "Ζιργκιουλελί Χιτζάζ",
         isMain: true,
         direction: "ASC",
         segments: [
-          { id: "ZIRGULELI_HIJAZ", size: 5, position: 0 },
+          { id: "HIJAZ_ZIRGULELI", size: 5, position: 0 },
           { id: "HIJAZ", size: 4 },
         ],
         entryNotes: [1, 5],
         endingNote: 1,
-        dominantNotes: [1, 4, 5],
+        dominantNotes: [1, 5],
       },
       {
-        id: "ZIRGULELI_HIJAZ_WITH_HIJAZ",
+        id: "HIJAZ_ZIRGULELI_WITH_HIJAZ",
         name: "Ζιργκιουλελί Χιτζάζ με απλό Χιτζάζ",
         isMain: true,
         direction: "ASC",
@@ -304,6 +327,7 @@ export default [
           { id: "HIJAZ", size: 4, position: 0 },
           { id: "BUSELIK", size: 5 },
         ],
+        dominantNotes: [1, 4],
       },
     ],
   },
@@ -343,8 +367,8 @@ export default [
     octavePosition: 1,
     variants: [
       {
-        id: "KARCIGAR",
-        name: "Καρτσιγιάρ",
+        id: "KARCIGAR_ASC",
+        name: "Ανιούσα",
         isMain: true,
         direction: "ASC|DESC",
         segments: [
@@ -356,6 +380,17 @@ export default [
         endingNote: 1,
         dominantNotes: [1, 3, 4],
       },
+      {
+        id: "KARCIGAR_DESC",
+        name: "Κατιούσα",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "USSAK", intervals: [1, 2, 2], position: 0 },
+          { id: "NIKRIZ", size: 5, position: 2 },
+          { id: "HIJAZ", size: 5, position: 3 },
+        ],
+      },
     ],
   },
   {
@@ -364,8 +399,8 @@ export default [
     octavePosition: 1,
     variants: [
       {
-        id: "MUHAYER",
-        name: "Μουχαγιέρ",
+        id: "MUHAYER_ASC",
+        name: "Ανιούσα",
         isMain: true,
         direction: "DESC",
         segments: [
@@ -375,6 +410,51 @@ export default [
         ],
         entryNotes: [8],
         endingNote: 1,
+        dominantNotes: [1, 5, 8],
+      },
+      {
+        id: "MUHAYER_DESC",
+        name: "Κατιούσα",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "USSAK", size: 5, position: 0 },
+          { id: "USSAK", intervals: [1, 2, 2] },
+          { id: "USSAK", size: 4 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "HIJAZKAR",
+    name: "Χιτζασκιάρ",
+    octavePosition: 0,
+    variants: [
+      {
+        id: "HIJAZKAR",
+        name: "Χιτζασκιάρ",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "HIJAZ", size: 5, position: 0, leadingInterval: 1 },
+          { id: "NIKRIZ", size: 5, position: 3 },
+          { id: "HIJAZ", size: 4, position: 4 },
+          { id: "HIJAZ", size: 5, position: 7 },
+        ],
+        entryNotes: [8],
+        endingNote: 1,
+        dominantNotes: [1, 4, 5, 8],
+      },
+      {
+        id: "HIJAZKAR_BUSELIK",
+        name: "Χιτζασκιάρ με Μπουσελίκ",
+        isMain: true,
+        direction: "DESC",
+        segments: [
+          { id: "HIJAZ", size: 5, position: 0, leadingInterval: 1 },
+          { id: "HIJAZ", size: 4, position: 4 },
+          { id: "BUSELIK", size: 5, position: 7 },
+        ],
         dominantNotes: [1, 5, 8],
       },
     ],
