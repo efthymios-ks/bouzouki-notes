@@ -70,10 +70,7 @@ export class MakamDetailsShort extends LitElement {
     return stepNote.match(/^([A-G][#b]?)/)[1];
   }
 
-  #resolveOctave(basePosition, baseKey, targetKey) {
-    const baseSemitone = Note.countSemitones(baseKey);
-    const targetSemitone = Note.countSemitones(targetKey);
-
+  #resolveOctave(basePosition, targetKey) {
     // Find all steps matching the target key
     const matchingSteps = Octave.TwoOctaves.steps.filter((step) => {
       const key = this.#extractNoteKey(step.note);
@@ -91,13 +88,23 @@ export class MakamDetailsShort extends LitElement {
     return matchingSteps[0];
   }
 
-  #renderSegmentName(segment, omitDegree = false) {
+  #renderSegmentName(segment, omitDegree = false, repeatDromo = false) {
     const intervals = segment.intervals;
     const intervalsAsString = intervals.map((interval) => Interval.getName(interval)).join("-");
     const noteCount = intervals.length + 1;
 
-    const degree = segment.position + 1;
-    const degreeLabel = omitDegree ? `${degree}η` : `${degree}η βαθμίδα`;
+    const position = segment.position;
+    let degreeLabel;
+
+    if (position >= 0) {
+      const degree = position + 1;
+      // Don't omit "βαθμίδα" if we're repeating "του δρόμου"
+      degreeLabel = omitDegree && !repeatDromo ? `${degree}η` : `${degree}η βαθμίδα`;
+    } else {
+      // position < 0
+      const stepsBack = Math.abs(position);
+      degreeLabel = `${stepsBack}η βαθμίδα πριν τη βάση`;
+    }
 
     const segmentOctaveStep = Octave.TwoOctaves.getStepByPosition(segment.octavePosition);
     const noteKey = segmentOctaveStep.note.match(/^([A-G][#b]?)/)[1];
@@ -130,9 +137,20 @@ export class MakamDetailsShort extends LitElement {
         const isSecondLast = index === segments.length - 2;
 
         const prefix = isFirst ? "ένα" : isLast ? "και ένα" : "ένα";
-        const part = this.#renderSegmentName(segment, !isFirst);
 
-        const extra = isFirst ? " του δρόμου" : "";
+        let repeatDromo = false;
+        if (!isFirst && segment.position >= 0) {
+          const previousSegments = segments.slice(0, index);
+          const allPreviousNegative = previousSegments.every((seg) => seg.position < 0);
+          repeatDromo = allPreviousNegative;
+        }
+
+        const part = this.#renderSegmentName(segment, !isFirst, repeatDromo);
+
+        let extra = "";
+        if (isFirst || repeatDromo) {
+          extra = " του δρόμου";
+        }
 
         let suffix = "";
         if (!isLast && !isSecondLast) {
@@ -263,13 +281,22 @@ export class MakamDetailsShort extends LitElement {
 
   #renderDegreeWithTooltip(degree) {
     const noteName = this.#getNoteNameForDegree(degree);
+    let degreeText;
+
+    if (degree > 0) {
+      degreeText = `${degree}η`;
+    } else {
+      const stepsBack = Math.abs(degree) + 1;
+      degreeText = `${stepsBack}η πριν τη βάση`;
+    }
+
     return html`<strong
       class="degree-tooltip"
       data-bs-toggle="tooltip"
       data-bs-placement="top"
       title="${noteName}"
       style="cursor: help;"
-      >${degree}η</strong
+      >${degreeText}</strong
     >`;
   }
 
@@ -282,7 +309,7 @@ export class MakamDetailsShort extends LitElement {
     const leadingNoteKey = Note.transpose(baseNoteKey, -leadingInterval);
     const leadingNote = new Note(leadingNoteKey);
 
-    const leadingStep = this.#resolveOctave(basePosition, baseNoteKey, leadingNoteKey);
+    const leadingStep = this.#resolveOctave(basePosition, leadingNoteKey);
     const intervalType = Interval.getLongNameAccusative(leadingInterval).toLowerCase();
     const noteName = leadingStep
       ? `${leadingNote.toFullName()} ${leadingStep.label}`

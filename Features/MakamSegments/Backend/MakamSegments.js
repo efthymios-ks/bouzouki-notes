@@ -60,7 +60,7 @@ export default [
     ],
   },
   {
-    id: "NIAVEND",
+    id: "NIHAVEND",
     name: "Νιαβέντ",
     intervals: [
       [2, 1, 2],
@@ -154,5 +154,16 @@ export default [
     intervals: [[2, 1, 1]],
     leadingInterval: 2,
     placements: [{ octavePosition: 1, length: 4 }],
+  },
+  {
+    id: "CARGAH",
+    name: "Τσαργκιάχ",
+    intervals: [[2, 2, 1, 2]],
+    leadingInterval: 1,
+    placements: [
+      { octavePosition: 3, length: 5 },
+      { octavePosition: 4, length: 5 },
+      { octavePosition: 0, length: 5 },
+    ],
   },
 ];

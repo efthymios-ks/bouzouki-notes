@@ -152,7 +152,7 @@ export class MakamSegmentsPage extends LitElement {
                     const noteCount = segment.getIntervalsBySize(placement.length).length + 1;
                     const noteKey = step.note.match(/^([A-G][#b]?)/)[1];
                     const note = Note.toFullName(noteKey);
-                    const title = `${noteCount}x ${note} στο ${step.label}`;
+                    const title = `${noteCount}x στο ${note} ${step.label}`;
                     const titleHtml = isMainPlacement
                       ? html`
                           <span

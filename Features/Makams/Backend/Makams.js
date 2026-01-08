@@ -514,4 +514,62 @@ export default [
       },
     ],
   },
+  {
+    id: "BUSELIK",
+    name: "Μπουσελίκ",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "BUSELIK_RAST",
+        name: "Μπουσελίκ με Ραστ",
+        isMain: true,
+        direction: "ASC|DESC",
+        segments: [
+          { id: "RAST", size: 4, position: -1 },
+          { id: "BUSELIK", size: 5, position: 0 },
+          { id: "CARGAH", size: 5, position: 2 },
+        ],
+        entryNotes: [3],
+        endingNote: 1,
+        dominantNotes: [0, 1, 3],
+      },
+      {
+        id: "BUSELIK",
+        name: "Μπουσελίκ",
+        segments: [
+          { id: "BUSELIK", size: 5, position: 0 },
+          { id: "CARGAH", size: 5, position: 2 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "NIHAVENT",
+    name: "Νιαβέντ",
+    octavePosition: 0,
+    variants: [
+      {
+        id: "NIHAVENT_HIJAZ",
+        name: "Νιαβέντ με Χιτζάζ",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "NIHAVEND", size: 5, position: 0 },
+          { id: "HIJAZ", size: 4, position: 4 },
+        ],
+        entryNotes: [5],
+        endingNote: 1,
+        dominantNotes: [1, 4, 5],
+      },
+      {
+        id: "NIHAVENT",
+        name: "Νιαβέντ",
+        isMain: true,
+        segments: [
+          { id: "NIHAVEND", size: 5, position: 0 },
+          { id: "NIHAVEND", size: 5, position: 3 },
+        ],
+      },
+    ],
+  },
 ];
