@@ -544,12 +544,12 @@ export default [
     ],
   },
   {
-    id: "NIHAVENT",
+    id: "NIHAVEND",
     name: "Νιαβέντ",
     octavePosition: 0,
     variants: [
       {
-        id: "NIHAVENT_HIJAZ",
+        id: "NIHAVEND_HIJAZ",
         name: "Νιαβέντ με Χιτζάζ",
         isMain: true,
         direction: "ASC",
@@ -562,7 +562,7 @@ export default [
         dominantNotes: [1, 4, 5],
       },
       {
-        id: "NIHAVENT",
+        id: "NIHAVEND",
         name: "Νιαβέντ",
         isMain: true,
         segments: [
@@ -589,6 +589,27 @@ export default [
         entryNotes: [1, 5],
         endingNote: 1,
         dominantNotes: [1, 5],
+      },
+    ],
+  },
+  {
+    id: "KURDI",
+    name: "Κιουρντί",
+    octavePosition: 1,
+    variants: [
+      {
+        id: "KURDI",
+        name: "Κιουρντί",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "KURDI", size: 5, position: 0 },
+          { id: "BUSELIK", size: 5, position: 3 },
+          { id: "CARGAH", size: 5, position: 2 },
+        ],
+        entryNotes: [1, 5],
+        endingNote: 1,
+        dominantNotes: [1, 2, 3, 4, 5],
       },
     ],
   },

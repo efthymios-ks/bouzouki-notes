@@ -268,9 +268,20 @@ export class MakamDetailsShort extends LitElement {
     const notePosition = basePosition + degree - 1;
     const octaveStep = Octave.TwoOctaves.getStepByPosition(notePosition);
 
-    const noteKey = this.#extractNoteKey(octaveStep.note);
-    const note = new Note(noteKey);
-    return `${note.toFullName()} ${octaveStep.label}`;
+    const octaveStepNoteKey = this.#extractNoteKey(octaveStep.note);
+    const note = new Note(octaveStepNoteKey);
+
+    // Get the actual note from the makam's scale
+    const noteIndex = degree - 1;
+    const actualNote = this.makam.mainVariant.notes[noteIndex];
+
+    // Only include the octave step label if the actual note matches the octave step note
+    if (actualNote && actualNote.key === octaveStepNoteKey) {
+      return `${actualNote.toFullName()} ${octaveStep.label}`;
+    }
+
+    // If no match or out of bounds, just return the note without the label
+    return actualNote ? actualNote.toFullName() : `${note.toFullName()} ${octaveStep.label}`;
   }
 
   #getBaseNoteName() {

@@ -34,7 +34,7 @@ export default [
     ],
   },
   {
-    id: "KYRDI",
+    id: "KURDI",
     name: "Κιουρντί",
     intervals: [
       [1, 2, 2],
