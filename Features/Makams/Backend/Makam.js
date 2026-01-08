@@ -73,7 +73,7 @@ export class Makam {
   }
 
   static getAll() {
-    return Makams.map((makam) => new Makam(makam)).sort((a, b) => a.id.localeCompare(b.id));
+    return Makams.map((makam) => new Makam(makam)).sort((a, b) => a.name.localeCompare(b.name));
   }
 
   static getById(id) {

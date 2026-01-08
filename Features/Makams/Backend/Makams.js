@@ -572,4 +572,24 @@ export default [
       },
     ],
   },
+  {
+    id: "NEVESER",
+    name: "Νεβεσέρ",
+    octavePosition: 0,
+    variants: [
+      {
+        id: "NEVESER",
+        name: "Νεβεσέρ",
+        isMain: true,
+        direction: "ASC",
+        segments: [
+          { id: "NIKRIZ", size: 5, position: 0 },
+          { id: "HIJAZ", size: 4 },
+        ],
+        entryNotes: [1, 5],
+        endingNote: 1,
+        dominantNotes: [1, 5],
+      },
+    ],
+  },
 ];
