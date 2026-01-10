@@ -127,7 +127,7 @@ export default [
         ],
         entryNotes: [1, 5],
         endingNote: 1,
-        dominantNotes: [1, 5],
+        dominantNotes: [1, 3, 5],
       },
       {
         id: "SEGAH_RAST_ASC",

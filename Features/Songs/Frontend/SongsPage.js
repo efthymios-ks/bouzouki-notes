@@ -39,7 +39,6 @@ export class SongsPage extends LitElement {
 
   #loadData() {
     this.allSongs = Song.getAll();
-    this.filteredSongs = [...this.allSongs];
 
     // Get all unique makam IDs from songs
     const makamIds = new Set();
@@ -49,7 +48,9 @@ export class SongsPage extends LitElement {
 
     // Get makam objects
     this.allMakams = Makam.getAll().filter((makam) => makamIds.has(makam.id));
-    this.requestUpdate();
+
+    // Apply initial sort
+    this.#applyFilters();
   }
 
   #findMakamByIdOrVariant(makamId) {
