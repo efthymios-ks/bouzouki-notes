@@ -101,7 +101,7 @@ export class BouzoukiFretboardPage extends LitElement {
 
       // Get notes based on the selected base note using intervals
       const intervals = makamItem.variant.intervals;
-      this.#selectednotes = Note.intervalsToNotes(this.selectedBaseNote, intervals);
+      this.#selectednotes = Note.intervalsToNormalizedNotes(this.selectedBaseNote, intervals);
       this.#selectedIntervals = intervals.map((i) => Interval.getName(i));
       return;
     }
