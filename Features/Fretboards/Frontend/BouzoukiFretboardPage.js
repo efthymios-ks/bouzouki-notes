@@ -2,6 +2,7 @@ import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 import { Chord } from "../../Chords/Backend/Chord.js";
 import { Note } from "../../Notes/Backend/Note.js";
 import { Makam } from "../../Makams/Backend/Makam.js";
+import { Interval } from "../../Intervals/Backend/Interval.js";
 import "./FretboardVisualizer.js";
 
 export class BouzoukiFretboardPage extends LitElement {
@@ -40,6 +41,7 @@ export class BouzoukiFretboardPage extends LitElement {
   );
 
   #selectednotes = [];
+  #selectedIntervals = [];
   #selectFretFunction = (stringNumber, stringNote, fretNumber, fretNote) => {
     return this.#selectednotes.some((note) => note === fretNote);
   };
@@ -83,6 +85,7 @@ export class BouzoukiFretboardPage extends LitElement {
     if (this.selectedItemType === BouzoukiFretboardPage.#typeEnum.CHORD) {
       const chord = `${this.selectedBaseNote}${this.selectedItemKey}`;
       this.#selectednotes = Chord.getNotes(chord);
+      this.#selectedIntervals = [];
       return;
     }
 
@@ -92,12 +95,14 @@ export class BouzoukiFretboardPage extends LitElement {
       );
       if (!makamItem) {
         this.#selectednotes = [];
+        this.#selectedIntervals = [];
         return;
       }
 
       // Get notes based on the selected base note using intervals
       const intervals = makamItem.variant.intervals;
       this.#selectednotes = Note.intervalsToNotes(this.selectedBaseNote, intervals);
+      this.#selectedIntervals = intervals.map((i) => Interval.getName(i));
       return;
     }
 
@@ -200,6 +205,27 @@ export class BouzoukiFretboardPage extends LitElement {
     return html`
       <div class="fretboard-container">
         ${this.controlsHtml()}
+
+        <div class="notes-intervals-display mb-3 p-3 bg-light border rounded">
+          <div class="row">
+            <div class="col-md-6 mb-2 mb-md-0">
+              <strong class="small">Νότες:</strong>
+              <span class="ms-2">
+                ${this.#selectednotes.length > 0
+                  ? this.#selectednotes.map((note) => Note.toPrintableString(note)).join(", ")
+                  : "—"}
+              </span>
+            </div>
+            ${this.#selectedIntervals.length > 0
+              ? html`
+                  <div class="col-md-6">
+                    <strong class="small">Διαστήματα:</strong>
+                    <span class="ms-2">${this.#selectedIntervals.join("-")}</span>
+                  </div>
+                `
+              : ""}
+          </div>
+        </div>
 
         <div class="overflow-x-auto">
           <fretboard-visualizer
