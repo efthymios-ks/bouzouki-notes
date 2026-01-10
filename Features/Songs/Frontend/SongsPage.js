@@ -53,6 +53,13 @@ export class SongsPage extends LitElement {
     this.#applyFilters();
   }
 
+  #normalizeGreekText(text) {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
   #findMakamByIdOrVariant(makamId) {
     // First, try to find by top-level makam ID
     const allMakams = this.allMakams;
@@ -71,15 +78,17 @@ export class SongsPage extends LitElement {
 
     // Name filter
     if (this.nameFilter.trim()) {
-      const searchTerm = this.nameFilter.toLowerCase().trim();
-      filtered = filtered.filter((song) => song.name.toLowerCase().includes(searchTerm));
+      const searchTerm = this.#normalizeGreekText(this.nameFilter.trim());
+      filtered = filtered.filter((song) =>
+        this.#normalizeGreekText(song.name).includes(searchTerm)
+      );
     }
 
     // Author filter
     if (this.authorFilter.trim()) {
-      const searchTerm = this.authorFilter.toLowerCase().trim();
+      const searchTerm = this.#normalizeGreekText(this.authorFilter.trim());
       filtered = filtered.filter((song) =>
-        song.authors.some((author) => author.toLowerCase().includes(searchTerm))
+        song.authors.some((author) => this.#normalizeGreekText(author).includes(searchTerm))
       );
     }
 
