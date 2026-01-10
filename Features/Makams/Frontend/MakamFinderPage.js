@@ -59,7 +59,7 @@ export class MakamFinderPage extends LitElement {
           ? html`<p class="text-muted text-center">Δεν βρέθηκαν μακάμ</p>`
           : this.foundResults.length > 0
           ? html`
-              <h5 class="text-center mb-3">Βρέθηκαν ${this.foundResults.length} πιθανά μακάμ</h5>
+              <h5 class="text-center mb-3">Βρέθηκαν πιθανά μακάμ</h5>
               <div class="d-flex flex-wrap justify-content-center gap-2">
                 ${this.foundResults.map((result) => this.#renderMakamMatch(result))}
               </div>
