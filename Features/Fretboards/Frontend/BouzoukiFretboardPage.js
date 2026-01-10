@@ -1,7 +1,7 @@
 import { LitElement, html } from "../../../Libraries/lit/lit.min.js";
 import { Chord } from "../../Chords/Backend/Chord.js";
 import { Note } from "../../Notes/Backend/Note.js";
-import { Scale } from "../../Scales/Backend/Scale.js";
+import { Makam } from "../../Makams/Backend/Makam.js";
 import "./FretboardVisualizer.js";
 
 export class BouzoukiFretboardPage extends LitElement {
@@ -13,20 +13,22 @@ export class BouzoukiFretboardPage extends LitElement {
   };
 
   static #typeEnum = Object.freeze({
-    SCALE: "Scale",
+    MAKAM: "Makam",
     CHORD: "Chord",
   });
 
   static #predefinedChordLayouts = Object.freeze(["D-A-F-C", "D-A-D"]);
 
-  static #allScales = Object.freeze(
-    Scale.getAll("D").flatMap((scale) =>
-      scale.variants.map((scaleVariant, scaleVariantIndex) => ({
-        key: BouzoukiFretboardPage.serializeScaleKey(scale.id, scaleVariantIndex),
-        name:
-          scale.name === scaleVariant.name ? scale.name : `${scale.name} - ${scaleVariant.name}`,
-        notes: scaleVariant.notes,
-      }))
+  static #allMakams = Object.freeze(
+    Makam.getAll().flatMap((makam) =>
+      makam.allVariants
+        .filter((variant) => variant.isMain)
+        .map((variant) => ({
+          key: `${makam.id}_${variant.id}`,
+          name: variant.name === makam.name ? makam.name : `${makam.name} - ${variant.name}`,
+          makam: makam,
+          variant: variant,
+        }))
     )
   );
 
@@ -46,26 +48,14 @@ export class BouzoukiFretboardPage extends LitElement {
     super();
     this.selectedChordLayout = BouzoukiFretboardPage.#predefinedChordLayouts[0];
     this.selectedBaseNote = "D";
-    this.selectedItemKey = BouzoukiFretboardPage.#allScales[0].key;
-    this.selectedItemType = BouzoukiFretboardPage.#typeEnum.SCALE;
+    this.selectedItemKey = BouzoukiFretboardPage.#allMakams[0].key;
+    this.selectedItemType = BouzoukiFretboardPage.#typeEnum.MAKAM;
 
     this.onSelectionChanged();
   }
 
   createRenderRoot() {
     return this;
-  }
-
-  static serializeScaleKey(scaleId, scaleVariantIndex) {
-    return `${scaleId}_${scaleVariantIndex}`;
-  }
-
-  static deserializeScaleKey(scaleKey) {
-    const [scaleId, scaleVariantIndex] = scaleKey.split("_");
-    return {
-      scaleId,
-      scaleVariantIndex: parseInt(scaleVariantIndex, 10),
-    };
   }
 
   onInputChange(event) {
@@ -96,24 +86,18 @@ export class BouzoukiFretboardPage extends LitElement {
       return;
     }
 
-    if (this.selectedItemType === BouzoukiFretboardPage.#typeEnum.SCALE) {
-      const { scaleId, scaleVariantIndex } = BouzoukiFretboardPage.deserializeScaleKey(
-        this.selectedItemKey
+    if (this.selectedItemType === BouzoukiFretboardPage.#typeEnum.MAKAM) {
+      const makamItem = BouzoukiFretboardPage.#allMakams.find(
+        (m) => m.key === this.selectedItemKey
       );
-
-      const scale = Scale.getAll(this.selectedBaseNote).find((scale) => scale.id === scaleId);
-      if (!scale) {
+      if (!makamItem) {
         this.#selectednotes = [];
         return;
       }
 
-      const scaleVariant = scale.variants[scaleVariantIndex];
-      if (!scaleVariant) {
-        this.#selectednotes = [];
-        return;
-      }
-
-      this.#selectednotes = scaleVariant.notes;
+      // Get notes based on the selected base note using intervals
+      const intervals = makamItem.variant.intervals;
+      this.#selectednotes = Note.intervalsToNotes(this.selectedBaseNote, intervals);
       return;
     }
 
@@ -127,13 +111,13 @@ export class BouzoukiFretboardPage extends LitElement {
       name: `Συγχορδία ${chord.name}`,
     }));
 
-    const scales = BouzoukiFretboardPage.#allScales.map((variant) => ({
-      type: BouzoukiFretboardPage.#typeEnum.SCALE,
-      key: variant.key,
-      name: `Δρόμος ${variant.name}`,
+    const makams = BouzoukiFretboardPage.#allMakams.map((makam) => ({
+      type: BouzoukiFretboardPage.#typeEnum.MAKAM,
+      key: makam.key,
+      name: `Μακάμ ${makam.name}`,
     }));
 
-    const notesOptions = [...chords, ...scales].map(
+    const notesOptions = [...chords, ...makams].map(
       (item) =>
         html`<option
           value="${item.key}"

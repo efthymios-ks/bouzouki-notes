@@ -103,7 +103,7 @@ export default [
       },
       {
         id: "USSAK_RAST",
-        name: "Ουσάκ με Ραστ",
+        name: "Με Ραστ",
         segments: [
           { id: "USSAK", size: 4, position: 0 },
           { id: "RAST", size: 5 },
@@ -131,7 +131,7 @@ export default [
       },
       {
         id: "SEGAH_RAST_ASC",
-        name: "Σεγκιάχ με Ραστ (Ανιούσα)",
+        name: "Με Ραστ (Ανιούσα)",
         direction: "ASC",
         segments: [
           { id: "SEGAH", size: 3, position: 0 },
@@ -141,7 +141,7 @@ export default [
       },
       {
         id: "SEGAH_RAST_DESC",
-        name: "Σεγκιάχ με Ραστ (Κατιούσα)",
+        name: "Με Ραστ (Κατιούσα)",
         direction: "DESC",
         segments: [
           { id: "SEGAH", size: 3, position: 0 },
@@ -323,7 +323,7 @@ export default [
       },
       {
         id: "HIJAZ_ZIRGULELI_WITH_HIJAZ",
-        name: "Ζιργκιουλελί Χιτζάζ με απλό Χιτζάζ",
+        name: "Με απλό Χιτζάζ",
         isMain: true,
         segments: [
           { id: "HIJAZ", size: 4, position: 0 },
@@ -481,7 +481,7 @@ export default [
     variants: [
       {
         id: "SUZINAK_ZIRGULELI",
-        name: "Ζιργκιουλελί Χιτζάζ",
+        name: "Ζιργκιουλελί Σουζινάκ",
         isMain: true,
         direction: "ASC|DESC",
         segments: [
@@ -521,7 +521,7 @@ export default [
     variants: [
       {
         id: "BUSELIK_RAST",
-        name: "Μπουσελίκ με Ραστ",
+        name: "Με Ραστ",
         isMain: true,
         direction: "ASC|DESC",
         segments: [
@@ -550,7 +550,7 @@ export default [
     variants: [
       {
         id: "NIHAVEND_HIJAZ",
-        name: "Νιαβέντ με Χιτζάζ",
+        name: "Με Χιτζάζ",
         isMain: true,
         direction: "ASC",
         segments: [
