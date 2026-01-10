@@ -6,8 +6,7 @@ export class SongsPage extends LitElement {
   static properties = {
     songs: { type: Array },
     filteredSongs: { type: Array },
-    nameFilter: { type: String },
-    authorFilter: { type: String },
+    searchFilter: { type: String },
     selectedMakams: { type: Set },
     allMakams: { type: Array },
     allSongNames: { type: Array },
@@ -20,8 +19,7 @@ export class SongsPage extends LitElement {
     super();
     this.allSongs = [];
     this.filteredSongs = [];
-    this.nameFilter = "";
-    this.authorFilter = "";
+    this.searchFilter = "";
     this.selectedMakams = new Set();
     this.allMakams = [];
     this.sortColumn = "name";
@@ -76,20 +74,26 @@ export class SongsPage extends LitElement {
   #applyFilters() {
     let filtered = [...this.allSongs];
 
-    // Name filter
-    if (this.nameFilter.trim()) {
-      const searchTerm = this.#normalizeGreekText(this.nameFilter.trim());
-      filtered = filtered.filter((song) =>
-        this.#normalizeGreekText(song.name).includes(searchTerm)
-      );
-    }
+    // Search filter - split by space, each term must match (AND), but can match in either name or author (OR)
+    if (this.searchFilter.trim()) {
+      const searchTerms = this.searchFilter
+        .split(/\s+/)
+        .map((term) => this.#normalizeGreekText(term.trim()))
+        .filter((term) => term.length > 0);
 
-    // Author filter
-    if (this.authorFilter.trim()) {
-      const searchTerm = this.#normalizeGreekText(this.authorFilter.trim());
-      filtered = filtered.filter((song) =>
-        song.authors.some((author) => this.#normalizeGreekText(author).includes(searchTerm))
-      );
+      filtered = filtered.filter((song) => {
+        const normalizedName = this.#normalizeGreekText(song.name);
+        const normalizedAuthors = song.authors.map((author) => this.#normalizeGreekText(author));
+
+        // All search terms must match (AND logic)
+        return searchTerms.every((term) => {
+          // Each term can match in either name OR any author (OR logic)
+          return (
+            normalizedName.includes(term) ||
+            normalizedAuthors.some((author) => author.includes(term))
+          );
+        });
+      });
     }
 
     // Makam filter
@@ -159,13 +163,8 @@ export class SongsPage extends LitElement {
     this.#applyFilters();
   }
 
-  #handleNameFilterChange(e) {
-    this.nameFilter = e.target.value;
-    this.#applyFilters();
-  }
-
-  #handleAuthorFilterChange(e) {
-    this.authorFilter = e.target.value;
+  #handleSearchFilterChange(e) {
+    this.searchFilter = e.target.value;
     this.#applyFilters();
   }
 
@@ -179,8 +178,7 @@ export class SongsPage extends LitElement {
   }
 
   #clearFilters() {
-    this.nameFilter = "";
-    this.authorFilter = "";
+    this.searchFilter = "";
     this.selectedMakams.clear();
     this.#applyFilters();
   }
@@ -237,29 +235,16 @@ export class SongsPage extends LitElement {
         <div class="card mb-4">
           <div class="card-body">
             <div class="row g-3">
-              <!-- Name Filter -->
-              <div class="col-md-4">
-                <label class="form-label fw-bold" for="name-filter">Όνομα</label>
+              <!-- Search Filter -->
+              <div class="col-md-8">
+                <label class="form-label fw-bold" for="search-filter">Αναζήτηση</label>
                 <input
-                  id="name-filter"
+                  id="search-filter"
                   type="text"
                   class="form-control"
-                  placeholder="Αναζήτηση..."
-                  .value=${this.nameFilter}
-                  @input=${this.#handleNameFilterChange}
-                />
-              </div>
-
-              <!-- Author Filter -->
-              <div class="col-md-4">
-                <label class="form-label fw-bold" for="author-filter">Συνθέτης</label>
-                <input
-                  id="author-filter"
-                  type="text"
-                  class="form-control"
-                  placeholder="Αναζήτηση..."
-                  .value=${this.authorFilter}
-                  @input=${this.#handleAuthorFilterChange}
+                  placeholder="Αναζήτηση τραγουδιού ή συνθέτη..."
+                  .value=${this.searchFilter}
+                  @input=${this.#handleSearchFilterChange}
                 />
               </div>
 
