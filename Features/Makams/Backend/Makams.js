@@ -247,26 +247,24 @@ export default [
     octavePosition: 1,
     variants: [
       {
-        id: "HIJAZ_ASC",
-        name: "Ανιούσα",
+        id: "HIJAZ",
+        name: "Χιτζάζ",
         isMain: true,
         direction: "ASC",
         segments: [
           { id: "HIJAZ", size: 4, position: 0 },
-          { id: "RAST", size: 5 },
+          { id: "RAST", name: "Ραστ με μονιμοποιημένη έλξη", intervals: [2, 1, 2, 2] },
         ],
         entryNotes: [1, 4],
         endingNote: 1,
         dominantNotes: [1, 4],
       },
       {
-        id: "HIJAZ_DESC",
-        name: "Κατιούσα",
-        isMain: true,
-        direction: "DESC",
+        id: "HIJAZ_RAST",
+        name: "Χιτζάζ με Ραστ",
         segments: [
           { id: "HIJAZ", size: 4, position: 0 },
-          { id: "USSAK", size: 5 },
+          { id: "RAST", size: 5 },
         ],
       },
     ],
